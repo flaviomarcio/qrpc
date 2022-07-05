@@ -10,7 +10,7 @@
 using namespace stefanfrings;
 
 HttpSessionStore::HttpSessionStore(const QSettings *settings, QObject* parent)
-    :QObject(parent)
+    :QObject{parent}
 {
     this->settings=settings;
     connect(&cleanupTimer,SIGNAL(timeout()),this,SLOT(sessionTimerEvent()));

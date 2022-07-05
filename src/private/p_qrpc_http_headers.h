@@ -101,7 +101,7 @@ public:
     //! \return
     //!
     virtual QVariant cookies() const;
-    virtual HttpHeaders &setCookies(const QVariant&cookie);
+    virtual HttpHeaders &setCookies(const QVariant &cookie);
 
     //!
     //! \brief authorization

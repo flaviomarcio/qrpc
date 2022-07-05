@@ -257,7 +257,7 @@ int ListenRequestCode::code()
     return request->responseCode();
 }
 
-int ListenRequestCode::code(const QVariant&code)
+int ListenRequestCode::code(const QVariant &code)
 {
     auto parent=this->parent();
     auto request=(parent==nullptr)?nullptr:dynamic_cast<ListenRequest*>(parent);

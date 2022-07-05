@@ -4,7 +4,7 @@
 #include "./qrpc_global.h"
 #include "./qrpc_last_error.h"
 #include "./qrpc_macro.h"
-#include "./qrpc_service_manager.h"
+#include "./qrpc_setting_manager.h"
 #include "./qrpc_service_setting.h"
 #include "./qrpc_service_thread.h"
 #include "./qrpc_types.h"

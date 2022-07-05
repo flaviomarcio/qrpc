@@ -108,7 +108,7 @@ bool HttpSession::isNull() const {
     return dataPtr==nullptr;
 }
 
-void HttpSession::set(const QByteArray& key, const QVariant& value)
+void HttpSession::set(const QByteArray& key, const QVariant & value)
 {
     if (dataPtr)
     {

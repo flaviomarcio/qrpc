@@ -58,7 +58,7 @@ const QString parseQueryItem(const QVariant &v);
 //! \param request_finish
 //! \return
 //!
-const QVariantHash toMapResquest(int method, const QVariant&request_url, const QString &request_body, const QVariantHash &request_parameters, const QString &response_body, const QVariantHash&request_header, const QDateTime&request_start, const QDateTime&request_finish);
+const QVariantHash toMapResquest(int method, const QVariant &request_url, const QString &request_body, const QVariantHash &request_parameters, const QString &response_body, const QVariantHash&request_header, const QDateTime&request_start, const QDateTime&request_finish);
 
 //!
 //! \brief routeExtractMethod
@@ -100,7 +100,7 @@ const QString parseQueryItem(const QVariant &v);
 //! \param request_finish
 //! \return
 //!
-const QVariantHash toMapResquest(int method, const QVariant&request_url, const QString &request_body, const QVariantHash &request_parameters, const QString &response_body, const QVariantHash&request_header, const QDateTime&request_start, const QDateTime&request_finish);
+const QVariantHash toMapResquest(int method, const QVariant &request_url, const QString &request_body, const QVariantHash &request_parameters, const QString &response_body, const QVariantHash&request_header, const QDateTime&request_start, const QDateTime&request_finish);
 
 }
 }

@@ -11,7 +11,7 @@ class ServiceThreadPvt: public QObject{
 public:
     QMutex mutex;
     QDateTime serviceStarted=QDateTime::currentDateTime();
-    ServiceManager manager;
+    SettingManager manager;
     QString serviceName;
     QRpc::ServiceSetting setting;
     ServiceThread*service=nullptr;
@@ -24,7 +24,7 @@ public:
     virtual ~ServiceThreadPvt(){
     }
 
-    void setManager(const ServiceManager&manager){
+    void setManager(const SettingManager&manager){
         this->manager.clear();
         this->manager.load(manager);
     }
@@ -35,22 +35,22 @@ public slots:
         emit service->request_state(uuid, service->Success, v);
         service->received(uuid, v);
     }
-    void onRequestSuccess(const QUuid &uuid, const QVariant&detail){
+    void onRequestSuccess(const QUuid &uuid, const QVariant &detail){
         QMutexLOCKER locker(&this->mutex);
         ++stats.success;
         emit service->request_state(uuid, service->Success, detail);
     }
-    void onRequestError(const QUuid &uuid, const QVariant&detail){
+    void onRequestError(const QUuid &uuid, const QVariant &detail){
         QMutexLOCKER locker(&this->mutex);
         ++stats.error;
         emit service->request_state(uuid, service->Error, detail);
     }
-    void onRequestDiscarted(const QUuid &uuid, const QVariant&detail){
+    void onRequestDiscarted(const QUuid &uuid, const QVariant &detail){
         QMutexLOCKER locker(&this->mutex);
         ++stats.discated;
         emit service->request_state(uuid, service->Discarted, detail);
     }
-    void onRequestCanceled(const QUuid&uuid, const QVariant&detail){
+    void onRequestCanceled(const QUuid&uuid, const QVariant &detail){
         QMutexLOCKER locker(&this->mutex);
         ++stats.canceled;
         emit service->request_state(uuid, service->Canceled, detail);
@@ -104,7 +104,7 @@ ServiceThread::ServiceThread(const QString &serviceName, QObject *parent) : QThr
     this->setServiceName(serviceName);
 }
 
-ServiceThread::ServiceThread(const ServiceManager &manager, QObject *parent) : QThread{nullptr}
+ServiceThread::ServiceThread(const SettingManager &manager, QObject *parent) : QThread{nullptr}
 {
     Q_UNUSED(parent)
     this->p = new ServiceThreadPvt{this};
@@ -113,7 +113,7 @@ ServiceThread::ServiceThread(const ServiceManager &manager, QObject *parent) : Q
     p->setManager(manager);
 }
 
-ServiceThread::ServiceThread(const ServiceManager &manager, const QString &serviceName, QObject *parent) : QThread{nullptr}
+ServiceThread::ServiceThread(const SettingManager &manager, const QString &serviceName, QObject *parent) : QThread{nullptr}
 {
     Q_UNUSED(parent)
     this->p = new ServiceThreadPvt{this};
@@ -132,7 +132,7 @@ QRpc::ServiceSetting&ServiceThread::setting()
     return p->setting;
 }
 
-ServiceManager &ServiceThread::manager()
+SettingManager &ServiceThread::manager()
 {
 
     return p->manager;
@@ -186,7 +186,7 @@ bool ServiceThread::start()
     return false;
 }
 
-bool ServiceThread::start(const ServiceManager&manager)
+bool ServiceThread::start(const SettingManager&manager)
 {
 
     if(!this->isRunning()){

@@ -1356,7 +1356,7 @@ void ListenRequest::setResponseCallback(const QVariantHash &value)
     p->responseCallback=value;
 }
 
-QVariant&ListenRequest::responseBody() const
+QVariant &ListenRequest::responseBody() const
 {
 
     return p->responseBody;

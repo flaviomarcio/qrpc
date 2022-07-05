@@ -7,7 +7,7 @@
 #include <QVariantHash>
 #include <QVariantList>
 #include <QDateTime>
-#include "./qrpc_service_manager.h"
+#include "./qrpc_setting_manager.h"
 #include "./qrpc_service_setting.h"
 
 namespace QRpc {
@@ -52,8 +52,8 @@ public:
     //!
     Q_INVOKABLE explicit ServiceThread(QObject *parent = nullptr);
     explicit ServiceThread(const QString &serviceName, QObject *parent = nullptr);
-    explicit ServiceThread(const ServiceManager&manager,QObject *parent = nullptr);
-    explicit ServiceThread(const ServiceManager&manager, const QString &serviceName, QObject *parent = nullptr);
+    explicit ServiceThread(const SettingManager&manager,QObject *parent = nullptr);
+    explicit ServiceThread(const SettingManager&manager, const QString &serviceName, QObject *parent = nullptr);
 
     //!
     //! \brief setting
@@ -65,7 +65,7 @@ public:
     //! \brief manager
     //! \return
     //!
-    virtual QRpc::ServiceManager&manager();
+    virtual QRpc::SettingManager&manager();
 
     //!
     //! \brief run
@@ -77,7 +77,7 @@ public:
     //! \return
     //!
     virtual bool start();
-    virtual bool start(const ServiceManager &manager);
+    virtual bool start(const SettingManager &manager);
 
     /**
      * @brief stop
@@ -157,28 +157,28 @@ signals:
     //! \param uuid
     //! \param detail
     //!
-    void request_success(const QUuid &uuid, const QVariant&detail);
+    void request_success(const QUuid &uuid, const QVariant &detail);
 
     //!
     //! \brief request_error
     //! \param uuid
     //! \param detail
     //!
-    void request_error(const QUuid &uuid, const QVariant&detail);
+    void request_error(const QUuid &uuid, const QVariant &detail);
 
     //!
     //! \brief request_discated
     //! \param uuid
     //! \param detail
     //!
-    void request_discated(const QUuid &uuid, const QVariant&detail);
+    void request_discated(const QUuid &uuid, const QVariant &detail);
 
     //!
     //! \brief request_canceled
     //! \param uuid
     //! \param detail
     //!
-    void request_canceled(const QUuid&uuid, const QVariant&detail);
+    void request_canceled(const QUuid&uuid, const QVariant &detail);
 
     //!
     //! \brief request_state
@@ -186,7 +186,7 @@ signals:
     //! \param state
     //! \param detail
     //!
-    void request_state(const QUuid &uuid, const QRpc::ServiceThread::State state, const QVariant&detail);
+    void request_state(const QUuid &uuid, const QRpc::ServiceThread::State state, const QVariant &detail);
 private:
     ServiceThreadPvt *p=nullptr;
 };

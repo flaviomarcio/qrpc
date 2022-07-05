@@ -59,7 +59,7 @@ public:
     bool isNull() const;
 
     /** Set a value. This method is thread safe. */
-    void set(const QByteArray& key, const QVariant& value);
+    void set(const QByteArray& key, const QVariant & value);
 
     /** Remove a value. This method is thread safe. */
     void remove(const QByteArray& key);

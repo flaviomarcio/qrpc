@@ -15,9 +15,9 @@ HEADERS += \
     $$PWD/qrpc_global.h \
     $$PWD/qrpc_last_error.h \
     $$PWD/qrpc_macro.h \
-    $$PWD/qrpc_service_manager.h \
     $$PWD/qrpc_service_setting.h \
     $$PWD/qrpc_service_thread.h \
+    $$PWD/qrpc_setting_manager.h \
     $$PWD/qrpc_startup.h \
     $$PWD/qrpc_types.h \
 
