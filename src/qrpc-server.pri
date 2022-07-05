@@ -114,6 +114,7 @@ HEADERS += \
 SOURCES += \
     $$PWD/private/p_qrpc_listen_qrpc.cpp \
     $$PWD/private/p_qrpc_listen_qrpc_slot.cpp \
+    $$PWD/private/p_qrpc_server.cpp \
     $$PWD/private/p_qrpc_thread.cpp \
     $$PWD/qrpc_controller.cpp \
     $$PWD/qrpc_controller_router.cpp \

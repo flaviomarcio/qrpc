@@ -31,203 +31,59 @@ public:
     //! \brief ServerPvt
     //! \param server
     //!
-    explicit ServerPvt(Server *server = nullptr) : QObject(server)
-    {
-        this->server = server;
-        this->listenColletions = new ListenColletions(server);
-    }
+    explicit ServerPvt(Server *server = nullptr);
 
     //!
     //! \brief ~ServerPvt
     //!
-    virtual ~ServerPvt()
-    {
-        this->serverStop();
-        delete this->listenColletions;
-    }
+    virtual ~ServerPvt();
 
     //!
     //! \brief toMd5
     //! \param v
     //! \return
     //!
-    static QByteArray toMd5(const QVariant &v)
-    {
-        if (!v.isValid())
-            return QByteArray();
-
-        auto token_data = v.toByteArray().trimmed();
-        if (token_data.length() == 32) {
-            return token_data;
-        }
-        return QCryptographicHash::hash(token_data, QCryptographicHash::Md5).toHex();
-    }
+    static QByteArray toMd5(const QVariant &v);
 
     //!
     //! \brief start
     //! \return
     //!
-    bool serverStart()
-    {
-        if (this->server->objectName().isEmpty()) {
-            static int countServerName = 0;
-            auto name = qsl("Server_%1").arg(++countServerName);
-            this->server->setObjectName(name);
-        }
-
-        this->listenColletions->setObjectName(this->server->objectName() + qsl("Pvt"));
-        if (!this->listenColletions->isRunning())
-            return this->listenColletions->start();
-        return this->listenColletions->isRunning();
-    }
+    bool serverStart();
 
     //!
     //! \brief stop
     //! \return
     //!
-    bool serverStop()
-    {
-        this->listenColletions->quit();
-        return false;
-    }
+    bool serverStop();
 
-    bool v_load(const QVariant &v)
-    {
-        switch (qTypeId(v)){
-        case QMetaType_QVariantList:
-        case QMetaType_QStringList:
-            return this->load(v.toStringList());
-        case QMetaType_QVariantHash:
-        case QMetaType_QVariantMap:
-            return this->load(v.toHash());
-        default:
-            if(v.toString().trimmed().isEmpty())
-                return this->load(QStringLiteral("qrc:/settings.json"));
-            return this->load(v.toString());
-        }
-    }
+    //!
+    //! \brief v_load
+    //! \param v
+    //! \return
+    //!
+    bool v_load(const QVariant &v);
 
-    bool load(const QStringList &settingsFileName)
-    {
-        QVariantList vList;
-        auto &p = *this;
-        p.settingsFileName.clear();
-        for (auto &fileName : settingsFileName) {
-            QFile file(fileName);
-            if (file.fileName().isEmpty())
-                continue;
+    //!
+    //! \brief load
+    //! \param settingsFileName
+    //! \return
+    //!
+    bool load(const QStringList &settingsFileName);
 
-            if (!file.exists()) {
-#if Q_RPC_LOG
-                sWarning() << tr("file not exists %1").arg(file.fileName());
-#endif
-                continue;
-            }
+    //!
+    //! \brief load
+    //! \param settingsFileName
+    //! \return
+    //!
+    bool load(const QString &settingsFileName);
 
-            if (!file.open(QFile::ReadOnly)) {
-#if Q_RPC_LOG
-                sWarning() << tr("%1, %2").arg(file.fileName(), file.errorString());
-#endif
-                continue;
-            }
-
-            auto bytes = file.readAll();
-            file.close();
-            QJsonParseError *error = nullptr;
-            auto doc = QJsonDocument::fromJson(bytes, error);
-            if (error != nullptr) {
-#if Q_RPC_LOG
-                sWarning() << tr("%1, %2").arg(file.fileName(), error->errorString());
-#endif
-                continue;
-            }
-
-            if (doc.object().isEmpty()) {
-#if Q_RPC_LOG
-                sWarning() << tr("object is empty, %2").arg(file.fileName());
-#endif
-                continue;
-            }
-
-            auto vHash = doc.object().toVariantHash();
-            if (!vHash.isEmpty())
-                vList << vHash;
-        }
-        Q_DECLARE_VU;
-        auto vHash = vu.vMerge(vList).toHash();
-        if (p.load(vHash))
-            p.settingsFileName = settingsFileName;
-        else
-            p.settingsFileName.clear();
-        return !p.settingsFileName.isNull();
-    }
-
-    bool load(const QString &settingsFileName)
-    {
-        QFile file(settingsFileName);
-        auto &p = *this;
-        if (file.fileName().isEmpty())
-            return false;
-
-        if (!file.exists()) {
-#if Q_RPC_LOG
-            sWarning() << tr("file not exists %1").arg(file.fileName());
-#endif
-            return false;
-        }
-
-        if (!file.open(QFile::ReadOnly)) {
-#if Q_RPC_LOG
-            sWarning() << tr("%1, %2").arg(file.fileName(), file.errorString());
-#endif
-            return false;
-        }
-
-        p.settingsFileName = settingsFileName;
-        auto bytes = file.readAll();
-        file.close();
-        QJsonParseError *error = nullptr;
-        auto doc = QJsonDocument::fromJson(bytes, error);
-        if (error != nullptr) {
-#if Q_RPC_LOG
-            sWarning() << tr("%1, %2").arg(file.fileName(), error->errorString());
-#endif
-            return false;
-        }
-
-        if (doc.object().isEmpty()) {
-#if Q_RPC_LOG
-            sWarning() << tr("object is empty, %2").arg(file.fileName());
-#endif
-            return false;
-        }
-        const auto vMap = doc.object().toVariantHash();
-        return this->load(vMap);
-    }
-
-    virtual bool load(const QVariantHash &settings) const
-    {
-        if (!settings.contains(qsl("protocol"))) {
-#if Q_RPC_LOG
-            sWarning() << tr("Json property [protocol] not detected");
-#endif
-            return false;
-        }
-
-        auto protocol = settings.value(qsl("protocol")).toHash();
-        auto controller = settings.value(qsl("controller")).toHash();
-
-        if (protocol.isEmpty()) {
-#if Q_RPC_LOG
-            sWarning() << tr("Json property [protocol] is empty");
-#endif
-            return false;
-        }
-
-        this->listenColletions->setSettings(protocol);
-        this->controllerOptions.load(controller);
-        return true;
-    }
+    //!
+    //! \brief load
+    //! \param settings
+    //! \return
+    //!
+    virtual bool load(const QVariantHash &settings) const;
 
 public:
     QByteArray settingsGroup = qbl("RPCServer");

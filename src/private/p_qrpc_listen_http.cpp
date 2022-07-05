@@ -290,7 +290,7 @@ public:
 
     explicit ListenHTTPPvt(ListenHTTP *parent) : QObject{parent} { this->parent = parent; }
 
-    virtual ~ListenHTTPPvt() {}
+
 
     bool start()
     {
