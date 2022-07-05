@@ -86,8 +86,6 @@ public:
         //!
         explicit Body(QObject*parent=nullptr);
 
-        virtual ~Body();
-
         //!
         //! \brief body
         //! \return
@@ -135,7 +133,6 @@ public:
 
 public:
     Q_INVOKABLE explicit Request(QObject *parent=nullptr);
-    //explicit Request(const ServiceSetting &setting, QObject *parent=nullptr);
     ~Request();
 
     //!

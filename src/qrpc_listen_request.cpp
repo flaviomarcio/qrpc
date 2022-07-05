@@ -1,6 +1,7 @@
 #include "./qrpc_listen_request.h"
 #include "./qrpc_request.h"
 #include "./qrpc_macro.h"
+#include "./qrpc_startup.h"
 #include <QStm>
 
 #include <QVariantHash>
@@ -47,8 +48,7 @@ static void init()
     *baseUuid=makeBaseUuid();
 }
 
-Q_COREAPP_STARTUP_FUNCTION(init);
-
+Q_RPC_STARTUP_FUNCTION(init);
 
 class ListenRequestPvt:public QObject{
 public:

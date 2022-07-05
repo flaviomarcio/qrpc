@@ -11,7 +11,7 @@ namespace QRpc {
 class Q_RPC_EXPORT ServiceSetting:public QStm::SettingBase
 {
     Q_OBJECT
-    SETTING_OBJECT(SettingBase)
+    QSTM_SETTING_OBJECT(SettingBase)
 public:
     Q_PROPERTY(QString service READ service WRITE setService NOTIFY serviceChanged)
     Q_PROPERTY(QVariantHash headers READ headers WRITE setHeaders NOTIFY headersChanged)

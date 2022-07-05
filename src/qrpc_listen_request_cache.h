@@ -22,11 +22,6 @@ public:
     explicit ListenRequestCache(Listen *parent = nullptr);
 
     //!
-    //! \brief ~ListenRequestCache
-    //!
-    ~ListenRequestCache();
-
-    //!
     //! \brief clear
     //!
     virtual void clear();

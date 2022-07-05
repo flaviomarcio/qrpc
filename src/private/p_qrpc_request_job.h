@@ -7,7 +7,7 @@
 
 
 namespace QRpc {
-
+class RequestJobPvt;
 //!
 //! \brief The RequestJob class
 //!
@@ -18,8 +18,6 @@ public:
 
 
     explicit RequestJob();
-
-    ~RequestJob();
 
     void run()override;
 
@@ -44,7 +42,7 @@ public slots:
 
     void onRun();
 private:
-    void*p=nullptr;
+    RequestJobPvt *p=nullptr;
 };
 
 }

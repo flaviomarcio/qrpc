@@ -7,7 +7,7 @@ namespace QRpc {
 #define dPvt()\
     auto &p =*reinterpret_cast<RequestExchangeSettingPvt*>(this->p)
 
-const static auto defaultLimit=60000;
+const static auto staticDefaultLimit=60000;
 
 class RequestExchangeSettingPvt{
 public:
@@ -22,7 +22,7 @@ public:
     QString topic;
     QVariantHash parameter;
     int port=8080;
-    QVariant activityLimit=defaultLimit;
+    QVariant activityLimit=staticDefaultLimit;
     RequestExchangeSetting*parent=nullptr;
     explicit RequestExchangeSettingPvt(RequestExchangeSetting*parent)
     {
@@ -57,10 +57,6 @@ RequestExchangeSetting::RequestExchangeSetting(RequestExchangeSetting &e, QObjec
     *this=e;
 }
 
-RequestExchangeSetting::~RequestExchangeSetting()
-{
-    dPvt();delete&p;
-}
 
 RequestExchangeSetting&RequestExchangeSetting::operator=(const RequestExchangeSetting &e)
 {
@@ -75,7 +71,7 @@ RequestExchangeSetting &RequestExchangeSetting::clear()
     auto &e=*this;
     for(int i = 0; i < e.metaObject()->propertyCount(); ++i) {
         auto property=e.metaObject()->property(i);
-        if(QByteArray(property.name()) == qbl("objectName"))
+        if(QByteArray{property.name()} == qbl("objectName"))
             continue;
 
         property.write(this, {});
@@ -96,7 +92,7 @@ QVariantMap RequestExchangeSetting::toMap() const
     auto &e=*this;
     for(int i = 0; i < e.metaObject()->propertyCount(); ++i) {
         auto property=e.metaObject()->property(i);
-        if(QByteArray(property.name()) == qbl("objectName"))
+        if(QByteArray{property.name()} == qbl("objectName"))
             continue;
 
         auto v=property.read(&e);
@@ -112,7 +108,7 @@ QVariantHash RequestExchangeSetting::toHash() const
     auto &e=*this;
     for(int i = 0; i < e.metaObject()->propertyCount(); ++i) {
         auto property=e.metaObject()->property(i);
-        if(QByteArray(property.name()) == qbl("objectName"))
+        if(QByteArray{property.name()} == qbl("objectName"))
             continue;
 
         auto v=property.read(&e);
@@ -152,13 +148,13 @@ QStringList RequestExchangeSetting::printOut(const QString &output)
     Q_DECLARE_VU;
 
     auto space=output.trimmed().isEmpty()?qsl_null:qsl("    ");
-    auto vMap=this->toHash();
-    if(vMap.isEmpty())
+    auto vHash=this->toHash();
+    if(vHash.isEmpty())
         return {};
 
     QStringList out;
     out<<qsl("%1%2 attributes").arg(space, output).trimmed();
-    QHashIterator<QString, QVariant> i(vMap);
+    QHashIterator<QString, QVariant> i(vHash);
     while (i.hasNext()){
         i.next();
         if(i.key().toLower()==qsl("password"))
@@ -171,66 +167,66 @@ QStringList RequestExchangeSetting::printOut(const QString &output)
 
 RequestMethod RequestExchangeSetting::method()const
 {
-    dPvt();
-    return p.method;
+
+    return p->method;
 }
 
 void RequestExchangeSetting::setMethod(const int &value)
 {
-    dPvt();
+
     auto method=RequestMethod(value);
     method=(method<Head || method>MaxMethod)?Post:method;
-    p.method=method;
+    p->method=method;
 }
 
 void RequestExchangeSetting::setMethod(const QString &value)
 {
-    dPvt();
+
     const auto vv=value.trimmed().toLower();
     for (const auto &v : RequestMethodNameList){
         if(v.trimmed().toLower()!=vv)
             return;
         const auto &i = RequestMethodName.key(v);
-        p.method=RequestMethod(i);
+        p->method=RequestMethod(i);
         return;
     }
-    p.method=QRpc::Post;
+    p->method=QRpc::Post;
 }
 
 QString RequestExchangeSetting::methodName() const
 {
-    dPvt();
-    return RequestMethodName[p.method];
+
+    return RequestMethodName[p->method];
 }
 
 Protocol RequestExchangeSetting::protocol() const
 {
-    dPvt();
-    return p.protocol;
+
+    return p->protocol;
 }
 
 QString RequestExchangeSetting::protocolName() const
 {
-    dPvt();
-    return p.protocolName();
+
+    return p->protocolName();
 }
 
 QString RequestExchangeSetting::protocolUrlName() const
 {
-    dPvt();
-    return p.protocolUrlName();
+
+    return p->protocolUrlName();
 }
 
 void RequestExchangeSetting::setProtocol(const Protocol &value)
 {
-    dPvt();
-    p.protocol=value;
+
+    p->protocol=value;
 }
 
 void RequestExchangeSetting::setProtocol(const QVariant &value)
 {
-    dPvt();
-    auto &v=p.protocol;
+
+    auto &v=p->protocol;
     if(value.isNull() || !value.isValid())
         v=Protocol::Http;
     else if(QString::number(value.toInt())==value)
@@ -247,137 +243,135 @@ void RequestExchangeSetting::setProtocol(const QVariant &value)
 
 QString &RequestExchangeSetting::driver() const
 {
-    dPvt();
-    return p.driver;
+
+    return p->driver;
 }
 
 void RequestExchangeSetting::setDriver(const QString &value)
 {
-    dPvt();
-    p.driver=value;
+
+    p->driver=value;
 }
 
 QString &RequestExchangeSetting::hostName() const
 {
-    dPvt();
-    return p.hostName;
+
+    return p->hostName;
 }
 
 void RequestExchangeSetting::setHostName(const QString &value)
 {
-    dPvt();
-    p.hostName=value;
+
+    p->hostName=value;
 }
 
 QString &RequestExchangeSetting::vHost() const
 {
-    dPvt();
-    return p.vHost;
+
+    return p->vHost;
 }
 
 void RequestExchangeSetting::setVHost(const QString &value)
 {
-    dPvt();
-    p.vHost=value;
+
+    p->vHost=value;
 }
 
 QString &RequestExchangeSetting::userName() const
 {
-    dPvt();
-    return p.userName;
+
+    return p->userName;
 }
 
 void RequestExchangeSetting::setUserName(const QString &value)
 {
-    dPvt();
-    p.userName=value;
+
+    p->userName=value;
 }
 
 QString &RequestExchangeSetting::passWord() const
 {
-    dPvt();
-    return p.passWord;
+
+    return p->passWord;
 }
 
 void RequestExchangeSetting::setPassWord(const QString &value)
 {
-    dPvt();
-    p.passWord=value;
+
+    p->passWord=value;
 }
 
 QString &RequestExchangeSetting::route() const
 {
-    dPvt();
-    return p.route;
+
+    return p->route;
 }
 
 void RequestExchangeSetting::setRoute(const QVariant &value)
 {
-    dPvt();
+
     auto typeId=qTypeId(value);
     switch (typeId) {
     case QMetaType_QUrl:
-        p.route = value.toUrl().toString();
+        p->route = value.toUrl().toString();
         break;
     default:
-        p.route = value.toString().trimmed();
+        p->route = value.toString().trimmed();
     }
-    while(p.route.contains(qsl("//")))
-        p.route=p.route.replace(qsl("//"),qsl("/"));
-    while(p.route.endsWith(qsl("/")))
-        p.route=p.route.left(p.route.length()-1);
+    while(p->route.contains(qsl("//")))
+        p->route=p->route.replace(qsl("//"),qsl("/"));
+    while(p->route.endsWith(qsl("/")))
+        p->route=p->route.left(p->route.length()-1);
 }
 
 QString &RequestExchangeSetting::topic() const
 {
-    dPvt();
-    return p.topic;
+
+    return p->topic;
 }
 
 void RequestExchangeSetting::setTopic(const QString &value)
 {
-    dPvt();
-    p.topic=value;
+
+    p->topic=value;
 }
 
 int RequestExchangeSetting::port() const
 {
-    dPvt();
-    return p.port;
+
+    return p->port;
 }
 
 void RequestExchangeSetting::setPort(int port)
 {
-    dPvt();
-    p.port = port;
+
+    p->port = port;
 }
 
 qlonglong RequestExchangeSetting::activityLimit() const
 {
-    dPvt();
-    auto l=p.activityLimit.toLongLong();
-    l=(l<1000)?defaultLimit:l;
+
+    auto l=p->activityLimit.toLongLong();
+    l=(l<1000)?staticDefaultLimit:l;
     return l;
 }
 
 void RequestExchangeSetting::setActivityLimit(const QVariant &value)
 {
-    dPvt();
-    p.activityLimit=value;
+
+    p->activityLimit=value;
 }
 
 QVariantHash &RequestExchangeSetting::parameter() const
 {
-    dPvt();
-    return p.parameter;
+
+    return p->parameter;
 }
 
 void RequestExchangeSetting::setParameter(const QVariantHash &parameter)
 {
-    dPvt();
-    p.parameter = parameter;
+
+    p->parameter = parameter;
 }
-
-
 
 }

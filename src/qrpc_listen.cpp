@@ -1,6 +1,7 @@
 #include "./qrpc_listen.h"
 #include "./qrpc_listen_colletion.h"
 #include "./qrpc_listen_request_cache.h"
+#include "./qrpc_startup.h"
 #include <QCoreApplication>
 #include <QCryptographicHash>
 #include <QDateTime>
@@ -10,8 +11,6 @@ namespace QRpc {
 
 typedef QHash<int, QPair<int, const QMetaObject *>> MetaObjectVectorHash;
 typedef QVector<ListenMetaObject> ListenMetaObjectList;
-
-#define dPvt() auto &p = *reinterpret_cast<ListenPvt *>(this->p)
 
 Q_GLOBAL_STATIC(MetaObjectVectorHash, staticListenInstalledHash);
 Q_GLOBAL_STATIC(ListenMetaObjectList, staticListenInstalledList);
@@ -25,7 +24,7 @@ static void init()
     *baseUuid = QCryptographicHash::hash(bytes, QCryptographicHash::Md5).toHex();
 }
 
-Q_COREAPP_STARTUP_FUNCTION(init)
+Q_RPC_STARTUP_FUNCTION(init);
 
 class ListenPvt : public QObject
 {
@@ -40,8 +39,6 @@ public:
         this->uuid = QUuid::createUuidV5(QUuid::createUuid(), *baseUuid);
     }
 
-    virtual ~ListenPvt() {}
-
     Listen *listen()
     {
         auto listen = dynamic_cast<Listen *>(this->parent());
@@ -55,11 +52,6 @@ Listen::Listen(QObject *parent) : QThread{nullptr}
     this->p = new ListenPvt{this};
 }
 
-Listen::~Listen()
-{
-    dPvt();
-    delete &p;
-}
 
 int Listen::install(const QVariant &type, const QMetaObject &metaObject)
 {
@@ -72,7 +64,7 @@ int Listen::install(const QVariant &type, const QMetaObject &metaObject)
 #endif
         QPair<int, const QMetaObject *> pair(itype, &metaObject);
         staticListenInstalledHash->insert(itype, pair);
-        *staticListenInstalledList<<pair;
+        staticListenInstalledList->append(pair);
     }
     return staticListenInstalledHash->contains(itype);
 }
@@ -84,8 +76,8 @@ ListenMetaObjectList &Listen::listenList()
 
 QUuid &Listen::uuid() const
 {
-    dPvt();
-    return p.uuid;
+
+    return p->uuid;
 }
 
 QObject *Listen::parent()
@@ -125,44 +117,37 @@ bool Listen::stop()
 
 Server *Listen::server()
 {
-    dPvt();
-    return p.server;
+    return p->server;
 }
 
 ListenColletions *Listen::colletions()
 {
-    dPvt();
-    return p.collections;
+    return p->collections;
 }
 
 ListenRequestCache *Listen::cacheRequest()
 {
-    dPvt();
-    return &p.cacheRequest;
+    return &p->cacheRequest;
 }
 
 void Listen::registerListenPool(Listen *listenPool)
 {
-    dPvt();
-    p.listenPool = listenPool;
+    p->listenPool = listenPool;
 }
 
 Listen &Listen::listenPool()
 {
-    dPvt();
-    return *p.listenPool;
+    return *p->listenPool;
 }
 
 void Listen::setServer(Server *server)
 {
-    dPvt();
-    p.server = server;
+    p->server = server;
 }
 
 void Listen::setColletions(ListenColletions *colletions)
 {
-    dPvt();
-    p.collections = colletions;
+    p->collections = colletions;
 }
 
 } // namespace QRpc

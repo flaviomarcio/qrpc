@@ -18,6 +18,7 @@ HEADERS += \
     $$PWD/qrpc_service_manager.h \
     $$PWD/qrpc_service_setting.h \
     $$PWD/qrpc_service_thread.h \
+    $$PWD/qrpc_startup.h \
     $$PWD/qrpc_types.h \
 
 SOURCES += \
@@ -28,5 +29,6 @@ SOURCES += \
     $$PWD/qrpc_controller_options.cpp \
     $$PWD/qrpc_last_error.cpp \
     $$PWD/qrpc_service_thread.cpp \
+    $$PWD/qrpc_startup.cpp \
     $$PWD/qrpc_types.cpp
 

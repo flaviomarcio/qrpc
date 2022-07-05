@@ -123,12 +123,6 @@ ServiceThread::ServiceThread(const ServiceManager &manager, const QString &servi
     this->setServiceName(serviceName);
 }
 
-ServiceThread::~ServiceThread()
-{
-
-    delete&p;
-}
-
 QRpc::ServiceSetting&ServiceThread::setting()
 {
 

@@ -9,11 +9,6 @@ Request::Request(QObject *parent):QObject{parent}
     this->p = new RequestPvt{this};
 }
 
-Request::~Request()
-{
-
-}
-
 bool Request::startsWith(const QString &requestPath, const QVariant &requestPathBase)
 {
     QStringList paths;
@@ -639,11 +634,6 @@ QStringList Request::printOut()
 
 Request::Body::Body(QObject *parent):QObject{parent}
 {
-}
-
-Request::Body::~Body()
-{
-    
 }
 
 QVariant &Request::Body::body() const

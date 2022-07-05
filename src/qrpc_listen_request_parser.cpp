@@ -22,16 +22,12 @@ Q_GLOBAL_STATIC(StringStringMap, staticMetaObjectRoute)
 Q_GLOBAL_STATIC(StringMetaMethod, staticMetaObjectMetaMethod)
 Q_GLOBAL_STATIC(QMutex, staticMetaObjectLock)
 
-#define dPvt() auto &p = *reinterpret_cast<ListenRequestParserPvt *>(this->p)
-
-class ListenRequestParserPvt
+class ListenRequestParserPvt:public QObject
 {
 public:
     Controller *controller = nullptr;
     QStringList basePathList;
-    explicit ListenRequestParserPvt(QObject *parent = nullptr) { Q_UNUSED(parent) }
-
-    virtual ~ListenRequestParserPvt() {}
+    explicit ListenRequestParserPvt(QObject *parent = nullptr):QObject{parent} {}
 };
 
 ListenRequestParser::ListenRequestParser(QObject *parent) : QObject{parent}, QRpcPrivate::NotationsExtended{this}
@@ -39,17 +35,11 @@ ListenRequestParser::ListenRequestParser(QObject *parent) : QObject{parent}, QRp
     this->p = new ListenRequestParserPvt(parent);
 }
 
-ListenRequestParser::~ListenRequestParser()
-{
-    dPvt();
-    delete &p;
-}
-
 QStringList &ListenRequestParser::basePath() const
 {
-    dPvt();
-    if(!p.basePathList.isEmpty())
-        return p.basePathList;
+
+    if(!p->basePathList.isEmpty())
+        return p->basePathList;
 
     auto &notations=this->notation();
     const auto &notation = notations.find(apiBasePath());
@@ -63,36 +53,36 @@ QStringList &ListenRequestParser::basePath() const
             break;
         }
         default:
-            vList<<v;
+            vList.append(v);
         }
 
         for (auto &row : vList) {
             auto line = row.toString().trimmed().toLower();
             if (line.isEmpty())
                 continue;
-            p.basePathList<<line;
+            p->basePathList.append(line);
         }
     }
-    if(p.basePathList.isEmpty())
-        p.basePathList<<QStringList{qsl("/")};
-    return p.basePathList;
+    if(p->basePathList.isEmpty())
+        p->basePathList.append(QStringList{qsl("/")});
+    return p->basePathList;
 }
 
 Controller &ListenRequestParser::controller()
 {
-    dPvt();
-    return *p.controller;
+
+    return *p->controller;
 }
 
 ListenRequest &ListenRequestParser::request()
 {
-    dPvt();
-    if (p.controller == nullptr) {
+
+    if (p->controller == nullptr) {
         static ListenRequest req;
         req.clear();
         return req;
     }
-    return p.controller->request();
+    return p->controller->request();
 }
 
 ListenRequest &ListenRequestParser::rq()
@@ -197,8 +187,8 @@ bool ListenRequestParser::parse(const QMetaMethod &metaMethod)
 
 void ListenRequestParser::setController(Controller *value)
 {
-    dPvt();
-    p.controller = value;
+
+    p->controller = value;
 }
 
 } // namespace QRpc

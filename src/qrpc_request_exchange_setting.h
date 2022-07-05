@@ -38,7 +38,6 @@ public:
     //! \param parent
     //!
     explicit RequestExchangeSetting(RequestExchangeSetting &e, QObject *parent=nullptr);
-    ~RequestExchangeSetting();
 
     //!
     //! \brief operator =

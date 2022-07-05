@@ -18,10 +18,7 @@
 
 namespace QRpc {
 
-#define dPvt()\
-    auto &p =*reinterpret_cast<HttpResponsePvt*>(this->p)
-
-class HttpResponsePvt{
+class HttpResponsePvt:public QObject{
 public:
     HttpResponse*parent=nullptr;
     QRpc::HttpHeaders response_header;
@@ -29,11 +26,7 @@ public:
     QNetworkReply::NetworkError response_qt_status_code=QNetworkReply::NoError;
     QString response_reason_phrase;
     QByteArray response_body;
-    explicit HttpResponsePvt(HttpResponse*parent): response_header(parent)
-    {
-    }
-
-    virtual ~HttpResponsePvt()
+    explicit HttpResponsePvt(HttpResponse *parent): QObject{parent}, response_header{parent}
     {
     }
 };
@@ -44,21 +37,14 @@ HttpResponse::HttpResponse(QObject *parent):QObject{parent}
     this->p = new HttpResponsePvt{this};
 }
 
-HttpResponse::~HttpResponse()
-{
-    dPvt();
-    delete&p;
-}
-
 HttpHeaders &HttpResponse::header() const
 {
-    dPvt();
-    return p.response_header;
+    return p->response_header;
 }
 
 void HttpResponse::setBody(const QVariant &vBody)
 {
-    dPvt();
+
     auto typeId=qTypeId(vBody);
     switch (typeId) {
     case QMetaType_QVariantMap:
@@ -68,17 +54,17 @@ void HttpResponse::setBody(const QVariant &vBody)
     {
         if(this->header().isContentType(AppJson)){
             auto doc=QJsonDocument::fromVariant(vBody);
-            p.response_body=doc.toJson(doc.Compact);
+            p->response_body=doc.toJson(doc.Compact);
             break;
         }
 
         if(this->header().isContentType(AppCBOR) || this->header().isContentType(AppOctetStream)){
             auto doc=QCborValue::fromVariant(vBody);
-            p.response_body=doc.toByteArray();
+            p->response_body=doc.toByteArray();
             break;
         }
         auto doc=QJsonDocument::fromVariant(vBody);
-        p.response_body=doc.toJson(doc.Compact);
+        p->response_body=doc.toJson(doc.Compact);
         break;
     }
     case QMetaType_QString:
@@ -86,66 +72,66 @@ void HttpResponse::setBody(const QVariant &vBody)
     {
         if(this->header().isContentType(AppJson)){
             auto doc=QJsonDocument::fromJson(vBody.toByteArray());
-            p.response_body=doc.toJson(doc.Compact);
+            p->response_body=doc.toJson(doc.Compact);
             break;
         }
 
         if(this->header().isContentType(AppCBOR) || this->header().isContentType(AppOctetStream)){
             auto doc=QCborValue::fromCbor(vBody.toByteArray());
-            p.response_body=doc.toByteArray();
+            p->response_body=doc.toByteArray();
             break;
         }
 
         auto doc=QJsonDocument::fromJson(vBody.toByteArray());
-        p.response_body=doc.toJson(doc.Compact);
+        p->response_body=doc.toJson(doc.Compact);
         break;
     }
     default:
-        p.response_body=vBody.toByteArray();
+        p->response_body=vBody.toByteArray();
     }
 }
 
 QByteArray &HttpResponse::body() const
 {
-    dPvt();
-    return p.response_body;
+
+    return p->response_body;
 }
 
 QVariant HttpResponse::bodyVariant() const
 {
-    dPvt();
+
     //    QVariant v;
     QJsonParseError*error=nullptr;
-    auto body=p.response_body.trimmed();
+    auto body=p->response_body.trimmed();
     if(body.isEmpty()){
         return {};
     }
 
     if(this->header().isContentType(AppJson)){
-        auto vdoc=QJsonDocument::fromJson(p.response_body, error).toVariant();
+        auto vdoc=QJsonDocument::fromJson(p->response_body, error).toVariant();
         if(!vdoc.isNull() && !vdoc.isValid())
             return vdoc;
     }
     else if(this->header().isContentType(AppCBOR) || this->header().isContentType(AppOctetStream)){
-        auto vdoc=QCborValue::fromVariant(p.response_body).toVariant();
+        auto vdoc=QCborValue::fromVariant(p->response_body).toVariant();
         if(!vdoc.isNull() && !vdoc.isValid())
             return vdoc;
     }
 
     {
-        auto body=p.response_body.trimmed();
+        auto body=p->response_body.trimmed();
         if(body.at(0)=='[' || body.at(0)=='{'){
-            auto doc=QJsonDocument::fromJson(p.response_body, error);
+            auto doc=QJsonDocument::fromJson(p->response_body, error);
             if(!doc.isNull() && (doc.isArray() || doc.isObject()))
                 return doc.toVariant();
         }
         else{
-            auto doc=QCborValue::fromVariant(p.response_body);
+            auto doc=QCborValue::fromVariant(p->response_body);
             if(!doc.isNull() && (doc.isArray() || doc.isMap()))
                 return doc.toVariant();
         }
     }
-    return p.response_body;
+    return p->response_body;
 }
 
 QVariantMap HttpResponse::bodyMap() const
@@ -189,53 +175,53 @@ QVariantList HttpResponse::bodyToList() const
 
 int &HttpResponse::statusCode() const
 {
-    dPvt();
-    return p.response_status_code;
+
+    return p->response_status_code;
 }
 
 QString &HttpResponse::reasonPhrase() const
 {
-    dPvt();
-    return p.response_reason_phrase;
+
+    return p->response_reason_phrase;
 }
 
 QNetworkReply::NetworkError &HttpResponse::qtStatusCode() const
 {
-    dPvt();
-    return p.response_qt_status_code;
+
+    return p->response_qt_status_code;
 }
 
 QVariantHash HttpResponse::toMap() const
 {
-    dPvt();
-    return QJsonDocument::fromJson(p.response_body).object().toVariantHash();
+
+    return QJsonDocument::fromJson(p->response_body).object().toVariantHash();
 }
 
 QVariantHash HttpResponse::toHash() const
 {
-    dPvt();
-    return QJsonDocument::fromJson(p.response_body).object().toVariantHash();
+
+    return QJsonDocument::fromJson(p->response_body).object().toVariantHash();
 }
 
 QVariantHash HttpResponse::toResponse() const
 {
-    dPvt();
-    auto response_body=QJsonDocument::fromJson(p.response_body).object().toVariantHash();
+
+    auto response_body=QJsonDocument::fromJson(p->response_body).object().toVariantHash();
     QVariantHash vBody;
     vBody[qsl("response_body")]=response_body;
-    vBody[qsl("qt_status_code")]=p.response_qt_status_code;
-    vBody[qsl("status_code")]=p.response_status_code;
-    vBody[qsl("reason_phrase")]=p.response_reason_phrase;
+    vBody[qsl("qt_status_code")]=p->response_qt_status_code;
+    vBody[qsl("status_code")]=p->response_status_code;
+    vBody[qsl("reason_phrase")]=p->response_reason_phrase;
     return vBody;
 }
 
 bool HttpResponse::isOk() const
 {
-    dPvt();
-    if(p.response_status_code==200)
+
+    if(p->response_status_code==200)
         return true;
 
-    if(p.response_qt_status_code==QNetworkReply::NoError)
+    if(p->response_qt_status_code==QNetworkReply::NoError)
         return true;
 
     return false;
@@ -243,11 +229,11 @@ bool HttpResponse::isOk() const
 
 bool HttpResponse::isCreated() const
 {
-    dPvt();
-    if(p.response_qt_status_code!=QNetworkReply::NoError)
+
+    if(p->response_qt_status_code!=QNetworkReply::NoError)
         return false;
 
-    if(p.response_status_code!=0 && p.response_status_code!=201)
+    if(p->response_status_code!=0 && p->response_status_code!=201)
         return false;
 
     return true;
@@ -255,8 +241,8 @@ bool HttpResponse::isCreated() const
 
 bool HttpResponse::isNotFound() const
 {
-    dPvt();
-    if(p.response_status_code==404)
+
+    if(p->response_status_code==404)
         return true;
 
     return false;
@@ -264,8 +250,8 @@ bool HttpResponse::isNotFound() const
 
 bool HttpResponse::isUnAuthorized() const
 {
-    dPvt();
-    if(p.response_status_code==401)
+
+    if(p->response_status_code==401)
         return true;
 
     return false;
@@ -273,34 +259,34 @@ bool HttpResponse::isUnAuthorized() const
 
 HttpResponse &HttpResponse::setResponse(QObject *objectResponse)
 {
-    dPvt();
+
     if(objectResponse!=nullptr && QRpc::RequestJobResponse::staticMetaObject.cast(objectResponse)){
         auto &response=*dynamic_cast<QRpc::RequestJobResponse*>(objectResponse);
-        p.response_header.setRawHeader(response.responseHeader);
-        p.response_status_code=response.response_status_code;
-        p.response_qt_status_code=response.response_qt_status_code;
-        p.response_reason_phrase=response.response_status_reason_phrase;
-        p.response_body=response.response_body;
+        p->response_header.setRawHeader(response.responseHeader);
+        p->response_status_code=response.response_status_code;
+        p->response_qt_status_code=response.response_qt_status_code;
+        p->response_reason_phrase=response.response_status_reason_phrase;
+        p->response_body=response.response_body;
     }
     return*this;
 }
 
 QString HttpResponse::toString() const
 {
-    dPvt();
+
     auto &response=*this;
-    auto qt_text=ListenRequestCode::qt_network_error_phrase(p.response_qt_status_code);
+    auto qt_text=ListenRequestCode::qt_network_error_phrase(p->response_qt_status_code);
     auto msg=qsl("QtStatus: Status:%1, %2, %3").arg(QString::number(response.qtStatusCode()), response.reasonPhrase(),qt_text);
     return msg;
 }
 
 HttpResponse::operator bool() const
 {
-    dPvt();
-    if(p.response_qt_status_code==QNetworkReply::NoError)
+
+    if(p->response_qt_status_code==QNetworkReply::NoError)
         return true;
 
-    if(p.response_status_code==200)
+    if(p->response_status_code==200)
         return true;
 
     return false;

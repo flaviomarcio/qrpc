@@ -7,8 +7,6 @@
 
 namespace QRpc {
 
-#define dPvt() auto &p = *reinterpret_cast<ListenRequestCachePvt *>(this->p)
-
 class ListenRequestCachePvt : public QObject
 {
 public:
@@ -38,24 +36,18 @@ ListenRequestCache::ListenRequestCache(Listen *parent) : QObject{parent}
     this->p = new ListenRequestCachePvt{this};
 }
 
-ListenRequestCache::~ListenRequestCache()
-{
-    dPvt();
-    delete &p;
-}
-
 void ListenRequestCache::clear()
 {
-    dPvt();
-    p.clear();
+
+    p->clear();
 }
 
 ListenRequest &ListenRequestCache::toRequest(const QUuid &uuid)
 {
-    dPvt();
-    QMutexLOCKER locker(&p.lock);
+
+    QMutexLOCKER locker(&p->lock);
     static ListenRequest ___ListenRequest;
-    auto request = p.cache.value(uuid.toString());
+    auto request = p->cache.value(uuid.toString());
     if (request != nullptr)
         return *request;
     return ___ListenRequest;
@@ -69,16 +61,16 @@ ListenRequest &ListenRequestCache::createRequest()
 
 ListenRequest &ListenRequestCache::createRequest(const QVariant &vRequest)
 {
-    dPvt();
-    QMutexLOCKER locker(&p.lock);
+
+    QMutexLOCKER locker(&p->lock);
     auto request = new ListenRequest(vRequest);
-    request->setListenUuid(p.listen()->uuid());
+    request->setListenUuid(p->listen()->uuid());
     if (request->isEmpty() || !request->isValid())
         request->setRequestBody(vRequest);
 
     auto uuid = request->requestUuid().isNull() ? request->makeUuid() : request->requestUuid();
     request->setRequestUuid(uuid);
-    p.cache.insert(uuid.toString(), request);
+    p->cache.insert(uuid.toString(), request);
     return *request;
 }
 

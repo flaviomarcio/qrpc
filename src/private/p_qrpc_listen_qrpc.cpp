@@ -182,23 +182,19 @@ public:
         for (auto &mObj : server->controllers()) {
             auto name = QString::fromUtf8(mObj->className()).toLower().toUtf8().toLower();
 
-            auto object = mObj->newInstance();
+            QScopedPointer<QObject> sObj(mObj->newInstance(Q_ARG(QObject*, nullptr )));
 
-            if (object == nullptr){
+            auto object=sObj.data();
+
+            if (object == nullptr)
                 continue;
-            }
 
             auto controller = dynamic_cast<Controller *>(object);
-            if (controller == nullptr){
-                delete object;
+            if (controller == nullptr)
                 continue;
-            }
 
-            //controller->initializeInstalleds();
             apiMakeBasePath(controller, mObj);
             this->controller.insert(name, mObj);
-            delete object;
-            object = nullptr;
         }
     }
 

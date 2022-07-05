@@ -29,11 +29,6 @@ public:
     Q_INVOKABLE explicit Listen(QObject *parent = nullptr);
 
     //!
-    //! \brief ~Listen
-    //!
-    ~Listen();
-
-    //!
     //! \brief install
     //! \param type
     //! \param metaObject

@@ -3,7 +3,7 @@
 #include "./p_qrpc_request_job_http.h"
 #endif
 #ifdef Q_RPC_AMQP
-#include "./p_qrpc_request_job_amqp.h"
+#include "./p_qrpc_request_job_amqp->h"
 #endif
 #ifdef Q_RPC_KAFKA
 #include "./p_qrpc_request_job_broker_kafka.h"
@@ -15,7 +15,7 @@
 #include "./p_qrpc_request_job_database.h"
 #endif
 #ifdef Q_RPC_TCP
-#include "./p_qrpc_request_job_tcp.h"
+#include "./p_qrpc_request_job_tcp->h"
 #endif
 #ifdef Q_RPC_WEBSOCKET
 #include "./p_qrpc_request_job_wss.h"
@@ -27,70 +27,67 @@ Q_GLOBAL_STATIC(QMutex, requestJobMutex)
 Q_GLOBAL_STATIC(QVector<RequestJob*>, requestJobPool)
 
 
-#define dPvt()\
-auto &p =*reinterpret_cast<RequestJobPvt*>(this->p)
-
 class RequestJobPvt:public QObject{
 public:
-    RequestJob*parent=nullptr;
+    RequestJob *parent=nullptr;
 
 #ifdef Q_RPC_HTTP
-    RequestJobHttp _requestJobHttp;
+    RequestJobHttp requestJobHttp;
 #endif
 #ifdef Q_RPC_WEBSOCKET
-    RequestJobWSS _requestJobWSS;
+    RequestJobWSS requestJobWSS;
 #endif
 #ifdef Q_RPC_TCP
-    RequestJobTcp _requestJobTcp;
+    RequestJobTcp requestJobTcp;
 #endif
 #ifdef Q_RPC_LOCALSOCKET
-    RequestJobLocalSocket _requestJobLocalSocket;
+    RequestJobLocalSocket requestJobLocalSocket;
 #endif
 #ifdef Q_RPC_DATABASE
-    RequestJobDataBase _requestJobDataBase;
+    RequestJobDataBase requestJobDataBase;
 #endif
     Request::Action action=Request::acRequest;
     QString action_fileName;
     QSslConfiguration sslConfiguration;
-    QHash<int,RequestJobProtocol*> _requestJobProtocolHash;
-    RequestJobResponse _response;
+    QHash<int,RequestJobProtocol*> requestJobProtocolHash;
+    RequestJobResponse response;
 
     explicit RequestJobPvt(RequestJob*parent):QObject{parent},
 #ifdef Q_RPC_HTTP
-        _requestJobHttp(this),
+        requestJobHttp(this),
 #endif
 #ifdef Q_RPC_WEBSOCKET
-        _requestJobWSS(this),
+        requestJobWSS(this),
 #endif
 #ifdef Q_RPC_TCP
-        _requestJobTcp(this),
+        requestJobTcp(this),
 #endif
 #ifdef Q_RPC_LOCALSOCKET
-        _requestJobLocalSocket(this),
+        requestJobLocalSocket(this),
 #endif
 #ifdef Q_RPC_DATABASE
-        _requestJobDataBase(this)
+        requestJobDataBase(this)
 #endif
-        _response(parent)
+        response(parent)
     {
         this->parent=parent;
 #ifdef Q_RPC_HTTP
-        _requestJobProtocolHash[QRpc::Http]=&this->_requestJobHttp;
-        _requestJobProtocolHash[QRpc::Https]=&this->_requestJobHttp;
+        requestJobProtocolHash[QRpc::Http]=&this->requestJobHttp;
+        requestJobProtocolHash[QRpc::Https]=&this->requestJobHttp;
 #endif
 #ifdef Q_RPC_WEBSOCKET
-        _requestJobProtocolMap[QRpc::WebSocket]=&this->_requestJobWSS;
+        _requestJobProtocolMap[QRpc::WebSocket]=&this->requestJobWSS;
 #endif
 #ifdef Q_RPC_TCPSOCKET
-        _requestJobProtocolMap[QRpc::TcpSocket]=&this->_requestJobTcp;
+        _requestJobProtocolMap[QRpc::TcpSocket]=&this->requestJobTcp;
 #endif
 #ifdef Q_RPC_LOCALSOCKET
-        _requestJobProtocolMap[QRpc::LocalSocket]=&this->_requestJobLocalSocket;
+        _requestJobProtocolMap[QRpc::LocalSocket]=&this->requestJobLocalSocket;
 #endif
 #ifdef Q_RPC_DATABASE
-        _requestJobProtocolMap[QRpc::DataBase]=&this->_requestJobDataBase;
+        _requestJobProtocolMap[QRpc::DataBase]=&this->requestJobDataBase;
 #endif
-        QHashIterator<int, RequestJobProtocol*> i(_requestJobProtocolHash);
+        QHashIterator<int, RequestJobProtocol*> i(requestJobProtocolHash);
         while (i.hasNext()){
             i.next();
             QObject::connect(i.value(), &RequestJobProtocol::callback, parent, &RequestJob::onRunCallback);
@@ -99,7 +96,7 @@ public:
 
     virtual ~RequestJobPvt()
     {
-        QHashIterator<int, RequestJobProtocol*> i(_requestJobProtocolHash);
+        QHashIterator<int, RequestJobProtocol*> i(requestJobProtocolHash);
         while (i.hasNext()){
             i.next();
             QObject::disconnect(i.value(), &RequestJobProtocol::callback, this->parent, &RequestJob::onRunCallback);
@@ -109,21 +106,21 @@ public:
     void clear()
     {
 #ifdef Q_RPC_HTTP
-        _requestJobHttp.clear();
+        requestJobHttp.clear();
 #endif
 #ifdef Q_RPC_WEBSOCKET
-        _requestJobWSS.clear();
+        requestJobWSS.clear();
 #endif
 #ifdef Q_RPC_TCP
-        _requestJobTcp.clear();
+        requestJobTcp->clear();
 #endif
 #ifdef Q_RPC_LOCALSOCKET
-        _requestJobLocalSocket.clear();
+        requestJobLocalSocket.clear();
 #endif
 #ifdef Q_RPC_DATABASE
-        RequestJobDataBase _requestJobDataBase;
+        RequestJobDataBase requestJobDataBase;
 #endif
-        this->_response.clear();
+        this->response.clear();
         this->action=Request::acRequest;
         this->action_fileName.clear();
         this->sslConfiguration=QSslConfiguration();
@@ -136,12 +133,6 @@ RequestJob::RequestJob():QThread{nullptr}
     this->moveToThread(this);
     static qlonglong taskCount=0;
     this->setObjectName(qsl("ReqJob%1").arg(++taskCount));
-}
-
-RequestJob::~RequestJob()
-{
-    dPvt();
-    delete&p;
 }
 
 void RequestJob::run()
@@ -163,9 +154,9 @@ RequestJob *RequestJob::newJob(Request::Action action, const QString &action_fil
         }
         requestJobMutex->unlock();
     }
-    auto &p=*static_cast<RequestJobPvt*>(job->p);
-    p.action=action;
-    p.action_fileName=action_fileName;
+    auto &p_=*static_cast<RequestJobPvt*>(job->p);
+    p_.action=action;
+    p_.action_fileName=action_fileName;
     return job;
 }
 
@@ -197,22 +188,22 @@ RequestJob &RequestJob::release()
 
 RequestJobResponse &RequestJob::response()
 {
-    dPvt();
-    return p._response;
+
+    return p->response;
 }
 
 void RequestJob::setResponse(RequestJobResponse &value)
 {
-    dPvt();
-    p._response = value;
+
+    p->response = value;
 }
 
 void RequestJob::onRunJob(const QSslConfiguration *sslConfiguration, const QVariantHash &headers, const QVariant &vUrl, const QString &fileName, Request *request)
 {
-    dPvt();
-    p.sslConfiguration=QSslConfiguration(*sslConfiguration);
+
+    p->sslConfiguration=QSslConfiguration(*sslConfiguration);
     auto url=vUrl.toUrl();
-    p.action_fileName=fileName;
+    p->action_fileName=fileName;
     RequestJobResponse response(headers, url, *request, this);
     this->setResponse(response);
     this->onRun();
@@ -226,10 +217,10 @@ void RequestJob::onRunCallback(const QVariant &v)
 
 void RequestJob::onRun()
 {
-    dPvt();
+
     const auto &e=this->response().request_exchange.call();
     const auto iprotocol=e.protocol();
-    auto protocol=p._requestJobProtocolHash[iprotocol];
+    auto protocol=p->requestJobProtocolHash[iprotocol];
 
     if(protocol==nullptr){
         this->response().response_qt_status_code = QNetworkReply::ProtocolUnknownError;
@@ -238,9 +229,9 @@ void RequestJob::onRun()
         return;
     }
 
-    protocol->sslConfiguration=p.sslConfiguration;
-    protocol->action=p.action;
-    protocol->action_fileName=p.action_fileName;
+    protocol->sslConfiguration=p->sslConfiguration;
+    protocol->action=p->action;
+    protocol->action_fileName=p->action_fileName;
     protocol->call(&this->response());
 }
 

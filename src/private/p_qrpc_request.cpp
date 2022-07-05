@@ -1,4 +1,5 @@
 #include "./p_qrpc_request.h"
+#include "../qrpc_startup.h"
 
 namespace QRpc {
 
@@ -64,7 +65,7 @@ static void static_log_init_dir()
         static_log_dir_clear(*static_log_dir);
 }
 
-Q_COREAPP_STARTUP_FUNCTION(static_log_init_dir)
+Q_RPC_STARTUP_FUNCTION(static_log_init_dir);
 
 
 RequestPvt::RequestPvt(Request *parent):

@@ -13,7 +13,7 @@ namespace QRpc {
 class Q_RPC_EXPORT ControllerSetting:public QStm::SettingBase
 {
     Q_OBJECT
-    SETTING_OBJECT(ControllerSetting)
+    QSTM_SETTING_OBJECT(ControllerSetting)
     Q_PROPERTY(QStringList notMethodCanAuthorization MEMBER notMethodCanAuthorization NOTIFY notMethodCanAuthorizationChanged)
 public:
     //!

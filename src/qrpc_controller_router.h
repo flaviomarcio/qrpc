@@ -27,11 +27,6 @@ public:
     Q_INVOKABLE explicit ControllerRouter(QObject *parent = nullptr);
 
     //!
-    //! \brief ~ControllerRouter
-    //!
-    ~ControllerRouter();
-
-    //!
     //! \brief router
     //! \param request
     //! \param metaMethod

@@ -54,7 +54,6 @@ public:
     explicit ServiceThread(const QString &serviceName, QObject *parent = nullptr);
     explicit ServiceThread(const ServiceManager&manager,QObject *parent = nullptr);
     explicit ServiceThread(const ServiceManager&manager, const QString &serviceName, QObject *parent = nullptr);
-    ~ServiceThread();
 
     //!
     //! \brief setting

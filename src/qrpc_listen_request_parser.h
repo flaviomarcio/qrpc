@@ -23,10 +23,6 @@ public:
     //!
     Q_INVOKABLE explicit ListenRequestParser(QObject *parent = nullptr);
 
-    //!
-    //! \brief ~ListenRequestParser
-    //!
-    ~ListenRequestParser();
 
 
     virtual QStringList &basePath() const;

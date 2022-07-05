@@ -3,6 +3,7 @@
 #include "./qrpc_listen_request_parser.h"
 #include "./qrpc_request.h"
 #include "./qrpc_server.h"
+#include "./qrpc_startup.h"
 #include <QCoreApplication>
 #include <QDebug>
 #include <QJsonDocument>
@@ -14,8 +15,6 @@
 namespace QRpc {
 
 typedef QMultiHash<QByteArray, QRpc::MethodsMultHash> MultStringMethod;
-
-#define dPvt() auto &p = *reinterpret_cast<ControllerPvt *>(this->p)
 
 Q_GLOBAL_STATIC(MetaObjectVector, staticInstalled);
 Q_GLOBAL_STATIC(MetaObjectVector, staticParserInstalled);
@@ -31,7 +30,7 @@ static void init()
     initBasePathParser();
 }
 
-Q_COREAPP_STARTUP_FUNCTION(init)
+Q_RPC_STARTUP_FUNCTION(init);
 
 class ControllerPvt
 {
@@ -56,8 +55,7 @@ Controller::Controller(QObject *parent) : QObject{parent}, QRpcPrivate::Notation
 
 Controller::~Controller()
 {
-    dPvt();
-    delete &p;
+
 }
 
 Controller::MethodInfoCollection Controller::invokableMethod() const
@@ -180,9 +178,9 @@ Controller::MethodInfoCollection Controller::invokableMethod() const
 
 QStringList &Controller::basePath() const
 {
-    dPvt();
-    if(!p.basePathList.isEmpty())
-        return p.basePathList;
+
+    if(!p->basePathList.isEmpty())
+        return p->basePathList;
 
     auto &notations=this->notation();
     const auto &notation = notations.find(apiBasePath());
@@ -203,12 +201,12 @@ QStringList &Controller::basePath() const
             auto line = row.toString().trimmed().toLower();
             if (line.isEmpty())
                 continue;
-            p.basePathList<<line;
+            p->basePathList<<line;
         }
     }
-    if(p.basePathList.isEmpty())
-        p.basePathList<<QStringList{qsl("/")};
-    return p.basePathList;
+    if(p->basePathList.isEmpty())
+        p->basePathList<<QStringList{qsl("/")};
+    return p->basePathList;
 }
 
 QString Controller::module() const
@@ -238,32 +236,32 @@ QString Controller::description() const
 
 ControllerSetting &Controller::setting()
 {
-    dPvt();
-    return p.setting;
+
+    return p->setting;
 }
 
 bool Controller::enabled() const
 {
-    dPvt();
-    return p.enabled;
+
+    return p->enabled;
 }
 
 void Controller::setEnabled(bool enabled)
 {
-    dPvt();
-    p.enabled = enabled;
+
+    p->enabled = enabled;
 }
 
 ListenRequest &Controller::request()
 {
-    dPvt();
-    return *p.request;
+
+    return *p->request;
 }
 
 ListenRequest &Controller::rq()
 {
-    dPvt();
-    return (p.request == nullptr) ? (p.____static_request) : (*p.request);
+
+    return (p->request == nullptr) ? (p->____static_request) : (*p->request);
 }
 
 bool Controller::requestSettings()
@@ -338,14 +336,14 @@ bool Controller::requestSettings()
 
 bool Controller::canOperation(const QMetaMethod &method)
 {
-    dPvt();
-    if (p.request == nullptr)
+
+    if (p->request == nullptr)
         return {};
 
     if (this->rq().isMethodOptions())
         return true;
 
-    auto &rq = *p.request;
+    auto &rq = *p->request;
     const auto &notations = this->notation(method);
 
     if(notations.isEmpty())
@@ -441,8 +439,8 @@ bool Controller::requestAfterInvoke()
 
 Server *Controller::server()
 {
-    dPvt();
-    return p.server;
+
+    return p->server;
 }
 
 const QMetaObject &Controller::install(const QMetaObject &metaObject)
@@ -483,15 +481,15 @@ QVector<const QMetaObject *> &Controller::staticApiParserList()
 
 Controller &Controller::setServer(Server *server)
 {
-    dPvt();
-    p.server = server;
+
+    p->server = server;
     return *this;
 }
 
 Controller &Controller::setRequest(ListenRequest &request)
 {
-    dPvt();
-    p.request = &request;
+
+    p->request = &request;
     return *this;
 }
 

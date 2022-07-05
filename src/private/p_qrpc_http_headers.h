@@ -3,23 +3,23 @@
 #include "../qrpc_global.h"
 
 namespace QRpc {
-
+class HttpHeadersPvt;
 //!
 //! \brief The HttpHeaders class
 //!
-class Q_RPC_EXPORT HttpHeaders: public QObject{
+class Q_RPC_EXPORT HttpHeaders: public QObject
+{
     Q_OBJECT
 public:
     Q_INVOKABLE explicit HttpHeaders(QObject*parent=nullptr);
 
     explicit HttpHeaders(const QVariant &v,QObject*parent=nullptr);
-    ~HttpHeaders();
 
     //!
     //! \brief clear
     //! \return
     //!
-    virtual HttpHeaders&clear();
+    virtual HttpHeaders &clear();
 
     //!
     //! \brief rawHeader
@@ -27,24 +27,24 @@ public:
     //!
     virtual QVariantHash &rawHeader() const;
     virtual QVariant rawHeader(const QString &headername) const;
-    virtual HttpHeaders&setRawHeader(const QVariantHash&rawHeader);
-    virtual HttpHeaders&setRawHeader(const QString &header, const QVariant &value);
+    virtual HttpHeaders &setRawHeader(const QVariantHash&rawHeader);
+    virtual HttpHeaders &setRawHeader(const QString &header, const QVariant &value);
 
     //!
     //! \brief addRawHeader
     //! \param rawHeader
     //! \return
     //!
-    virtual HttpHeaders&addRawHeader(const QVariantHash&rawHeader);
-    virtual HttpHeaders&addRawHeader(const QString &header, const QVariant &value);
+    virtual HttpHeaders &addRawHeader(const QVariantHash&rawHeader);
+    virtual HttpHeaders &addRawHeader(const QString &header, const QVariant &value);
 
     //!
     //! \brief contentType
     //! \return
     //!
     virtual QVariant contentType() const;
-    virtual HttpHeaders&setContentType(const int contentType);
-    virtual HttpHeaders&setContentType(const QVariant &v);
+    virtual HttpHeaders &setContentType(const int contentType);
+    virtual HttpHeaders &setContentType(const QVariant &v);
 
     //!
     //! \brief isContentType
@@ -72,10 +72,10 @@ public:
     //! \param credentials
     //! \return
     //!
-    virtual HttpHeaders&setAuthorization(const QString &authorization, const QString &type, const QVariant &credentials);
-    virtual HttpHeaders&setAuthorization(const QString &authorization, const AuthorizationType&type, const QVariant &credentials);
-    virtual HttpHeaders&setAuthorization(const AuthorizationType&type, const QVariant &credentials);
-    virtual HttpHeaders&setAuthorization(const AuthorizationType&type, const QVariant &userName, const QVariant &passWord);
+    virtual HttpHeaders &setAuthorization(const QString &authorization, const QString &type, const QVariant &credentials);
+    virtual HttpHeaders &setAuthorization(const QString &authorization, const AuthorizationType&type, const QVariant &credentials);
+    virtual HttpHeaders &setAuthorization(const AuthorizationType&type, const QVariant &credentials);
+    virtual HttpHeaders &setAuthorization(const AuthorizationType&type, const QVariant &userName, const QVariant &passWord);
     //virtual Header&setAuthorization(const QString &type, const QVariant &credentials);
 
     //!
@@ -84,8 +84,8 @@ public:
     //! \param credentials
     //! \return
     //!
-    virtual HttpHeaders&setProxyAuthorization(const AuthorizationType&type, const QVariant &credentials);
-    virtual HttpHeaders&setProxyAuthorization(const QString &type, const QVariant &credentials);
+    virtual HttpHeaders &setProxyAuthorization(const AuthorizationType&type, const QVariant &credentials);
+    virtual HttpHeaders &setProxyAuthorization(const QString &type, const QVariant &credentials);
 
     //!
     //! \brief setWWWAuthenticate
@@ -93,15 +93,15 @@ public:
     //! \param credentials
     //! \return
     //!
-    virtual HttpHeaders&setWWWAuthenticate(const AuthorizationType&type, const QVariant &credentials);
-    virtual HttpHeaders&setWWWAuthenticate(const QString &type, const QVariant &credentials);
+    virtual HttpHeaders &setWWWAuthenticate(const AuthorizationType&type, const QVariant &credentials);
+    virtual HttpHeaders &setWWWAuthenticate(const QString &type, const QVariant &credentials);
 
     //!
     //! \brief cookies
     //! \return
     //!
     virtual QVariant cookies() const;
-    virtual HttpHeaders&setCookies(const QVariant&cookie);
+    virtual HttpHeaders &setCookies(const QVariant&cookie);
 
     //!
     //! \brief authorization
@@ -135,7 +135,7 @@ public:
     //! \param output
     //! \return
     //!
-    virtual HttpHeaders&print(const QString &output=QString());
+    virtual HttpHeaders &print(const QString &output=QString());
 
     //!
     //! \brief printOut
@@ -149,10 +149,10 @@ public:
     //! \param v
     //! \return
     //!
-    HttpHeaders&operator =(const QVariant &v);
-    HttpHeaders&operator <<(const QVariant &v);
+    HttpHeaders &operator =(const QVariant &v);
+    HttpHeaders &operator <<(const QVariant &v);
 private:
-    void*p = nullptr;
+    HttpHeadersPvt *p = nullptr;
 };
 
 }

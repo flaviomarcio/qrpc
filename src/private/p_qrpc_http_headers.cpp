@@ -11,20 +11,17 @@ static const auto staticDefaultContentType=QRpc::AppJson;
 #define dPvt()\
     auto &p =*reinterpret_cast<HttpHeadersPvt*>(this->p)
 
-class HttpHeadersPvt{
+class HttpHeadersPvt:public QObject{
 public:
 
     QObject*parent=nullptr;
     QVariantHash header;
 
-    explicit HttpHeadersPvt(HttpHeaders*parent)
+    explicit HttpHeadersPvt(HttpHeaders*parent):QObject{parent}
     {
         this->parent=parent;
     }
 
-    virtual ~HttpHeadersPvt()
-    {
-    }
 
     QVariant header_v(const QString &key)const
     {
@@ -63,43 +60,37 @@ public:
 HttpHeaders::HttpHeaders(QObject *parent):QObject{parent}
 {
     this->p = new HttpHeadersPvt{this};
-    dPvt();
-    p.parent=parent;
+    p->parent=parent;
 }
 
 HttpHeaders::HttpHeaders(const QVariant &v, QObject *parent):QObject{parent}
 {
     this->p = new HttpHeadersPvt{this};
-    dPvt();
-    p.parent=parent;
+
+    p->parent=parent;
     Q_DECLARE_VU;
-    p.header=vu.toHash(v);
+    p->header=vu.toHash(v);
 }
 
-HttpHeaders::~HttpHeaders()
-{
-    dPvt();
-    delete&p;
-}
 
 HttpHeaders &HttpHeaders::clear()
 {
-    dPvt();
-    p.header.clear();
+
+    p->header.clear();
     return*this;
 }
 
 QVariantHash&HttpHeaders::rawHeader()const
 {
-    dPvt();
-    return p.header;
+
+    return p->header;
 }
 
 QVariant HttpHeaders::rawHeader(const QString &headername)const
 {
-    dPvt();
+
     QStringList returnList;
-    QHashIterator<QString, QVariant> i(p.header);
+    QHashIterator<QString, QVariant> i(p->header);
     while (i.hasNext()) {
         i.next();
 
@@ -125,8 +116,8 @@ QVariant HttpHeaders::rawHeader(const QString &headername)const
 
 HttpHeaders &HttpHeaders::setRawHeader(const QVariantHash &rawHeader)
 {
-    dPvt();
-    auto &header=p.header;
+
+    auto &header=p->header;
     header.clear();
     QHashIterator<QString, QVariant> i(rawHeader);
     while (i.hasNext()) {
@@ -153,9 +144,9 @@ HttpHeaders &HttpHeaders::setRawHeader(const QString &header, const QVariant &va
         list<<value;
     }
 
-    dPvt();
+
     const auto headerName=QRpc::Util::headerFormatName(header);
-    auto vList=p.header[headerName].toStringList();
+    auto vList=p->header[headerName].toStringList();
     vList.clear();
     for(auto &v:list){
         auto vv=v.toByteArray().trimmed();
@@ -177,7 +168,7 @@ HttpHeaders &HttpHeaders::setRawHeader(const QString &header, const QVariant &va
         }
     }
 
-    p.header[headerName]=vList;
+    p->header[headerName]=vList;
     return*this;
 }
 
@@ -207,9 +198,9 @@ HttpHeaders &HttpHeaders::addRawHeader(const QString &header, const QVariant &va
         list<<value;
     }
 
-    dPvt();
+
     const auto headerName=QRpc::Util::headerFormatName(header);
-    auto vList=p.header.value(headerName).toStringList();
+    auto vList=p->header.value(headerName).toStringList();
     vList.clear();
     for(auto &v:list){
         auto vv=v.toByteArray().trimmed();
@@ -239,9 +230,9 @@ HttpHeaders &HttpHeaders::setContentType(const int contentType)
 
 HttpHeaders &HttpHeaders::setContentType(const QVariant &v)
 {
-    dPvt();
-    p.header.remove(ContentTypeName);
-    p.header.remove(QString(ContentTypeName).toLower());
+
+    p->header.remove(ContentTypeName);
+    p->header.remove(QString(ContentTypeName).toLower());
     QVariant value=v;
     if(qTypeId(v)==QMetaType_QUrl){
         value=QVariant();
@@ -255,14 +246,14 @@ HttpHeaders &HttpHeaders::setContentType(const QVariant &v)
         }
     }
     if(value.isValid())
-        p.header.insert(ContentTypeName,value);
+        p->header.insert(ContentTypeName,value);
     return*this;
 }
 
 bool HttpHeaders::isContentType(int contentType) const
 {
-    dPvt();
-    const auto contenttype=p.header_v(ContentTypeName).toStringList();
+
+    const auto contenttype=p->header_v(ContentTypeName).toStringList();
     for(auto &ct:contenttype){
         int cType=-1;
         if(!ContentTypeHeaderToHeaderType.contains(ct))
@@ -277,8 +268,8 @@ bool HttpHeaders::isContentType(int contentType) const
 
 QVariant HttpHeaders::contentType() const
 {
-    dPvt();
-    auto v=p.header_v(ContentTypeName);
+
+    auto v=p->header_v(ContentTypeName);
     return v;
 }
 
@@ -289,8 +280,8 @@ ContentType HttpHeaders::defaultContentType()
 
 QVariant HttpHeaders::contentDisposition() const
 {
-    dPvt();
-    auto v=p.header_v(ContentDispositionName);
+
+    auto v=p->header_v(ContentDispositionName);
     return v;
 }
 
@@ -404,9 +395,9 @@ HttpHeaders &HttpHeaders::setCookies(const QVariant &cookie)
 
 QVariant HttpHeaders::authorization(const QString &authorization, const QString &type)
 {
-    dPvt();
+
     QVariantList returnList;
-    QHashIterator<QString, QVariant> i(p.header);
+    QHashIterator<QString, QVariant> i(p->header);
     while (i.hasNext()) {
         i.next();
         if(i.key().toLower()!=authorization.toLower())
@@ -522,8 +513,8 @@ QStringList HttpHeaders::printOut(const QString &output)
 
 HttpHeaders &HttpHeaders::operator=(const QVariant &v)
 {
-    dPvt();
-    p.header.clear();
+
+    p->header.clear();
     QVariantHash vHash;
     switch (qTypeId(v)) {
     case QMetaType_QString:

@@ -5,13 +5,13 @@ namespace QRpc {
 #define dPvt()\
     auto &p =*reinterpret_cast<RequestExchangePvt*>(this->p)
 
-class RequestExchangePvt{
+class RequestExchangePvt:public QObject{
 public:
     RequestExchange*parent=nullptr;
     RequestExchangeSetting call;
     RequestExchangeSetting back;
 
-    explicit RequestExchangePvt(RequestExchange*parent):call(parent), back(parent)
+    explicit RequestExchangePvt(RequestExchange*parent):QObject{parent}, call{parent}, back{parent}
     {
         this->parent=parent;
     }
@@ -29,54 +29,49 @@ RequestExchange::RequestExchange(QObject *parent):QObject{parent}
 RequestExchange::RequestExchange(RequestExchange &exchange, QObject *parent):QObject{parent}
 {
     this->p = new RequestExchangePvt{this};
-    dPvt();
-    p.call=exchange.call();
-    p.back=exchange.back();
-}
 
-RequestExchange::~RequestExchange()
-{
-    dPvt();delete&p;
+    p->call=exchange.call();
+    p->back=exchange.back();
 }
 
 RequestExchange&RequestExchange::operator =(RequestExchange &e)
 {
-    dPvt();
-    p.call=e.call();
-    p.back=e.back();
+
+    p->call=e.call();
+    p->back=e.back();
     return*this;
 }
 
 RequestExchange &RequestExchange::clear()
 {
-    dPvt();
-    p.call.clear();
-    p.back.clear();
+
+    p->call.clear();
+    p->back.clear();
     return*this;
 }
 
 RequestExchangeSetting &RequestExchange::call()
 {
-    dPvt();
-    return p.call;
+
+    return p->call;
 }
 
 RequestExchangeSetting &RequestExchange::back()
 {
-    dPvt();
-    return p.back;
+
+    return p->back;
 }
 
 QVariantMap RequestExchange::toMap() const
 {
-    dPvt();
-    return QVariantMap{{qsl("call"),p.call.toHash()}, {qsl("back"),p.back.toHash()}};
+
+    return QVariantMap{{qsl("call"),p->call.toHash()}, {qsl("back"),p->back.toHash()}};
 }
 
 QVariantHash RequestExchange::toHash() const
 {
-    dPvt();
-    return QVariantHash{{qsl("call"),p.call.toHash()}, {qsl("back"),p.back.toHash()}};
+
+    return QVariantHash{{qsl("call"),p->call.toHash()}, {qsl("back"),p->back.toHash()}};
 }
 
 RequestExchange &RequestExchange::print(const QString &output)
@@ -88,19 +83,19 @@ RequestExchange &RequestExchange::print(const QString &output)
 
 QStringList RequestExchange::printOut(const QString &output)
 {
-    dPvt();
+
     QStringList out;
     auto space=output.trimmed().isEmpty()?qsl_null:qsl("    ");
-    if(p.call.isValid()){
+    if(p->call.isValid()){
         out<<qsl("%1%2 exchange.call").arg(space, output).trimmed();
         auto outtext=space+qsl(".    ");
-        for(auto &v:p.call.printOut(outtext))
+        for(auto &v:p->call.printOut(outtext))
             out<<v;
     }
-    if(p.back.isValid()){
+    if(p->back.isValid()){
         out<<qsl("%1%2 exchange.back").arg(space, output).trimmed();
         auto outtext=space+qsl(".    ");
-        for(auto &v:p.back.printOut(outtext))
+        for(auto &v:p->back.printOut(outtext))
             out<<v;
     }
     return out;

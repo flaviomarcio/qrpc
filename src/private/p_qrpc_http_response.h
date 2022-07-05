@@ -4,7 +4,7 @@
 #include <QNetworkReply>
 
 namespace QRpc {
-
+class HttpResponsePvt;
 //!
 //! \brief The HttpResponse class
 //!
@@ -16,7 +16,6 @@ public:
     //! \param parent
     //!
     Q_INVOKABLE explicit HttpResponse(QObject*parent=nullptr);
-    ~HttpResponse();
 
     //!
     //! \brief header
@@ -171,7 +170,7 @@ public:
     virtual QStringList printOut(const QString &output=QString());
 
 private:
-    void*p = nullptr;
+    HttpResponsePvt *p = nullptr;
 };
 
 

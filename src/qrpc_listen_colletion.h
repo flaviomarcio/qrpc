@@ -41,11 +41,6 @@ public:
     explicit ListenColletions(const QVariantHash &settings, Server *server = nullptr);
 
     //!
-    //! \brief ~ListenColletions
-    //!
-    ~ListenColletions();
-
-    //!
     //! \brief protocol
     //! \return
     //!
