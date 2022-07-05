@@ -135,7 +135,7 @@ bool ControllerOptionsPrv::load(QObject *settingsObject)
             continue;
 
         auto methodName=QString(metaMethod.name()).toLower().trimmed();
-        auto staticNames=QStringList{qsl("settingsfilename"),qsl("settings_server"),qsl("settingsserver")};
+        auto staticNames=QStringList{qsl("resourcesettings")};
         if(!staticNames.contains(methodName))
             continue;
 
