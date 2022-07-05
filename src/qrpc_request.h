@@ -133,7 +133,6 @@ public:
 
 public:
     Q_INVOKABLE explicit Request(QObject *parent=nullptr);
-    ~Request();
 
     //!
     //! \brief startsWith
