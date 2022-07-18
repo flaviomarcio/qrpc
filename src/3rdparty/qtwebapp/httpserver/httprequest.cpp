@@ -336,7 +336,7 @@ QByteArray HttpRequest::getPath() const
 }
 
 
-const QByteArray& HttpRequest::getRawPath() const
+const QByteArray & HttpRequest::getRawPath() const
 {
     return path;
 }
@@ -348,12 +348,12 @@ QByteArray HttpRequest::getVersion() const
 }
 
 
-QByteArray HttpRequest::getHeader(const QByteArray& name) const
+QByteArray HttpRequest::getHeader(const QByteArray & name) const
 {
     return headers.value(name.toLower());
 }
 
-QList<QByteArray> HttpRequest::getHeaders(const QByteArray& name) const
+QList<QByteArray> HttpRequest::getHeaders(const QByteArray & name) const
 {
     return headers.values(name.toLower());
 }
@@ -363,12 +363,12 @@ QMultiHash<QByteArray,QByteArray> HttpRequest::getHeaderMap() const
     return headers;
 }
 
-QByteArray HttpRequest::getParameter(const QByteArray& name) const
+QByteArray HttpRequest::getParameter(const QByteArray & name) const
 {
     return parameters.value(name);
 }
 
-QList<QByteArray> HttpRequest::getParameters(const QByteArray& name) const
+QList<QByteArray> HttpRequest::getParameters(const QByteArray & name) const
 {
     return parameters.values(name);
 }
@@ -555,7 +555,7 @@ QTemporaryFile* HttpRequest::getUploadedFile(const QByteArray fieldName) const
     return uploadedFiles.value(fieldName);
 }
 
-QByteArray HttpRequest::getCookie(const QByteArray& name) const
+QByteArray HttpRequest::getCookie(const QByteArray & name) const
 {
     return cookies.value(name);
 }

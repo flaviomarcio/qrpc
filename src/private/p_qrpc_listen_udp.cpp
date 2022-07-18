@@ -1,8 +1,6 @@
 #include "./p_qrpc_listen_udp.h"
 #include "../qrpc_listen_colletion.h"
 #include "../qrpc_listen_protocol.h"
-#include "../qrpc_listen_request.h"
-#include "../qrpc_server.h"
 #include <QNetworkDatagram>
 #include <QUdpSocket>
 

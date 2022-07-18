@@ -66,7 +66,7 @@ public:
 
     HttpResponse&call(const RequestMethod&method, const QVariant &vRoute, const QVariant &body);
 signals:
-    void runJob(const QSslConfiguration*sslConfig, const QVariantHash&headers, const QVariant &url, const QString &fileName, QRpc::Request*request);
+    void runJob(const QSslConfiguration*sslConfig, const QVariantHash &headers, const QVariant &url, const QString &fileName, QRpc::Request*request);
 };
 
 }

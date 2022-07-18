@@ -1,4 +1,9 @@
 #include "./p_qrpc_controller_options.h"
+#include "../../../qstm/src/qstm_util_variant.h"
+#include "../qrpc_const.h"
+#if Q_RPC_LOG
+#include "../qrpc_macro.h"
+#endif
 
 namespace QRpc {
 
@@ -82,7 +87,7 @@ ControllerOptions &ControllerOptionsPrv::insert(const QVariantHash &value)
     if(vValue.isEmpty())
         return*this->parent;
 
-    auto name=vValue.value(qsl("name")).toByteArray().trimmed();
+    auto name=vValue.value(QStringLiteral("name")).toByteArray().trimmed();
     if(name.isEmpty())
         return*this->parent;
     auto setting=p.settings.value(name);
@@ -110,12 +115,12 @@ ControllerOptions &ControllerOptionsPrv::insert(const QVariantHash &value)
 
 bool ControllerOptionsPrv::v_load(const QVariant &v)
 {
-    switch (qTypeId(v)) {
-    case QMetaType_QVariantList:
-    case QMetaType_QStringList:
+    switch (v.typeId()) {
+    case QMetaType::QVariantList:
+    case QMetaType::QStringList:
         return this->load(v.toStringList());
-    case QMetaType_QVariantHash:
-    case QMetaType_QVariantMap:
+    case QMetaType::QVariantHash:
+    case QMetaType::QVariantMap:
         return this->load(v.toHash());
     default:
         return this->load(v.toString());
@@ -135,7 +140,7 @@ bool ControllerOptionsPrv::load(QObject *settingsObject)
             continue;
 
         auto methodName=QString(metaMethod.name()).toLower().trimmed();
-        auto staticNames=QStringList{qsl("resourcesettings")};
+        auto staticNames=QStringList{QStringLiteral("resourcesettings")};
         if(!staticNames.contains(methodName))
             continue;
 
@@ -161,14 +166,14 @@ bool ControllerOptionsPrv::load(const QStringList &settingsFileName)
 
         if(!file.exists()){
 #if Q_RPC_LOG
-            sWarning()<<qsl("file not exists %1").arg(file.fileName());
+            rWarning()<<QStringLiteral("file not exists %1").arg(file.fileName());
 #endif
             continue;
         }
 
         if(!file.open(QFile::ReadOnly)){
 #if Q_RPC_LOG
-            sWarning()<<qsl("%1, %2").arg(file.fileName(), file.errorString());
+            rWarning()<<QStringLiteral("%1, %2").arg(file.fileName(), file.errorString());
 #endif
             continue;
         }
@@ -179,14 +184,14 @@ bool ControllerOptionsPrv::load(const QStringList &settingsFileName)
         auto doc=QJsonDocument::fromJson(bytes, error);
         if(error!=nullptr){
 #if Q_RPC_LOG
-            sWarning()<<qsl("%1, %2").arg(file.fileName(), error->errorString());
+            rWarning()<<QStringLiteral("%1, %2").arg(file.fileName(), error->errorString());
 #endif
             continue;
         }
 
         if(doc.object().isEmpty()){
 #if Q_RPC_LOG
-            sWarning()<<qsl("object is empty, %1").arg(file.fileName());
+            rWarning()<<QStringLiteral("object is empty, %1").arg(file.fileName());
 #endif
             continue;
         }
@@ -212,21 +217,21 @@ bool ControllerOptionsPrv::load(const QString &fileName)
         QFile file(fileName);
         if(fileName.trimmed().isEmpty()){
 #if Q_RPC_LOG
-            sWarning()<<qsl("not file settings");
+            rWarning()<<QStringLiteral("not file settings");
 #endif
             return false;
         }
 
         if(!file.exists()){
 #if Q_RPC_LOG
-            sWarning()<<qsl("file not exists %1").arg(file.fileName());
+            rWarning()<<QStringLiteral("file not exists %1").arg(file.fileName());
 #endif
             return false;
         }
 
         if(!file.open(QFile::ReadOnly)){
 #if Q_RPC_LOG
-            sWarning()<<qsl("%1, %2").arg(file.fileName(), fileName);
+            rWarning()<<QStringLiteral("%1, %2").arg(file.fileName(), fileName);
 #endif
             return false;
         }
@@ -238,22 +243,22 @@ bool ControllerOptionsPrv::load(const QString &fileName)
         auto doc=QJsonDocument::fromJson(bytes, error);
         if(error!=nullptr){
 #if Q_RPC_LOG
-            sWarning()<<qsl("%1, %2").arg(file.fileName(), error->errorString());
+            rWarning()<<QStringLiteral("%1, %2").arg(file.fileName(), error->errorString());
 #endif
             return false;
         }
 
         if(doc.object().isEmpty()){
 #if Q_RPC_LOG
-            sWarning()<<qsl("object is empty, %1").arg(file.fileName());
+            rWarning()<<QStringLiteral("object is empty, %1").arg(file.fileName());
 #endif
             return false;
         }
 
         auto vHash=doc.object().toVariantHash();
-        if(!vHash.contains(qsl("services"))){
+        if(!vHash.contains(QStringLiteral("services"))){
 #if Q_RPC_LOG
-            sWarning()<<qsl("tag services not exists, %1").arg(file.fileName());
+            rWarning()<<QStringLiteral("tag services not exists, %1").arg(file.fileName());
 #endif
         }
         return p.load(vHash);
@@ -271,14 +276,14 @@ bool ControllerOptionsPrv::load(const QVariantHash &settings)
     auto &p=*this;
     p.settingBody=settings;
 
-    auto arguments=settings.value(qsl("arguments"));
+    auto arguments=settings.value(QStringLiteral("arguments"));
 
-    switch (qTypeId(arguments)) {
-    case QMetaType_QVariantList:
-    case QMetaType_QStringList:
+    switch (arguments.typeId()) {
+    case QMetaType::QVariantList:
+    case QMetaType::QStringList:
     {
         for(auto &v:arguments.toList()){
-            auto l=v.toString().split(qsl("="));
+            auto l=v.toString().split(QStringLiteral("="));
             if(l.isEmpty()){
                 continue;
             }
@@ -296,8 +301,8 @@ bool ControllerOptionsPrv::load(const QVariantHash &settings)
         }
         break;
     }
-    case QMetaType_QVariantHash:
-    case QMetaType_QVariantMap:
+    case QMetaType::QVariantHash:
+    case QMetaType::QVariantMap:
     {
         Q_V_HASH_ITERATOR (arguments.toHash()){
             i.next();
@@ -310,7 +315,7 @@ bool ControllerOptionsPrv::load(const QVariantHash &settings)
     }
 
 
-    QVariantHash defaultVariables{{qsl("hostName") , qsl("SERVICE_HOST")}};
+    QVariantHash defaultVariables{{QStringLiteral("hostName") , QStringLiteral("SERVICE_HOST")}};
     QVariantHash defaultValues;
     if(!defaultVariables.isEmpty()){
         Q_V_HASH_ITERATOR (defaultVariables){
@@ -324,11 +329,11 @@ bool ControllerOptionsPrv::load(const QVariantHash &settings)
         }
     }
 
-    auto defaultSetting=settings.value(qsl("default")).toHash();
+    auto defaultSetting=settings.value(QStringLiteral("default")).toHash();
 
     p.settingsDefault=defaultSetting;
 
-    if(settings.contains(qsl("hostName")) && settings.contains(qsl("port"))){
+    if(settings.contains(QStringLiteral("hostName")) && settings.contains(QStringLiteral("port"))){
         this->insert(settings);
         return this->isLoaded();
     }
@@ -336,7 +341,7 @@ bool ControllerOptionsPrv::load(const QVariantHash &settings)
     Q_V_HASH_ITERATOR (settings){
         i.next();
         auto value=i.value().toHash();
-        value.insert(qsl("name"), i.key().trimmed());
+        value.insert(QStringLiteral("name"), i.key().trimmed());
 
         {
             Q_V_HASH_ITERATOR (defaultValues){

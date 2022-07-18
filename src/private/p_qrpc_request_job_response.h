@@ -45,7 +45,7 @@ public:
 
     explicit RequestJobResponse(QObject*parent);
 
-    explicit RequestJobResponse(const QVariantHash&request_header, const QVariant &vUrl, Request&request, QObject*parent);
+    explicit RequestJobResponse(const QVariantHash &request_header, const QVariant &vUrl, Request&request, QObject*parent);
 
     ~RequestJobResponse();
 

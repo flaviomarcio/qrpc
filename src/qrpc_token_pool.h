@@ -14,9 +14,8 @@ class Q_RPC_EXPORT TokenPool : public QThread
     Q_OBJECT
 public:
     Q_INVOKABLE explicit TokenPool(QObject *parent = nullptr);
-    ~TokenPool();
 
-    Q_DECLARE_INSTANCE(TokenPool)
+    static TokenPool &i();
 
     virtual QVariantHash token(const QByteArray &md5) const;
 

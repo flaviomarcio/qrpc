@@ -83,71 +83,71 @@
         return {}; \
     }
 
-#define QRPC_V_CRUD QVariantHash{{qsl("method"), this->rq().requestMethod()}, {qsl("source"), this->rq().requestParamHash()}}
+#define QRPC_V_CRUD QVariantHash{{QStringLiteral("method"), this->rq().requestMethod()}, {QStringLiteral("source"), this->rq().requestParamHash()}}
 
 #define QRPC_V_SET_METHOD(v) auto v = this->rq().requestMethod()
 
 #define QRPC_V_SET_PARAMETERS(v) auto v = this->rq().requestParamHash()
 
 #define QRPC_V_SET(v) \
-    auto v = this->rq().requestParamHash(qbl(#v)); \
-    this->rq().requestParserProperty().append(qbl(#v).toLower())
+    auto v = this->rq().requestParamHash(QByteArrayLiteral(#v)); \
+    this->rq().requestParserProperty().append(QByteArrayLiteral(#v).toLower())
 
 #define QRPC_V_SET_UUID(v) \
-    auto v = QStm::VariantUtil{}.toUuid(this->rq().requestParamHash(qbl(#v))); \
+    auto v = QStm::VariantUtil{}.toUuid(this->rq().requestParamHash(QByteArrayLiteral(#v))); \
     Q_UNUSED(v); \
-    this->rq().requestParserProperty().append(qbl(#v).toLower())
+    this->rq().requestParserProperty().append(QByteArrayLiteral(#v).toLower())
 
 #define QRPC_V_SET_BYTE(v) \
-    auto v = this->rq().requestParamHash(qbl(#v)).toByteArray().trimmed(); \
-    this->rq().requestParserProperty().append(qbl(#v).toLower())
+    auto v = this->rq().requestParamHash(QByteArrayLiteral(#v)).toByteArray().trimmed(); \
+    this->rq().requestParserProperty().append(QByteArrayLiteral(#v).toLower())
 
 #define QRPC_V_SET_STRING(v) \
-    auto v = this->rq().requestParamHash(qbl(#v)).toString().trimmed(); \
-    this->rq().requestParserProperty().append(qbl(#v).toLower())
+    auto v = this->rq().requestParamHash(QByteArrayLiteral(#v)).toString().trimmed(); \
+    this->rq().requestParserProperty().append(QByteArrayLiteral(#v).toLower())
 
 #define QRPC_V_SET_LONGLONG(v) \
-    auto v = this->rq().requestParamHash(qbl(#v)).toLongLong(); \
-    this->rq().requestParserProperty().append(qbl(#v).toLower())
+    auto v = this->rq().requestParamHash(QByteArrayLiteral(#v)).toLongLong(); \
+    this->rq().requestParserProperty().append(QByteArrayLiteral(#v).toLower())
 
 #define QRPC_V_SET_INT(v) \
-    auto v = this->rq().requestParamHash(qbl(#v)).toInt(); \
-    this->rq().requestParserProperty().append(qbl(#v).toLower())
+    auto v = this->rq().requestParamHash(QByteArrayLiteral(#v)).toInt(); \
+    this->rq().requestParserProperty().append(QByteArrayLiteral(#v).toLower())
 
 #define QRPC_V_SET_DATE(v) \
-    auto v = QDate::fromString(this->rq().requestParamHash(qbl(#v)).toString(), \
+    auto v = QDate::fromString(this->rq().requestParamHash(QByteArrayLiteral(#v)).toString(), \
                                Qt::ISODate); \
-    this->rq().requestParserProperty().append(qbl(#v).toLower())
+    this->rq().requestParserProperty().append(QByteArrayLiteral(#v).toLower())
 
 #define QRPC_V_SET_DATETIME(v) \
-    auto v = QDateTime::fromString(this->rq().requestParamHash(qbl(#v)).toString(), \
+    auto v = QDateTime::fromString(this->rq().requestParamHash(QByteArrayLiteral(#v)).toString(), \
                                    Qt::ISODateWithMs); \
-    this->rq().requestParserProperty().append(qbl(#v).toLower())
+    this->rq().requestParserProperty().append(QByteArrayLiteral(#v).toLower())
 
 #define QRPC_V_SET_TIME(v) \
-    auto v = QTime::fromString(this->rq().requestParamHash(qbl(#v)).toString(), \
+    auto v = QTime::fromString(this->rq().requestParamHash(QByteArrayLiteral(#v)).toString(), \
                                Qt::ISODateWithMs); \
-    this->rq().requestParserProperty().append(qbl(#v).toLower())
+    this->rq().requestParserProperty().append(QByteArrayLiteral(#v).toLower())
 
 #define QRPC_V_SET_DOUBLE(v) \
-    auto v = this->rq().requestParamHash(qbl(#v)).toDouble(); \
-    this->rq().requestParserProperty().append(qbl(#v).toLower())
+    auto v = this->rq().requestParamHash(QByteArrayLiteral(#v)).toDouble(); \
+    this->rq().requestParserProperty().append(QByteArrayLiteral(#v).toLower())
 
 #define QRPC_V_SET_MAP(v) \
-    auto v = this->rq().requestParamHash(qbl(#v)).toMap(); \
-    this->rq().requestParserProperty().append(qbl(#v).toLower())
+    auto v = this->rq().requestParamHash(QByteArrayLiteral(#v)).toMap(); \
+    this->rq().requestParserProperty().append(QByteArrayLiteral(#v).toLower())
 
 #define QRPC_V_SET_HASH(v) \
-    auto v = this->rq().requestParamHash(qbl(#v)).toHash(); \
-    this->rq().requestParserProperty().append(qbl(#v).toLower())
+    auto v = this->rq().requestParamHash(QByteArrayLiteral(#v)).toHash(); \
+    this->rq().requestParserProperty().append(QByteArrayLiteral(#v).toLower())
 
 #define QRPC_V_SET_LIST(v) \
-    auto v = this->rq().requestParamHash(qbl(#v)).toList(); \
-    this->rq().requestParserProperty().append(qbl(#v).toLower())
+    auto v = this->rq().requestParamHash(QByteArrayLiteral(#v)).toList(); \
+    this->rq().requestParserProperty().append(QByteArrayLiteral(#v).toLower())
 
 #define QRPC_V_SET_BOOL(v) \
-    auto v = this->rq().requestParamHash(qbl(#v)).toBool(); \
-    this->rq().requestParserProperty().append(qbl(#v).toLower())
+    auto v = this->rq().requestParamHash(QByteArrayLiteral(#v)).toBool(); \
+    this->rq().requestParserProperty().append(QByteArrayLiteral(#v).toLower())
 
 #define QRPC_V_SET_BODY(v) auto v = this->rq().requestBody()
 
@@ -201,3 +201,20 @@ public: \
         this->rq().co().setNotImplemented(); \
         return {}; \
     }
+
+#define ___r_party_1 QString::number(qlonglong(QThread::currentThreadId()))+QStringLiteral(":")
+
+#define ___r_party_2 QString(__PRETTY_FUNCTION__).replace(QStringLiteral("virtual"),QLatin1String("")).split(QStringLiteral("(")).first().trimmed()+QStringLiteral(":")
+
+#define rDebug()qDebug()<<___r_party_1<<___r_party_2
+
+#define rCritical()qCritical()<<___r_party_1<<___r_party_2
+
+#define rInfo()qInfo()<<___r_party_1<<___r_party_2
+
+#define rWarning()qWarning()<<___r_party_1<<___r_party_2
+
+#define rDebugMethodStart() qDebug()<<___r_party_1<<___r_party_2<<QStringLiteral(":start")
+
+#define rDebugMethodFinish()qDebug()<<___r_party_1<<___r_party_2<<QStringLiteral(":finish")
+

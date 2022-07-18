@@ -1,11 +1,13 @@
 #include "./p_qrpc_listen_tcp.h"
-
 #include "../qrpc_listen.h"
 #include "../qrpc_listen_colletion.h"
 #include "../qrpc_listen_protocol.h"
 #include "../qrpc_listen_request.h"
 #include "../qrpc_listen_request_cache.h"
-#include "../qrpc_server.h"
+#include "../qrpc_const.h"
+#if Q_RPC_LOG
+#include "../qrpc_macro.h"
+#endif
 #include <QFile>
 #include <QSslCertificate>
 #include <QSslConfiguration>
@@ -49,7 +51,7 @@ public:
                     this,
                     &ServerTCPSocket::onServerNewConnection);
             if (!server->listen(QHostAddress::LocalHost, port)) {
-                sWarning() << tr("WebsocketListener: Cannot bind on port %1: %2")
+                rWarning() << tr("WebsocketListener: Cannot bind on port %1: %2")
                                   .arg(port)
                                   .arg(server->errorString());
                 server->close();
@@ -64,7 +66,7 @@ public:
                 continue;
             }
 
-            sWarning() << tr("TcpsocketListener: Cannot bind on port %1: %2")
+            rWarning() << tr("TcpsocketListener: Cannot bind on port %1: %2")
                               .arg(port)
                               .arg(server->errorString());
             server->close();

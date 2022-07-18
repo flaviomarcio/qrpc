@@ -1,10 +1,9 @@
 #include "./qrpc_listen_request.h"
 #include "./qrpc_request.h"
-#include "./qrpc_macro.h"
 #include "./qrpc_startup.h"
-#include <QStm>
-
+#include "./qrpc_macro.h"
 #include <QVariantHash>
+//#include <QStm>
 
 //#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
 //#define CBOR_INCLUDED
@@ -41,7 +40,7 @@ static void init()
     {
         QProcess process;
         auto lst = process.environment();
-        auto bytes=lst.join(qsl(",")).toUtf8()+QDateTime::currentDateTime().toString().toUtf8();
+        auto bytes=lst.join(QStringLiteral(",")).toUtf8()+QDateTime::currentDateTime().toString().toUtf8();
         return QCryptographicHash::hash(bytes, QCryptographicHash::Md5).toHex();
     };
 
@@ -130,7 +129,7 @@ public:
             auto key=property.name();
             auto value=property.read(parent);
             if(value.isValid()){
-                if(qTypeId(value)==QMetaType_QUuid && (!value.toUuid().isNull()))
+                if(value.typeId()==QMetaType::QUuid && (!value.toUuid().isNull()))
                     map.insert(key, value.toUuid());
                 else
                     map.insert(key, value);
@@ -225,10 +224,10 @@ public:
             i.next();
             auto k=i.key().trimmed().toLower();
             auto v=i.value().toString()
-                         .replace(qsl("Basic"),qsl("basic"))
-                         .replace(qsl("Bearer"),qsl("bearer"))
-                         .replace(qsl("Service"),qsl("service"));
-            if(k!=qsl("authorization"))
+                         .replace(QStringLiteral("Basic"),QStringLiteral("basic"))
+                         .replace(QStringLiteral("Bearer"),QStringLiteral("bearer"))
+                         .replace(QStringLiteral("Service"),QStringLiteral("service"));
+            if(k!=QStringLiteral("authorization"))
                 continue;
 
             if(v.startsWith(stype)){
@@ -281,49 +280,49 @@ QVariantHash ListenRequest::authorizationHeaders() const
 QString QRpc::ListenRequest::authorizationBasic() const
 {
 
-    return p->authorizationParser(qbl("Basic"));
+    return p->authorizationParser(QByteArrayLiteral("Basic"));
 }
 
 QString ListenRequest::authorizationBearer() const
 {
 
-    return p->authorizationParser(qbl("Bearer"));
+    return p->authorizationParser(QByteArrayLiteral("Bearer"));
 }
 
 QString ListenRequest::authorizationService() const
 {
 
-    return p->authorizationParser(qbl("Service"));
+    return p->authorizationParser(QByteArrayLiteral("Service"));
 }
 
 bool ListenRequest::isMethodHead() const
 {
 
-    return (p->requestMethod==qbl("head"));
+    return (p->requestMethod==QByteArrayLiteral("head"));
 }
 
 bool ListenRequest::isMethodGet()const
 {
 
-    return (p->requestMethod==qbl("get"));
+    return (p->requestMethod==QByteArrayLiteral("get"));
 }
 
 bool ListenRequest::isMethodPost()const
 {
 
-    return (p->requestMethod==qbl("post"));
+    return (p->requestMethod==QByteArrayLiteral("post"));
 }
 
 bool ListenRequest::isMethodPut() const
 {
 
-    return (p->requestMethod==qbl("put"));
+    return (p->requestMethod==QByteArrayLiteral("put"));
 }
 
 bool ListenRequest::isMethodDelete() const
 {
 
-    return (p->requestMethod==qbl("delete"));
+    return (p->requestMethod==QByteArrayLiteral("delete"));
 }
 
 bool ListenRequest::isMethodUpload() const
@@ -335,7 +334,7 @@ bool ListenRequest::isMethodUpload() const
 bool ListenRequest::isMethodOptions() const
 {
 
-    return (p->requestMethod==qbl("options"));
+    return (p->requestMethod==QByteArrayLiteral("options"));
 }
 
 bool ListenRequest::canMethodHead()
@@ -472,10 +471,10 @@ bool ListenRequest::mergeMap(const QVariantMap &vRequest)
         if(!vNew.isValid() || vNew.isNull()){
             continue;
         }
-        auto type=qTypeId(property);
+        auto type=property.typeId();
         switch (type) {
-        case QMetaType_QVariantMap:
-        case QMetaType_QVariantHash:
+        case QMetaType::QVariantMap:
+        case QMetaType::QVariantHash:
         {
             auto vHash=vVal.toHash();
             if(!vHash.isEmpty()){
@@ -493,8 +492,8 @@ bool ListenRequest::mergeMap(const QVariantMap &vRequest)
             }
             break;
         }
-        case QMetaType_QVariantList:
-        case QMetaType_QStringList:
+        case QMetaType::QVariantList:
+        case QMetaType::QStringList:
         {
             auto vLst=vVal.toList();
             if(!vLst.isEmpty()){
@@ -512,7 +511,7 @@ bool ListenRequest::mergeMap(const QVariantMap &vRequest)
             }
             break;
         }
-        case QMetaType_QUuid:
+        case QMetaType::QUuid:
         {
             if(!property.write(this, vNew.toUuid())){
                 this->clear();
@@ -520,7 +519,7 @@ bool ListenRequest::mergeMap(const QVariantMap &vRequest)
             }
             break;
         }
-        case QMetaType_QUrl:
+        case QMetaType::QUrl:
         {
             if(!property.write(this, vNew.toUrl())){
                 this->clear();
@@ -528,8 +527,8 @@ bool ListenRequest::mergeMap(const QVariantMap &vRequest)
             }
             break;
         }
-        case QMetaType_UInt:
-        case QMetaType_Int:
+        case QMetaType::UInt:
+        case QMetaType::Int:
         {
             if(!property.write(this, vNew.toInt())){
                 this->clear();
@@ -537,8 +536,8 @@ bool ListenRequest::mergeMap(const QVariantMap &vRequest)
             }
             break;
         }
-        case QMetaType_ULongLong:
-        case QMetaType_LongLong:
+        case QMetaType::ULongLong:
+        case QMetaType::LongLong:
         {
             if(!property.write(this, vNew.toLongLong())){
                 this->clear();
@@ -547,7 +546,7 @@ bool ListenRequest::mergeMap(const QVariantMap &vRequest)
             break;
         }
 
-        case QMetaType_Double:
+        case QMetaType::Double:
         {
             if(!property.write(this, vNew.toDouble())){
                 this->clear();
@@ -557,7 +556,7 @@ bool ListenRequest::mergeMap(const QVariantMap &vRequest)
         }
         default:
             if(!property.write(this, vNew)){
-                if(type!=QMetaType_User){
+                if(type!=QMetaType::User){
                     this->clear();
                     return this->isValid();
                 }
@@ -591,10 +590,10 @@ bool ListenRequest::mergeHash(const QVariantHash &vRequest)
         if(!vNew.isValid() || vNew.isNull()){
             continue;
         }
-        auto type=qTypeId(property);
+        auto type=property.typeId();
         switch (type) {
-        case QMetaType_QVariantMap:
-        case QMetaType_QVariantHash:
+        case QMetaType::QVariantMap:
+        case QMetaType::QVariantHash:
         {
             auto vHash=vVal.toHash();
             if(!vHash.isEmpty()){
@@ -612,8 +611,8 @@ bool ListenRequest::mergeHash(const QVariantHash &vRequest)
             }
             break;
         }
-        case QMetaType_QVariantList:
-        case QMetaType_QStringList:
+        case QMetaType::QVariantList:
+        case QMetaType::QStringList:
         {
             auto vLst=vVal.toList();
             if(!vLst.isEmpty()){
@@ -631,7 +630,7 @@ bool ListenRequest::mergeHash(const QVariantHash &vRequest)
             }
             break;
         }
-        case QMetaType_QUuid:
+        case QMetaType::QUuid:
         {
             if(!property.write(this, vNew.toUuid())){
                 this->clear();
@@ -639,7 +638,7 @@ bool ListenRequest::mergeHash(const QVariantHash &vRequest)
             }
             break;
         }
-        case QMetaType_QUrl:
+        case QMetaType::QUrl:
         {
             if(!property.write(this, vNew.toUrl())){
                 this->clear();
@@ -647,8 +646,8 @@ bool ListenRequest::mergeHash(const QVariantHash &vRequest)
             }
             break;
         }
-        case QMetaType_UInt:
-        case QMetaType_Int:
+        case QMetaType::UInt:
+        case QMetaType::Int:
         {
             if(!property.write(this, vNew.toInt())){
                 this->clear();
@@ -656,8 +655,8 @@ bool ListenRequest::mergeHash(const QVariantHash &vRequest)
             }
             break;
         }
-        case QMetaType_ULongLong:
-        case QMetaType_LongLong:
+        case QMetaType::ULongLong:
+        case QMetaType::LongLong:
         {
             if(!property.write(this, vNew.toLongLong())){
                 this->clear();
@@ -666,7 +665,7 @@ bool ListenRequest::mergeHash(const QVariantHash &vRequest)
             break;
         }
 
-        case QMetaType_Double:
+        case QMetaType::Double:
         {
             if(!property.write(this, vNew.toDouble())){
                 this->clear();
@@ -676,7 +675,7 @@ bool ListenRequest::mergeHash(const QVariantHash &vRequest)
         }
         default:
             if(!property.write(this, vNew)){
-                if(type!=QMetaType_User){
+                if(type!=QMetaType::User){
                     this->clear();
                     return this->isValid();
                 }
@@ -700,62 +699,62 @@ bool ListenRequest::fromResponseMap(const QVariantHash &vRequest)
     for(int i = metaObject->propertyOffset() ; i < metaObject->propertyCount() ; i++){
         auto property = metaObject->property(i);
         auto key = QByteArray{property.name()};
-        if(!key.startsWith(qbl("requestUuid")) && !key.startsWith(qbl("response")))
+        if(!key.startsWith(QByteArrayLiteral("requestUuid")) && !key.startsWith(QByteArrayLiteral("response")))
             continue;
 
         auto value=vRequest.value(key);
         if(property.write(this, value))
             continue;
 
-        auto typeId=qTypeId(property);
+        auto typeId=property.typeId();
         switch (typeId) {
-        case QMetaType_QByteArray:
+        case QMetaType::QByteArray:
             value=value.toByteArray();
             break;
-        case QMetaType_QString:
+        case QMetaType::QString:
             value=value.toString();
             break;
-        case QMetaType_QChar:
+        case QMetaType::QChar:
             value=value.toChar();
             break;
-        case QMetaType_QBitArray:
+        case QMetaType::QBitArray:
             value=value.toByteArray();
             break;
-        case QMetaType_LongLong:
-        case QMetaType_ULongLong:
+        case QMetaType::LongLong:
+        case QMetaType::ULongLong:
             value=value.toLongLong();
             break;
-        case QMetaType_Int:
-        case QMetaType_UInt:
+        case QMetaType::Int:
+        case QMetaType::UInt:
             value=value.toInt();
             break;
-        case QMetaType_Double:
+        case QMetaType::Double:
             value=value.toDouble();
             break;
-        case QMetaType_Bool:
+        case QMetaType::Bool:
             value=value.toBool();
             break;
-        case QMetaType_QDateTime:
+        case QMetaType::QDateTime:
             value=value.toDateTime();
             break;
-        case QMetaType_QDate:
+        case QMetaType::QDate:
             value=value.toDate();
             break;
-        case QMetaType_QTime:
+        case QMetaType::QTime:
             value=value.toTime();
             break;
-        case QMetaType_QVariantMap:
-        case QMetaType_QVariantHash:
+        case QMetaType::QVariantMap:
+        case QMetaType::QVariantHash:
             value=value.toHash();
             break;
-        case QMetaType_QVariantList:
-        case QMetaType_QStringList:
+        case QMetaType::QVariantList:
+        case QMetaType::QStringList:
             value=value.toList();
             break;
-        case QMetaType_QUuid:
+        case QMetaType::QUuid:
             value=value.toUuid();
             break;
-        case QMetaType_QUrl:
+        case QMetaType::QUrl:
             value=value.toUrl();
             break;
         default:
@@ -773,62 +772,62 @@ bool ListenRequest::fromResponseHash(const QVariantHash &vRequest)
     for(int i = metaObject->propertyOffset() ; i < metaObject->propertyCount() ; i++){
         auto property = metaObject->property(i);
         auto key = QByteArray{property.name()};
-        if(!key.startsWith(qbl("requestUuid")) && !key.startsWith(qbl("response")))
+        if(!key.startsWith(QByteArrayLiteral("requestUuid")) && !key.startsWith(QByteArrayLiteral("response")))
             continue;
 
         auto value=vRequest.value(key);
         if(property.write(this, value))
             continue;
 
-        auto typeId=qTypeId(property);
+        auto typeId=property.typeId();
         switch (typeId) {
-        case QMetaType_QByteArray:
+        case QMetaType::QByteArray:
             value=value.toByteArray();
             break;
-        case QMetaType_QString:
+        case QMetaType::QString:
             value=value.toString();
             break;
-        case QMetaType_QChar:
+        case QMetaType::QChar:
             value=value.toChar();
             break;
-        case QMetaType_QBitArray:
+        case QMetaType::QBitArray:
             value=value.toByteArray();
             break;
-        case QMetaType_LongLong:
-        case QMetaType_ULongLong:
+        case QMetaType::LongLong:
+        case QMetaType::ULongLong:
             value=value.toLongLong();
             break;
-        case QMetaType_Int:
-        case QMetaType_UInt:
+        case QMetaType::Int:
+        case QMetaType::UInt:
             value=value.toInt();
             break;
-        case QMetaType_Double:
+        case QMetaType::Double:
             value=value.toDouble();
             break;
-        case QMetaType_Bool:
+        case QMetaType::Bool:
             value=value.toBool();
             break;
-        case QMetaType_QDateTime:
+        case QMetaType::QDateTime:
             value=value.toDateTime();
             break;
-        case QMetaType_QDate:
+        case QMetaType::QDate:
             value=value.toDate();
             break;
-        case QMetaType_QTime:
+        case QMetaType::QTime:
             value=value.toTime();
             break;
-        case QMetaType_QVariantMap:
-        case QMetaType_QVariantHash:
+        case QMetaType::QVariantMap:
+        case QMetaType::QVariantHash:
             value=value.toHash();
             break;
-        case QMetaType_QVariantList:
-        case QMetaType_QStringList:
+        case QMetaType::QVariantList:
+        case QMetaType::QStringList:
             value=value.toList();
             break;
-        case QMetaType_QUuid:
+        case QMetaType::QUuid:
             value=value.toUuid();
             break;
-        case QMetaType_QUrl:
+        case QMetaType::QUrl:
             value=value.toUrl();
             break;
         default:
@@ -990,10 +989,10 @@ QVariant &ListenRequest::requestBody() const
 QVariantMap ListenRequest::requestBodyMap() const
 {
 
-    switch (qTypeId(p->requestBody))
+    switch (p->requestBody.typeId())
     {
-    case QMetaType_QVariantMap:
-    case QMetaType_QVariantHash:
+    case QMetaType::QVariantMap:
+    case QMetaType::QVariantHash:
         return p->requestBody.toMap();
         break;
     default:
@@ -1006,10 +1005,10 @@ QVariantMap ListenRequest::requestBodyMap() const
 QVariantHash ListenRequest::requestBodyHash() const
 {
 
-    switch (qTypeId(p->requestBody))
+    switch (p->requestBody.typeId())
     {
-    case QMetaType_QVariantMap:
-    case QMetaType_QVariantHash:
+    case QMetaType::QVariantMap:
+    case QMetaType::QVariantHash:
         return p->requestBody.toHash();
         break;
     default:
@@ -1041,9 +1040,9 @@ bool ListenRequest::requestParserBodyMap(const QVariant &property, QVariantMap &
     bool __return=true;
     if(property.isValid()){
         p->requestParserProperty.clear();
-        switch (qTypeId(property)) {
-        case QMetaType_QVariantList:
-        case QMetaType_QStringList:
+        switch (property.typeId()) {
+        case QMetaType::QVariantList:
+        case QMetaType::QStringList:
         {
             for(auto &v:property.toList()){
                 auto s=v.toString().toLower().trimmed();
@@ -1052,8 +1051,8 @@ bool ListenRequest::requestParserBodyMap(const QVariant &property, QVariantMap &
             }
             break;
         }
-        case QMetaType_QVariantMap:
-        case QMetaType_QVariantHash:
+        case QMetaType::QVariantMap:
+        case QMetaType::QVariantHash:
         {
             auto vKeys=property.toHash().keys();
             for(auto &v:vKeys){
@@ -1075,7 +1074,7 @@ bool ListenRequest::requestParserBodyMap(const QVariant &property, QVariantMap &
             }
             for(auto &prop:p->requestParserProperty){
                 if(!vPropBody.contains(prop)){
-                    sInfo()<<qsl("parameter not found: ")+prop.toString();
+                    rInfo()<<QStringLiteral("parameter not found: ")+prop.toString();
                     __return=false;
                 }
             }
@@ -1108,9 +1107,9 @@ bool ListenRequest::requestParserBodyHash(const QVariant &property, QVariantHash
     bool __return=true;
     if(property.isValid()){
         p->requestParserProperty.clear();
-        switch (qTypeId(property)) {
-        case QMetaType_QVariantList:
-        case QMetaType_QStringList:
+        switch (property.typeId()) {
+        case QMetaType::QVariantList:
+        case QMetaType::QStringList:
         {
             for(auto &v:property.toList()){
                 auto s=v.toString().toLower().trimmed();
@@ -1119,8 +1118,8 @@ bool ListenRequest::requestParserBodyHash(const QVariant &property, QVariantHash
             }
             break;
         }
-        case QMetaType_QVariantMap:
-        case QMetaType_QVariantHash:
+        case QMetaType::QVariantMap:
+        case QMetaType::QVariantHash:
         {
             auto vKeys=property.toHash().keys();
             for(auto &v:vKeys){
@@ -1142,7 +1141,7 @@ bool ListenRequest::requestParserBodyHash(const QVariant &property, QVariantHash
             }
             for(auto &prop:p->requestParserProperty){
                 if(!vPropBody.contains(prop)){
-                    sInfo()<<qsl("parameter not found: ")+prop.toString();
+                    rInfo()<<QStringLiteral("parameter not found: ")+prop.toString();
                     __return=false;
                 }
             }
@@ -1185,9 +1184,9 @@ QVariant ListenRequest::requestParamHash(const QByteArray &key) const
             continue;
 
         auto &v=i.value();
-        switch (qTypeId(p->requestBody)) {
-        case QMetaType_QString:
-        case QMetaType_QByteArray:
+        switch (p->requestBody.typeId()) {
+        case QMetaType::QString:
+        case QMetaType::QByteArray:
         {
             auto s=v.toByteArray();
             return s.isEmpty()?QVariant{}:s;
@@ -1209,9 +1208,9 @@ QVariantHash ListenRequest::requestParamHash() const
 QVariantList ListenRequest::requestBodyList() const
 {
 
-    switch (qTypeId(p->requestBody)) {
-    case QMetaType_QVariantList:
-    case QMetaType_QStringList:
+    switch (p->requestBody.typeId()) {
+    case QMetaType::QVariantList:
+    case QMetaType::QStringList:
         return p->requestBody.toList();
     default:
         return QVariantList{p->requestParameter};
@@ -1222,11 +1221,11 @@ void ListenRequest::setRequestBody(const QVariant &value)
 {
 
     QVariant _body;
-    switch (qTypeId(value)) {
-    case QMetaType_QVariantList:
-    case QMetaType_QStringList:
-    case QMetaType_QVariantMap:
-    case QMetaType_QVariantHash:
+    switch (value.typeId()) {
+    case QMetaType::QVariantList:
+    case QMetaType::QStringList:
+    case QMetaType::QVariantMap:
+    case QMetaType::QVariantHash:
         _body=value;
         break;
     default:
@@ -1249,9 +1248,9 @@ void ListenRequest::setRequestBody(const QVariant &value)
         }
     }
     if(this->isMethodGet() || this->isMethodDelete()){
-        switch (qTypeId(_body)) {
-        case QMetaType_QVariantMap:
-        case QMetaType_QVariantHash:
+        switch (_body.typeId()) {
+        case QMetaType::QVariantMap:
+        case QMetaType::QVariantHash:
             p->requestParameter=_body.toHash();
             break;
         default:
@@ -1308,7 +1307,7 @@ void ListenRequest::setUploadedFiles(const QVariant &vFiles)
             continue;
         }
 
-        auto filename=file->fileName().split(qbl("/")).last();
+        auto filename=file->fileName().split(QByteArrayLiteral("/")).last();
         p->uploadedFiles.insert(filename, file);
     }
 }
@@ -1333,8 +1332,8 @@ void ListenRequest::setResponseHeader(const QVariantHash &value)
     Q_V_HASH_ITERATOR(value){
         i.next();
         auto &v=i.value();
-        auto typeId=qTypeId(v);
-        auto s=(typeId==QMetaType_QStringList || typeId==QMetaType_QVariantList)?v.toStringList().join(' '):v.toString();
+        auto typeId=v.typeId();
+        auto s=(typeId==QMetaType::QStringList || typeId==QMetaType::QVariantList)?v.toStringList().join(' '):v.toString();
         p->responseHeader.insert(i.key(), s);
     }
 }
@@ -1367,12 +1366,12 @@ QByteArray ListenRequest::responseBodyBytes() const
 
     QVariant v;
     const auto &response = p->responseBody;
-    auto typeId=qTypeId(response);
+    auto typeId=response.typeId();
     switch (typeId) {
-    case QMetaType_QVariantList:
-    case QMetaType_QStringList:
-    case QMetaType_QVariantMap:
-    case QMetaType_QVariantHash:
+    case QMetaType::QVariantList:
+    case QMetaType::QStringList:
+    case QMetaType::QVariantMap:
+    case QMetaType::QVariantHash:
     {
         //TODO UTILIZAR switch () {}
         if(p->requestContentType==AppJson)
@@ -1393,20 +1392,20 @@ QByteArray ListenRequest::responseBodyBytes() const
 
     if(v.isValid()){
         QString body;
-        switch (qTypeId(v)) {
-        case QMetaType_QDate:
+        switch (v.typeId()) {
+        case QMetaType::QDate:
             body=v.toDate().toString(Qt::ISODate);
             break;
-        case QMetaType_QTime:
+        case QMetaType::QTime:
             body=v.toTime().toString(Qt::ISODateWithMs);
             break;
-        case QMetaType_QDateTime:
+        case QMetaType::QDateTime:
             body=v.toDateTime().toString(Qt::ISODateWithMs);
             break;
-        case QMetaType_QUuid:
+        case QMetaType::QUuid:
             body=v.toUuid().toString();
             break;
-        case QMetaType_QUrl:
+        case QMetaType::QUrl:
             body=v.toUrl().toString();
             break;
         default:
@@ -1421,10 +1420,10 @@ QByteArray ListenRequest::responseBodyBytes() const
 void ListenRequest::setResponseBody(const QVariant &value)
 {
 
-    switch (qTypeId(value)) {
-    case QMetaType_QByteArray:
-    case QMetaType_QString:
-    case QMetaType_QChar:
+    switch (value.typeId()) {
+    case QMetaType::QByteArray:
+    case QMetaType::QString:
+    case QMetaType::QChar:
     {
         if(value.toString().trimmed().isEmpty()){
             p->responseBody={};

@@ -36,22 +36,22 @@ public slots:
         service->received(uuid, v);
     }
     void onRequestSuccess(const QUuid &uuid, const QVariant &detail){
-        QMutexLOCKER locker(&this->mutex);
+        QMutexLocker<QMutex> locker(&this->mutex);
         ++stats.success;
         emit service->request_state(uuid, service->Success, detail);
     }
     void onRequestError(const QUuid &uuid, const QVariant &detail){
-        QMutexLOCKER locker(&this->mutex);
+        QMutexLocker<QMutex> locker(&this->mutex);
         ++stats.error;
         emit service->request_state(uuid, service->Error, detail);
     }
     void onRequestDiscarted(const QUuid &uuid, const QVariant &detail){
-        QMutexLOCKER locker(&this->mutex);
+        QMutexLocker<QMutex> locker(&this->mutex);
         ++stats.discated;
         emit service->request_state(uuid, service->Discarted, detail);
     }
     void onRequestCanceled(const QUuid&uuid, const QVariant &detail){
-        QMutexLOCKER locker(&this->mutex);
+        QMutexLocker<QMutex> locker(&this->mutex);
         ++stats.canceled;
         emit service->request_state(uuid, service->Canceled, detail);
     }
@@ -76,13 +76,13 @@ QVariantHash ServiceThread::Stats::toMap()const
 QVariantHash ServiceThread::Stats::toHash() const
 {
     QVariantHash v;
-    v.insert(qsl("running" ),(this->service==nullptr)?false:this->service->isRunning());
-    v.insert(qsl("started" ), this->started     );
-    v.insert(qsl("received"), this->received    );
-    v.insert(qsl("success" ), this->success     );
-    v.insert(qsl("error"   ), this->error       );
-    v.insert(qsl("discated"), this->discated    );
-    v.insert(qsl("canceled"), this->canceled    );
+    v.insert(QStringLiteral("running" ),(this->service==nullptr)?false:this->service->isRunning());
+    v.insert(QStringLiteral("started" ), this->started     );
+    v.insert(QStringLiteral("received"), this->received    );
+    v.insert(QStringLiteral("success" ), this->success     );
+    v.insert(QStringLiteral("error"   ), this->error       );
+    v.insert(QStringLiteral("discated"), this->discated    );
+    v.insert(QStringLiteral("canceled"), this->canceled    );
     return v;
 
 }
@@ -176,7 +176,7 @@ bool ServiceThread::start()
             if(objectName.isEmpty())
                 objectName=QString::number(qlonglong(QThread::currentThreadId()), 16);
 
-            objectName=qsl("%1_%2").arg(objectName).arg(++serviceThreadCount);
+            objectName=QStringLiteral("%1_%2").arg(objectName).arg(++serviceThreadCount);
         }
         p->manager.clear();
         QThread::start();
@@ -201,7 +201,7 @@ bool ServiceThread::start(const SettingManager&manager)
             if(objectName.isEmpty())
                 objectName=QString::number(qlonglong(QThread::currentThreadId()), 16);
 
-            objectName=qsl("%1_%2").arg(objectName).arg(++serviceThreadCount);
+            objectName=QStringLiteral("%1_%2").arg(objectName).arg(++serviceThreadCount);
         }
         p->setManager(manager);
         QThread::start();
@@ -236,7 +236,7 @@ void ServiceThread::received(const QUuid &uuid, const QVariant &v)
 void ServiceThread::dispatcher(const QUuid &uuid, const QVariant &v)
 {
 
-    QMutexLOCKER locker(&p->mutex);
+    QMutexLocker<QMutex> locker(&p->mutex);
     ++p->stats.queue;
     emit this->request_send(uuid, v);
 }
@@ -245,8 +245,8 @@ QVariantHash ServiceThread::toMap() const
 {
 
     QVariantHash v;
-    v.insert(qsl("service"), this->objectName());
-    v.insert(qsl("stats"  ), p->stats.toHash()   );
+    v.insert(QStringLiteral("service"), this->objectName());
+    v.insert(QStringLiteral("stats"  ), p->stats.toHash()   );
     return v;
 }
 

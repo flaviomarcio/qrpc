@@ -24,7 +24,7 @@ public:
 
     void clear()
     {
-        QMutexLOCKER locker(&this->lock);
+        QMutexLocker<QMutex> locker(&this->lock);
         auto aux = this->cache;
         this->cache.clear();
         qDeleteAll(aux);
@@ -45,7 +45,7 @@ void ListenRequestCache::clear()
 ListenRequest &ListenRequestCache::toRequest(const QUuid &uuid)
 {
 
-    QMutexLOCKER locker(&p->lock);
+    QMutexLocker<QMutex> locker(&p->lock);
     static ListenRequest ___ListenRequest;
     auto request = p->cache.value(uuid.toString());
     if (request != nullptr)
@@ -62,7 +62,7 @@ ListenRequest &ListenRequestCache::createRequest()
 ListenRequest &ListenRequestCache::createRequest(const QVariant &vRequest)
 {
 
-    QMutexLOCKER locker(&p->lock);
+    QMutexLocker<QMutex> locker(&p->lock);
     auto request = new ListenRequest(vRequest);
     request->setListenUuid(p->listen()->uuid());
     if (request->isEmpty() || !request->isValid())

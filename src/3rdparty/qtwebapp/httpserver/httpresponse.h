@@ -105,7 +105,7 @@ public:
       Cannot be combined with write().
       @param url Destination URL
     */
-    void redirect(const QByteArray& url);
+    void redirect(const QByteArray & url);
 
     /**
      * Flush the output buffer (of the underlying socket).

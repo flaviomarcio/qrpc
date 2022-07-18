@@ -1,20 +1,22 @@
 #include "./p_qrpc_listen_broker_database.h"
-#include <QCoreApplication>
-#include <QCryptographicHash>
-#include <QJsonDocument>
-#include <QMutex>
-#include <QtSql/QSqlDatabase>
-#include <QtSql/QSqlDriver>
-#include <QtSql/QSqlError>
-#include <QtSql/QSqlQuery>
-
 #include "../../../qstm/src/qstm_url.h"
 #include "../qrpc_listen_colletion.h"
 #include "../qrpc_listen_protocol.h"
 #include "../qrpc_listen_request.h"
 #include "../qrpc_listen_request_cache.h"
+#include "../qrpc_const.h"
+#if Q_RPC_LOG
 #include "../qrpc_macro.h"
-#include "../qrpc_server.h"
+#endif
+#include <QCoreApplication>
+#include <QCryptographicHash>
+#include <QJsonDocument>
+#include <QMutex>
+#include <QSqlDatabase>
+#include <QSqlDriver>
+#include <QSqlError>
+#include <QSqlQuery>
+
 
 namespace QRpc {
 
@@ -51,7 +53,7 @@ public:
             if (!this->realMessageOnException)
                 this->realMessageOnException = option.realMessageOnException();
             auto settings = option.makeSettingsHash();
-            settings[qsl("port")] = port;
+            settings[QStringLiteral("port")] = port;
             auto connection = queueMake(settings);
             if (connection.isValid() && connection.isOpen()) {
                 this->listenersQSqlDatabase.insert(connection.connectionName(), connection);
@@ -85,15 +87,15 @@ public:
     {
         Q_UNUSED(options)
 
-        auto driver = options[qsl("driver")].toString().trimmed();
-        auto hostName = options[qsl("hostName")].toString().trimmed();
-        auto userName = options[qsl("userName")].toString().trimmed();
-        auto password = options[qsl("password")].toString().trimmed();
-        auto dataBaseName = options[qsl("databaseName")].toString().trimmed();
-        auto port = options[qsl("port")].toLongLong();
-        auto connectOptions = options[qsl("connectionOptions")].toString().trimmed();
+        auto driver = options[QStringLiteral("driver")].toString().trimmed();
+        auto hostName = options[QStringLiteral("hostName")].toString().trimmed();
+        auto userName = options[QStringLiteral("userName")].toString().trimmed();
+        auto password = options[QStringLiteral("password")].toString().trimmed();
+        auto dataBaseName = options[QStringLiteral("databaseName")].toString().trimmed();
+        auto port = options[QStringLiteral("port")].toLongLong();
+        auto connectOptions = options[QStringLiteral("connectionOptions")].toString().trimmed();
 
-        auto connectionName = qsl("broker-%1-%2").arg(driver).arg(port).toLower();
+        auto connectionName = QStringLiteral("broker-%1-%2").arg(driver).arg(port).toLower();
 
         queueRemove(connectionName);
 
@@ -114,7 +116,7 @@ public:
             auto sqlConnectionName = __connection.connectionName();
             if (!sqlDriver->subscribeToNotification(sqlConnectionName)) {
                 auto msg = __connection.lastError().text();
-                sWarning() << msg;
+                rWarning() << msg;
             } else {
                 QObject::connect(
                     sqlDriver,
@@ -150,7 +152,7 @@ public slots:
 public:
     void queueStop()
     {
-        QMutexLOCKER locker(&this->lock);
+        QMutexLocker<QMutex> locker(&this->lock);
         auto v = this->listenersQSqlDatabase;
         this->listenersQSqlDatabase.clear();
         Q_V_DATABASE_ITERATOR(v)
@@ -162,7 +164,7 @@ public:
 
     bool isListening()
     {
-        QMutexLOCKER locker(&this->lock);
+        QMutexLocker<QMutex> locker(&this->lock);
         Q_V_DATABASE_ITERATOR(this->listenersQSqlDatabase)
         {
             i.next();
@@ -196,12 +198,12 @@ public:
         QByteArray body;
 
         static const auto staticUrlNames = QVector<int>()
-                                           << QMetaType_QUrl << QMetaType_QVariantMap
-                                           << QMetaType_QString << QMetaType_QByteArray
-                                           << QMetaType_QChar << QMetaType_QBitArray;
+                                           << QMetaType::QUrl << QMetaType::QVariantMap
+                                           << QMetaType::QString << QMetaType::QByteArray
+                                           << QMetaType::QChar << QMetaType::QBitArray;
         const auto &responseBody = request.responseBody();
         Url rpc_url;
-        if (!staticUrlNames.contains(qTypeId(responseBody)))
+        if (!staticUrlNames.contains(responseBody.typeId()))
             body = request.responseBodyBytes();
         else if (!rpc_url.read(responseBody).isValid())
             body = request.responseBodyBytes();
@@ -223,18 +225,18 @@ public:
 
 #if Q_RPC_LOG
         if (request.co().isOK()) {
-            auto msgOut = qsl("%1%2:req:%3, ret: %4, %5 ms ")
+            auto msgOut = QStringLiteral("%1%2:req:%3, ret: %4, %5 ms ")
                               .arg(QT_STRINGIFY2(QRpc::Server), requestMethod, requestPath)
                               .arg(responseCode)
                               .arg(mSecs);
             cInfo() << msgOut;
         } else {
-            auto msgOut = qsl("%1%2:req:%3, ret: %4, %5 ms ")
+            auto msgOut = QStringLiteral("%1%2:req:%3, ret: %4, %5 ms ")
                               .arg(QT_STRINGIFY2(QRpc::Server), requestMethod, requestPath)
                               .arg(responseCode)
                               .arg(mSecs);
             cWarning() << msgOut;
-            msgOut = qsl("ret=") + responsePhrase;
+            msgOut = QStringLiteral("ret=") + responsePhrase;
             cWarning() << msgOut;
             {
                 auto &requestHeader = request.requestHeader();
@@ -242,7 +244,7 @@ public:
                     QHashIterator<QString, QVariant> i(requestHeader);
                     while (i.hasNext()) {
                         i.next();
-                        cWarning() << qsl("   header - %1 : %2").arg(i.key(), i.value().toString());
+                        cWarning() << QStringLiteral("   header - %1 : %2").arg(i.key(), i.value().toString());
                     }
                 }
 #if Q_RPC_LOG_SUPER_VERBOSE
@@ -251,13 +253,13 @@ public:
                     QHashIterator<QByteArray, QVariant> i(requestParameter);
                     while (i.hasNext()) {
                         i.next();
-                        cWarning() << qbl("   parameter - ") + i.key() + qbl(":") + i.value();
+                        cWarning() << QByteArrayLiteral("   parameter - ") + i.key() + QByteArrayLiteral(":") + i.value();
                     }
                 }
 #endif
 #if Q_RPC_LOG_SUPER_VERBOSE
-                cWarning() << qsl("       method:%1").arg(requestMethod);
-                cWarning() << qbl("       body:") + requestBody;
+                cWarning() << QStringLiteral("       method:%1").arg(requestMethod);
+                cWarning() << QByteArrayLiteral("       body:") + requestBody;
 #endif
             }
         }
@@ -283,7 +285,7 @@ public slots:
         auto connection = this->listenersQSqlDatabase.value(connectionName);
         if (!connection.isValid())
             return;
-        connectionName = connectionName + qsl("_response");
+        connectionName = connectionName + QStringLiteral("_response");
         connection = QSqlDatabase::cloneDatabase(connection.connectionName(), connectionName);
         if (!connection.isOpen()) {
             connection.open();

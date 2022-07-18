@@ -1,7 +1,7 @@
 #include "./qrpc_listen_protocol.h"
-#include "../../qstm/src/qstm_types.h"
 #include "./qrpc_listen.h"
-#include "./qrpc_listen_colletion.h"
+#include "../../qstm/src/qstm_macro.h"
+//#include "./qrpc_listen_colletion.h"
 #include <QMetaProperty>
 #include <QSettings>
 #include <QThreadPool>
@@ -59,9 +59,9 @@ public:
 
     void setSettings(const QVariantHash &settings, const QVariantHash &defaultSettings)
     {
-        static auto exceptionProperty = QStringList{qsl("protocol"),
-                qsl("protocolname"),
-                qsl("optionname")};
+        static auto exceptionProperty = QStringList{QStringLiteral("protocol"),
+                QStringLiteral("protocolname"),
+                QStringLiteral("optionname")};
         this->settingsHash = settings.isEmpty() ? this->settingsHash : settings;
         const QMetaObject *metaObject = dynamic_cast<ListenProtocol *>(this->parent())->metaObject();
         for (int i = metaObject->propertyOffset(); i < metaObject->propertyCount(); i++) {
@@ -79,22 +79,22 @@ public:
             if (property.write(this->parent(), value))
                 continue;
 
-            switch (qTypeId(property)) {
-            case QMetaType_QUuid:
+            switch (property.typeId()) {
+            case QMetaType::QUuid:
                 if (property.write(this->parent(), value.toUuid()))
                     continue;
                 break;
-            case QMetaType_LongLong:
-            case QMetaType_ULongLong:
+            case QMetaType::LongLong:
+            case QMetaType::ULongLong:
                 if (property.write(this->parent(), value.toLongLong()))
                     continue;
                 break;
-            case QMetaType_Int:
-            case QMetaType_UInt:
+            case QMetaType::Int:
+            case QMetaType::UInt:
                 if (property.write(this->parent(), value.toInt()))
                     continue;
                 break;
-            case QMetaType_Bool:
+            case QMetaType::Bool:
                 if (property.write(this->parent(), value.toBool()))
                     continue;
                 break;
@@ -193,7 +193,7 @@ Listen *ListenProtocol::makeListen()
         return nullptr;
     }
 
-    object->setObjectName(qsl("lis_%1").arg(QString::fromUtf8(this->protocolName())));
+    object->setObjectName(QStringLiteral("lis_%1").arg(QString::fromUtf8(this->protocolName())));
     return listen;
 }
 
@@ -417,9 +417,9 @@ void ListenProtocol::setPort(const QVariant &value)
 {
 
     QVariantList l;
-    switch (qTypeId(value)) {
-    case QMetaType_QStringList:
-    case QMetaType_QVariantList:
+    switch (value.typeId()) {
+    case QMetaType::QStringList:
+    case QMetaType::QVariantList:
         l = value.toList();
         break;
     default:

@@ -76,7 +76,7 @@ public:
     QByteArray getPath() const;
 
     /** Get the raw path of the HTTP request (e.g. "/file%20with%20spaces.html") */
-    const QByteArray& getRawPath() const;
+    const QByteArray & getRawPath() const;
 
     /** Get the version of the HTPP request (e.g. "HTTP/1.1") */
     QByteArray getVersion() const;
@@ -87,13 +87,13 @@ public:
       @return If the header occurs multiple times, only the last
       one is returned.
     */
-    QByteArray getHeader(const QByteArray& name) const;
+    QByteArray getHeader(const QByteArray & name) const;
 
     /**
       Get the values of a HTTP request header.
       @param name Name of the header, not case-senitive.
     */
-    QList<QByteArray> getHeaders(const QByteArray& name) const;
+    QList<QByteArray> getHeaders(const QByteArray & name) const;
 
     /**
      * Get all HTTP request headers. Note that the header names
@@ -107,13 +107,13 @@ public:
       @return If the parameter occurs multiple times, only the last
       one is returned.
     */
-    QByteArray getParameter(const QByteArray& name) const;
+    QByteArray getParameter(const QByteArray & name) const;
 
     /**
       Get the values of a HTTP request parameter.
       @param name Name of the parameter, case-sensitive.
     */
-    QList<QByteArray> getParameters(const QByteArray& name) const;
+    QList<QByteArray> getParameters(const QByteArray & name) const;
 
     /** Get all HTTP request parameters. */
     QMultiHash<QByteArray,QByteArray> getParameterMap() const;
@@ -143,7 +143,7 @@ public:
       Get the value of a cookie.
       @param name Name of the cookie
     */
-    QByteArray getCookie(const QByteArray& name) const;
+    QByteArray getCookie(const QByteArray & name) const;
 
     /** Get all cookies. */
     QHash<QByteArray,QByteArray>& getCookieMap();

@@ -1,6 +1,8 @@
 #pragma once
 
+#include "../qrpc_global.h"
 #include "../qrpc_listen.h"
+#include "../qrpc_macro.h"
 
 namespace QRpc {
 class ListenQRPCPvt;
@@ -19,11 +21,6 @@ public:
     //! \param parent
     //!
     Q_INVOKABLE explicit ListenQRPC(QObject *parent = nullptr);
-
-    //!
-    //! \brief ~ListenQRPC
-    //!
-    ~ListenQRPC();
 
     //!
     //! \brief run

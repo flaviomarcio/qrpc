@@ -5,10 +5,8 @@
 #include <QDebug>
 #include <QTcpSocket>
 #include <QUrl>
-#include <QtSql/QSqlDatabase>
-#include <QtSql/QSqlDriver>
-#include <QtSql/QSqlQuery>
-#include <QtSql/QSqlError>
+#include <QSqlDatabase>
+#include <QSqlDriver>
 
 namespace QRpc {
 

@@ -1,9 +1,6 @@
 #pragma once
 
 #include "../qrpc_listen.h"
-#include "./p_qrpc_listen_http.h"
-#include <QtWebSockets/QWebSocket>
-#include <QtWebSockets/QWebSocketServer>
 
 namespace QRpc {
 
@@ -37,6 +34,6 @@ private:
     void *p = nullptr;
 };
 
-QRPC_LISTTEN_AUTO_REGISTER(TcpSocket, ListenTCP)
+//QRPC_LISTTEN_AUTO_REGISTER(TcpSocket, ListenTCP)
 
 } // namespace QRpc

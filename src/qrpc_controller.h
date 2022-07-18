@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../../qnotation/src/qnotation.h"
-#include "./qrpc_controller_notation.h"
-#include "./qrpc_controller_setting.h"
-#include "./qrpc_global.h"
-#include "./qrpc_listen_request.h"
 #include <QList>
 #include <QMetaMethod>
 #include <QMetaObject>
+#include <QAnnotation>
+#include "./qrpc_global.h"
+#include "./qrpc_controller_notation.h"
+#include "./qrpc_controller_setting.h"
+#include "./qrpc_listen_request.h"
 
 namespace QRpc {
 
@@ -41,7 +41,7 @@ public:
         QByteArray fullPath;
         QStringList methods;
         QStringList rules;
-        QNotation::Collection notations;
+        QAnnotation::Collection notations;
     };
 
     typedef QVector<MethodInfo> MethodInfoCollection;

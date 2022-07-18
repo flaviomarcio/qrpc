@@ -1,11 +1,15 @@
 #include "./p_qrpc_listen_qrpc_slot.h"
+#include "./p_qrpc_listen_qrpc.h"
 #include "../qrpc_controller.h"
 #include "../qrpc_request.h"
 #include "../qrpc_controller_router.h"
 #include "../qrpc_listen_request.h"
 #include "../qrpc_listen_request_parser.h"
 #include "../qrpc_server.h"
-#include "./p_qrpc_listen_qrpc.h"
+#include "../qrpc_const.h"
+#if Q_RPC_LOG
+#include "../qrpc_macro.h"
+#endif
 #include <QDebug>
 #include <QMetaMethod>
 #include <QMutex>
@@ -26,6 +30,8 @@ public:
     ControllerMethodCollection controllerMethods;
     MultStringList controllerRedirect;
 
+    QVector<const QMetaObject *> invokeControllersList;
+
     explicit ListenQRPCSlotPvt(ListenQRPCSlot *slot, ListenQRPC *listenQRPC) : QObject(slot)
     {
         QObject::connect(slot,
@@ -45,11 +51,7 @@ public:
     bool canRedirectCheckBasePath(const QByteArray &className, const QByteArray &basePath)
     {
         const auto classNameA = className.toLower();
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        QHashIterator<QByteArray, QStringList> i(this->controllerRedirect);
-#else
         QMultiHashIterator<QByteArray, QStringList> i(this->controllerRedirect);
-#endif
         while (i.hasNext()) {
             i.next();
             const auto classNameB = i.key().toLower();
@@ -110,14 +112,14 @@ public:
 
         if (!controller->canAuthorization() || !controller->canAuthorization(metaMethod)) {
 #if Q_RPC_LOG_VERBOSE
-            sWarning() << qsl("canAuthorization::authorization skipped");
+            rWarning() << QStringLiteral("canAuthorization::authorization skipped");
 #endif
             return false;
         }
 
         if (!controller->beforeAuthorization()) {
 #if Q_RPC_LOG
-            sWarning() << qsl("authorization in Controller::beforeAuthorization()");
+            rWarning() << QStringLiteral("authorization in Controller::beforeAuthorization()");
 #endif
             if (controller->rq().co().isOK())
                 controller->rq().co().setUnauthorized();
@@ -126,7 +128,7 @@ public:
 
         if (!controller->authorization()) {
 #if Q_RPC_LOG
-            sWarning() << qsl("authorization in Controller::authorization()");
+            rWarning() << QStringLiteral("authorization in Controller::authorization()");
 #endif
             if (controller->rq().co().isOK())
                 controller->rq().co().setUnauthorized();
@@ -135,7 +137,7 @@ public:
 
         if (!controller->afterAuthorization()) {
 #if Q_RPC_LOG
-            sWarning() << qsl("authorization in Controller::afterAuthorization()");
+            rWarning() << QStringLiteral("authorization in Controller::afterAuthorization()");
 #endif
             if (controller->rq().co().isOK())
                 controller->rq().co().setUnauthorized();
@@ -159,7 +161,7 @@ public:
             auto object = sObj.data();
             if (object == nullptr) {
 #if Q_RPC_LOG
-                sWarning() << qsl("Parser not valid ") << mObjParser->className();
+                rWarning() << QStringLiteral("Parser not valid ") << mObjParser->className();
 #endif
                 continue;
             }
@@ -167,7 +169,7 @@ public:
             auto parser = dynamic_cast<ListenRequestParser *>(object);
             if (parser == nullptr) {
 #if Q_RPC_LOG
-                sWarning() << qsl("Parser not valid ") << mObjParser->className();
+                rWarning() << QStringLiteral("Parser not valid ") << mObjParser->className();
 #endif
                 delete object;
                 continue;
@@ -178,10 +180,10 @@ public:
                 continue;
 
 #if Q_RPC_LOG
-            sWarning() << qsl("Listen request parser fail: parser ") << mObjParser->className();
+            rWarning() << QStringLiteral("Listen request parser fail: parser ") << mObjParser->className();
 #endif
             if (request.co().isOK())
-                request.co().setNotAcceptable(qsl_null);
+                request.co().setNotAcceptable({});
 
             return false;
         }
@@ -192,7 +194,7 @@ public:
     {
         if (!this->controllerRouter->router(&request, metaMethod)) {
 #if Q_RPC_LOG
-            sWarning() << qsl("fail: invokeRouters");
+            rWarning() << QStringLiteral("fail: invokeRouters");
 #endif
             request.co().setCode(this->controllerRouter->lr().sc());
             if (request.co().isOK())
@@ -202,20 +204,21 @@ public:
         return true;
     }
 
-    QVector<const QMetaObject *> invokeControllers(const QByteArray &requestPath)
+    QVector<const QMetaObject *> &invokeControllers(const QByteArray &requestPath)
     {
-        QVector<const QMetaObject *> __return;
+        auto &__return=invokeControllersList;
+        __return.clear();
         for (auto &mObjController : this->listenControllers) {
             auto className = QByteArray(mObjController->className()).toLower();
 
             if (canRedirectCheckBasePath(className, requestPath)){
-                __return<<mObjController;
+                __return.append(mObjController);
                 continue;
             }
 
             auto routeMethods = this->controllerMethods.value(className);
             if (routeMethods.contains(requestPath)){
-                __return<<mObjController;
+                __return.append(mObjController);
                 continue;
             }
         }
@@ -236,7 +239,7 @@ public:
 
         if (this->listenControllers.isEmpty()) {
 #if Q_RPC_LOG
-            sWarning() << qsl("No active controllers");
+            rWarning() << QStringLiteral("No active controllers");
 #endif
             return false;
         }
@@ -250,7 +253,7 @@ public:
             return true;
         };
 
-        auto listenControllers=invokeControllers(requestPath);
+        const auto &listenControllers=invokeControllers(requestPath);
         for (auto &mObjController : listenControllers) {
             auto className = QByteArray(mObjController->className()).toLower();
             auto routeMethods = this->controllerMethods.value(className);
@@ -277,7 +280,7 @@ public:
             return returnOK();
         }
 #if Q_RPC_LOG
-                sWarning() << qsl("QMetaMethod is not valid:: fail");
+                rWarning() << QStringLiteral("QMetaMethod is not valid:: fail");
 #endif
         if (request.co().isOK())
             request.co().setNotFound();
@@ -291,7 +294,7 @@ public:
 
         if (!controller->requestSettings()) {
 #if Q_RPC_LOG_VERBOSE
-            sWarning() << qsl("requestBeforeInvoke:: fail");
+            rWarning() << QStringLiteral("requestBeforeInvoke:: fail");
 #endif
             if (controller->rq().co().isOK())
                 controller->rq().co().setBadRequest();
@@ -307,18 +310,9 @@ public:
             return {};
         }
 
-//        if (controller->requestRedirect()) {
-//#if Q_RPC_LOG_VERBOSE
-//            sWarning() << qsl("requestRedirect:: fail");
-//#endif
-//            if (controller->rq().co().isOK())
-//                controller->rq().co().setInternalServerError();
-//            return {};
-//        }
-
         if (!controller->canOperation(metaMethod)) {
 #if Q_RPC_LOG_VERBOSE
-            sWarning() << qsl("canOperation:: fail");
+            rWarning() << QStringLiteral("canOperation:: fail");
 #endif
             if (controller->rq().co().isOK())
                 controller->rq().co().setNotAcceptable();
@@ -339,8 +333,8 @@ public:
         QVariant vArgValue;
         if (parameterCount == 1) {
             switch (parameterType) {
-            case QMetaType_QVariantMap:
-            case QMetaType_QVariantHash:
+            case QMetaType::QVariantMap:
+            case QMetaType::QVariantHash:
                 vArgValue = request.toHash();
                 break;
             default:
@@ -348,12 +342,12 @@ public:
             }
         }
 
-        static const auto sQVariant = qbl("QVariant");
+        static const auto sQVariant = QByteArrayLiteral("QVariant");
         auto invokeArg0 = QGenericArgument(sQVariant, &vArgValue);
         bool invokeResult = false;
 
         switch (returnType) {
-        case QMetaType_Void: {
+        case QMetaType::Void: {
             if (parameterCount == 0)
                 invokeResult = metaMethod.invoke(controller, Qt::DirectConnection);
             else
@@ -379,7 +373,7 @@ public:
         }
 
         switch (returnType) {
-        case QMetaType_Void:
+        case QMetaType::Void:
             request.setResponseBody({});
             break;
         default:
@@ -434,14 +428,14 @@ public:
 
         if(controller==nullptr){
 #if Q_RPC_LOG_VERBOSE
-            sWarning() << qsl("Invalid controller");
+            rWarning() << QStringLiteral("Invalid controller");
 #endif
             return;
         }
 
         if (!controller->requestBeforeInvoke()) {
 #if Q_RPC_LOG_VERBOSE
-            sWarning() << qsl("requestBeforeInvoke:: fail");
+            rWarning() << QStringLiteral("requestBeforeInvoke:: fail");
 #endif
             if (controller->rq().co().isOK())
                 controller->rq().co().setInternalServerError();
@@ -460,7 +454,7 @@ private slots:
         if (this->listenQRPC == nullptr)
             qFatal("listen pool is nullptr");
 
-        auto requestPath = vRequestHash.value(qsl("requestPath")).toString();
+        auto requestPath = vRequestHash.value(QStringLiteral("requestPath")).toString();
         const auto &controllerSetting = this->listenQRPC->server()->controllerOptions().setting(
             requestPath);
         ListenRequest request(vRequestHash, controllerSetting);
@@ -475,7 +469,7 @@ private slots:
         vRequestHash = request.toHash();
         auto listen = this->listenQRPC->childrenListen(listenUuid);
         if (listen == nullptr) {
-            sWarning() << qsl("invalid listen for ") << listenUuid.toString();
+            rWarning() << QStringLiteral("invalid listen for ") << listenUuid.toString();
         } else {
             emit listen->rpcResponse(requestUuid, vRequestHash);
         }

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../../qstm/src/qstm_setting_manager.h"
+#include <QSettings>
 #include "./qrpc_global.h"
 #include "./qrpc_service_setting.h"
-#include <QSettings>
+#include "../../qstm/src/qstm_setting_manager.h"
 
 namespace QRpc {
 
@@ -14,8 +14,13 @@ class Q_RPC_EXPORT SettingManager : public QStm::SettingManager
 {
     Q_OBJECT
 public:
-    Q_DECLARE_INSTANCE(SettingManager)
     Q_SETTING_MANAGER_REPLACE_METHODS(SettingManager, ServiceSetting)
+
+    //!
+    //! \brief i
+    //! \return
+    //!
+    static SettingManager &i();
 };
 
 }

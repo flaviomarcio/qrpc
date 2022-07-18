@@ -8,8 +8,9 @@
 #include "../qrpc_listen_protocol.h"
 #include "../qrpc_listen_request.h"
 #include "../qrpc_listen_request_cache.h"
+#include "../qrpc_const.h"
 #include "../qrpc_macro.h"
-#include "../qrpc_server.h"
+//#include "../qrpc_server.h"
 #include <QCoreApplication>
 #include <QCryptographicHash>
 
@@ -51,7 +52,7 @@ public:
     explicit HttpServer3rdparty(QSettings *settings, ListenHTTP *listen = nullptr)
         : stefanfrings::HttpRequestHandler{listen}
     {
-        this->port=settings->value(qsl("port")).toInt();
+        this->port=settings->value(QStringLiteral("port")).toInt();
         this->listen=listen;
         this->listener=HttpListeners3drparty::make(this, settings);
         QObject::connect(listen, &Listen::rpcResponse, this, &HttpServer3rdparty::onRpcResponse);
@@ -73,32 +74,23 @@ public:
         QVariantHash requestParameters;
 
         {
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-            QHashIterator<QByteArray, QByteArray> i(getHeaders);
-#else
             QMultiHashIterator<QByteArray, QByteArray> i(getHeaders);
-#endif
-
             while (i.hasNext()) {
                 i.next();
                 requestHeaders[i.key()] = i.value();
 #if Q_RPC_LOG_SUPER_VERBOSE
-                sInfo() << "   header - " + i.key() + ":" + i.value();
+                rInfo() << "   header - " + i.key() + ":" + i.value();
 #endif
             }
         }
 
         {
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-            QHashIterator<QByteArray, QByteArray> i(getParameters);
-#else
             QMultiHashIterator<QByteArray, QByteArray> i(getParameters);
-#endif
             while (i.hasNext()) {
                 i.next();
                 requestParameters[i.key()] = i.value();
 #if Q_RPC_LOG_SUPER_VERBOSE
-                sInfo() << "   parameter - " + i.key() + ":" + i.value();
+                rInfo() << "   parameter - " + i.key() + ":" + i.value();
 #endif
             }
         }
@@ -140,23 +132,22 @@ public:
                                             - time_start.toMSecsSinceEpoch())
                                      / 1000.000;
         const auto mSecs = QString::number(mSecsSinceEpoch, 'f', 3);
-        const auto responseCode = request.responseCode();
         const auto responsePhrase = QString::fromUtf8(request.responsePhrase());
 
 
-        static const auto staticUrlNames = QVector<int>{QMetaType_QUrl,
-                                                        QMetaType_QVariantMap,
-                                                        QMetaType_QVariantHash,
-                                                        QMetaType_QString,
-                                                        QMetaType_QByteArray,
-                                                        QMetaType_QChar,
-                                                        QMetaType_QBitArray};
+        static const auto staticUrlNames = QVector<int>{QMetaType::QUrl,
+                                                        QMetaType::QVariantMap,
+                                                        QMetaType::QVariantHash,
+                                                        QMetaType::QString,
+                                                        QMetaType::QByteArray,
+                                                        QMetaType::QChar,
+                                                        QMetaType::QBitArray};
         Url rpc_url;
 
         auto getBody=[&request, &rpc_url]()
         {
             const auto &responseBody = request.responseBody();
-            if (!staticUrlNames.contains(qTypeId(responseBody)))
+            if (!staticUrlNames.contains(responseBody.typeId()))
                 return request.responseBodyBytes();
 
             if (!rpc_url.read(responseBody).isValid())
@@ -179,48 +170,40 @@ public:
 #if Q_RPC_LOG
 
         if (request.co().isOK()) {
-            auto msgOut = qsl("%1::%2:req:%3, ret: %4, %5 ms ")
+            auto msgOut = QStringLiteral("%1::%2:req:%3, ret: %4, %5 ms ")
                               .arg(QT_STRINGIFY2(QRpc::Server), requestMethod, requestPath)
-                              .arg(responseCode)
+                              .arg(request.responseCode())
                               .arg(mSecs);
-            cInfo() << msgOut;
+            rInfo() << msgOut;
         } else {
-            auto msgOut = qsl("%1::%2:req:%3, ret: %4, %5 ms ")
+            auto msgOut = QStringLiteral("%1::%2:req:%3, ret: %4, %5 ms ")
                               .arg(QT_STRINGIFY2(QRpc::Server), requestMethod, requestPath)
-                              .arg(responseCode)
+                              .arg(request.responseCode())
                               .arg(mSecs);
-            cWarning() << msgOut;
-            msgOut = qsl("ret=") + responsePhrase;
-            cWarning() << msgOut;
+            rWarning() << msgOut;
+            msgOut = QStringLiteral("ret=") + responsePhrase;
+            rWarning() << msgOut;
             {
                 {
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-                    QHashIterator<QByteArray, QByteArray> i(getHeaders);
-#else
                     QMultiHashIterator<QByteArray, QByteArray> i(getHeaders);
-#endif
                     while (i.hasNext()) {
                         i.next();
-                        cWarning() << qsl("   header - %1 : %2").arg(i.key(), i.value());
+                        rWarning() << QStringLiteral("   header - %1 : %2").arg(i.key(), i.value());
                     }
                 }
 #if Q_RPC_LOG_SUPER_VERBOSE
                 {
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                     QHashIterator<QByteArray, QByteArray> i(getParameter);
-#else
-                    QHashIterator<QByteArray, QByteArray> i(getParameter);
-#endif
 
                     while (i.hasNext()) {
                         i.next();
-                        cWarning() << qbl("   parameter - ") + i.key() + qbl(":") + i.value();
+                        rWarning() << QByteArrayLiteral("   parameter - ") + i.key() + QByteArrayLiteral(":") + i.value();
                     }
                 }
 #endif
 #if Q_RPC_LOG_SUPER_VERBOSE
-                cWarning() << qsl("       method:%1").arg(requestMethod);
-                cWarning() << qbl("       body:") + requestBody;
+                rWarning() << QStringLiteral("       method:%1").arg(requestMethod);
+                rWarning() << QByteArrayLiteral("       body:") + requestBody;
 #endif
             }
         }
@@ -241,9 +224,9 @@ public:
 
             HttpHeaders headers(rpc_url.headers());
             if (!headers.contentDisposition().isValid()) {
-                auto fileName = rpc_url.toLocalFile().split(qsl("/")).last();
+                auto fileName = rpc_url.toLocalFile().split(QStringLiteral("/")).last();
                 rpc_url.headers().insert(QString(ContentDispositionName).toUtf8(),
-                                         qsl("inline; filename=\"%1\"").arg(fileName).toUtf8());
+                                         QStringLiteral("inline; filename=\"%1\"").arg(fileName).toUtf8());
                 if (!headers.contentType().isValid())
                     headers.setContentType(rpc_url.url());
             }
@@ -295,7 +278,7 @@ public:
     bool start()
     {
         {
-            QMutexLocker locker(&this->lock);
+            QMutexLocker<QMutex> locker(&this->lock);
 
             if(!this->started.tryLock())
                 return {};
@@ -307,7 +290,7 @@ public:
                 if (port <= 0)
                     continue;
                 auto settings = option.makeSettings();
-                settings->setValue(qsl("port"), port);
+                settings->setValue(QStringLiteral("port"), port);
                 auto listen = new HttpServer3rdparty{settings, this->parent};
                 listen->realMessageOnException = option.realMessageOnException();
                 listens.append(listen);
@@ -325,7 +308,7 @@ public:
 
     bool isListening()
     {
-        QMutexLocker locker(&this->lock);
+        QMutexLocker<QMutex> locker(&this->lock);
         for (auto &h : this->listens) {
             if (!h->listener->listener->isListening())
                 continue;
@@ -337,7 +320,7 @@ public:
     bool stop()
     {
         if(!this->started.tryLock(1)){
-            QMutexLocker locker(&this->lock);
+            QMutexLocker<QMutex> locker(&this->lock);
             auto aux=this->listens;
             this->listens.clear();
             qDeleteAll(aux);

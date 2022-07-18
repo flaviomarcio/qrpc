@@ -1,6 +1,7 @@
 #include "./qrpc_request.h"
 #include "./private/p_qrpc_request.h"
 #include "./private/p_qrpc_listen_request_code.h"
+#include "./qrpc_macro.h"
 
 namespace QRpc {
 
@@ -13,9 +14,9 @@ bool Request::startsWith(const QString &requestPath, const QVariant &requestPath
 {
     QStringList paths;
 
-    switch (qTypeId(requestPathBase)){
-    case QMetaType_QStringList:
-    case QMetaType_QVariantList:
+    switch (requestPathBase.typeId()){
+    case QMetaType::QStringList:
+    case QMetaType::QVariantList:
     {
         for(auto &v:requestPathBase.toList())
             paths.append(v.toString().trimmed());
@@ -26,19 +27,19 @@ bool Request::startsWith(const QString &requestPath, const QVariant &requestPath
     }
 
     for(auto &pathItem:paths){
-        auto startWith=pathItem.contains(qsl("*"));
+        auto startWith=pathItem.contains(QStringLiteral("*"));
         if(startWith){
-            pathItem=pathItem.split(qsl("*")).first();
+            pathItem=pathItem.split(QStringLiteral("*")).first();
         }
 
-        auto route=qsl("/%1/").arg(pathItem.trimmed().toLower());
-        auto path=qsl("/%1/").arg(requestPath.trimmed().toLower());
+        auto route=QStringLiteral("/%1/").arg(pathItem.trimmed().toLower());
+        auto path=QStringLiteral("/%1/").arg(requestPath.trimmed().toLower());
 
-        while(route.contains(qsl("//")))
-            route=route.replace(qsl("//"),qsl("/"));
+        while(route.contains(QStringLiteral("//")))
+            route=route.replace(QStringLiteral("//"),QStringLiteral("/"));
 
-        while(path.contains(qsl("//")))
-            path=path.replace(qsl("//"),qsl("/"));
+        while(path.contains(QStringLiteral("//")))
+            path=path.replace(QStringLiteral("//"),QStringLiteral("/"));
 
         if(startWith && path.startsWith(route))
             return true;
@@ -119,7 +120,7 @@ Request &Request::setSettings(const QVariantHash &setting)
 
 QString Request::url() const
 {
-    return this->url(qsl_null);
+    return this->url({});
 }
 
 QString Request::url(const QString &path) const
@@ -127,14 +128,14 @@ QString Request::url(const QString &path) const
     auto &rq=*this;
 
     auto spath=path.trimmed().isEmpty()?this->route().trimmed():path.trimmed();
-    spath=qsl("/%1").arg(spath);
-    while(spath.contains(qsl("//")))
-        spath=spath.replace(qsl("//"),"/");
+    spath=QStringLiteral("/%1").arg(spath);
+    while(spath.contains(QStringLiteral("//")))
+        spath=spath.replace(QStringLiteral("//"),"/");
 
     if(path.isEmpty())
-        return qsl("%1://%2:%3").arg(rq.protocolName(),rq.hostName(),rq.port().toString());
+        return QStringLiteral("%1://%2:%3").arg(rq.protocolName(),rq.hostName(),rq.port().toString());
 
-    return qsl("%1://%2:%3%4").arg(rq.protocolName(),rq.hostName(),rq.port().toString(),spath);
+    return QStringLiteral("%1://%2:%3%4").arg(rq.protocolName(),rq.hostName(),rq.port().toString(),spath);
 }
 
 Protocol Request::protocol() const
@@ -270,17 +271,17 @@ QVariant Request::port() const
 Request &Request::setPort(const QVariant &value)
 {
     QVariant v;
-    auto type=qTypeId(value);
+    auto type=value.typeId();
     switch (type) {
-    case QMetaType_QVariantList:
-    case QMetaType_QStringList:
+    case QMetaType::QVariantList:
+    case QMetaType::QStringList:
     {
         auto l=value.toList();
         v=l.isEmpty()?0:l.last().toInt();
         break;
     }
-    case QMetaType_QVariantHash:
-    case QMetaType_QVariantMap:
+    case QMetaType::QVariantHash:
+    case QMetaType::QVariantMap:
     {
         auto l=value.toHash().values();
         v=l.isEmpty()?0:l.last().toInt();
@@ -574,9 +575,9 @@ Request &Request::autoSetCookie()
     auto cookies=this->header().cookies().toStringList();
     while (i.hasNext()){
         i.next();
-        if(!i.key().toLower().startsWith(qsl("set-cookie")))
+        if(!i.key().toLower().startsWith(QStringLiteral("set-cookie")))
             continue;
-        auto cookieList=i.value().toString().split(qsl(";"));
+        auto cookieList=i.value().toString().split(QStringLiteral(";"));
         for(auto &cookie:cookieList){
             if(!cookies.contains(cookie))
                 cookies.append(cookie);
@@ -590,8 +591,8 @@ QString Request::toString() const
 {
     auto &response=p->qrpcResponse;
     auto qt_text=ListenRequestCode::qt_network_error_phrase(p->response_qt_status_code);
-    auto msg=qsl("%1:QtStatus: Status:%2, %3, %4").arg(p->exchange.call().url(), QString::number(response.qtStatusCode()),response.reasonPhrase(), qt_text);
-    return msg;
+    static auto format=QStringLiteral("%1:QtStatus: Status:%2, %3, %4");
+    return format.arg(p->exchange.call().url(), QString::number(response.qtStatusCode()),response.reasonPhrase(), qt_text);
 }
 
 QVariantHash Request::toResponse()const
@@ -616,18 +617,18 @@ Request &Request::setSslConfiguration(const QSslConfiguration &value)
 Request &Request::print()
 {
     for(auto &v:this->printOut())
-        sInfo()<<v;
+        rInfo()<<v;
     return*this;
 }
 
 QStringList Request::printOut()
 {
     QStringList out;
-    for(auto &v:this->exchange().printOut(qsl("exchange")))
+    for(auto &v:this->exchange().printOut(QStringLiteral("exchange")))
         out.append(v);
-    for(auto &v:this->header().printOut(qsl("request")))
+    for(auto &v:this->header().printOut(QStringLiteral("request")))
         out.append(v);
-    for(auto &v:this->response().printOut(qsl("response")))
+    for(auto &v:this->response().printOut(QStringLiteral("response")))
         out.append(v);
     return out;
 }
@@ -650,12 +651,12 @@ void Request::Body::setBody(const QVariant &value)
 QString Request::Body::toString()const
 {
 
-    auto type=qTypeId(p->request_body);
+    auto type=p->request_body.typeId();
     switch (type) {
-    case QMetaType_QVariantList:
-    case QMetaType_QVariantHash:
-    case QMetaType_QVariantMap:
-    case QMetaType_QStringList:
+    case QMetaType::QVariantList:
+    case QMetaType::QVariantHash:
+    case QMetaType::QVariantMap:
+    case QMetaType::QStringList:
         return QJsonDocument::fromVariant(p->request_body).toJson();
     default:
         return p->request_body.toString();
@@ -670,12 +671,12 @@ QVariantMap Request::Body::toMap() const
 QVariantHash Request::Body::toHash()const
 {
 
-    auto type=qTypeId(p->request_body);
+    auto type=p->request_body.typeId();
     switch (type) {
-    case QMetaType_QVariantHash:
-    case QMetaType_QVariantList:
-    case QMetaType_QVariantMap:
-    case QMetaType_QStringList:
+    case QMetaType::QVariantHash:
+    case QMetaType::QVariantList:
+    case QMetaType::QVariantMap:
+    case QMetaType::QStringList:
         return QJsonDocument::fromVariant(p->request_body).object().toVariantHash();
     default:
         return QJsonDocument::fromJson(p->request_body.toByteArray()).object().toVariantHash();
@@ -685,12 +686,12 @@ QVariantHash Request::Body::toHash()const
 QVariantList Request::Body::toList() const
 {
 
-    auto type=qTypeId(p->request_body);
+    auto type=p->request_body.typeId();
     switch (type) {
-    case QMetaType_QVariantHash:
-    case QMetaType_QVariantList:
-    case QMetaType_QVariantMap:
-    case QMetaType_QStringList:
+    case QMetaType::QVariantHash:
+    case QMetaType::QVariantList:
+    case QMetaType::QVariantMap:
+    case QMetaType::QStringList:
         return QJsonDocument::fromVariant(p->request_body).array().toVariantList();
     default:
         return QJsonDocument::fromJson(p->request_body.toByteArray()).array().toVariantList();

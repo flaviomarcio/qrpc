@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../qrpc_listen.h"
+#include "../qrpc_macro.h"
 
 namespace QRpc {
 class ListenHTTPPvt;
@@ -31,6 +32,5 @@ private:
 };
 
 QRPC_LISTTEN_AUTO_REGISTER(Http, ListenHTTP)
-//QRPC_LISTTEN_AUTO_REGISTER(Https, ListenHTTP)
 
 } // namespace QRpc

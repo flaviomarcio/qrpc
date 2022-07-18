@@ -1,12 +1,13 @@
 #include "./p_qrpc_listen_local_socket.h"
-
 #include "../qrpc_listen.h"
 #include "../qrpc_listen_colletion.h"
 #include "../qrpc_listen_protocol.h"
 #include "../qrpc_listen_request.h"
 #include "../qrpc_listen_request_cache.h"
+#include "../qrpc_const.h"
+#if Q_RPC_LOG
 #include "../qrpc_macro.h"
-#include "../qrpc_server.h"
+#endif
 #include <QFile>
 #include <QLocalServer>
 #include <QLocalSocket>
@@ -52,7 +53,7 @@ public:
                     &LocalSocketServer::onServerNewConnection);
 
             if (!server->listen(port)) {
-                sWarning() << tr("LocalSocketServer: Cannot bind on port %1: %2")
+                rWarning() << tr("LocalSocketServer: Cannot bind on port %1: %2")
                                   .arg(port, server->errorString());
                 server->close();
                 server->deleteLater();
@@ -60,7 +61,7 @@ public:
             }
 
             if (!server->isListening()) {
-                sWarning() << tr("LocalSocketServer: Cannot bind on port %1: %2")
+                rWarning() << tr("LocalSocketServer: Cannot bind on port %1: %2")
                                   .arg(port, server->errorString());
                 server->close();
                 server->deleteLater();

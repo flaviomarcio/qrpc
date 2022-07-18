@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../qrpc_listen.h"
+#include "../qrpc_macro.h"
 
 namespace QRpc {
 
@@ -34,6 +35,6 @@ private:
     void *p = nullptr;
 };
 
-QRPC_LISTTEN_AUTO_REGISTER(LocalSocket, ListenLocalSocket)
+//QRPC_LISTTEN_AUTO_REGISTER(LocalSocket, ListenLocalSocket)
 
 } // namespace QRpc

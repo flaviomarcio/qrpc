@@ -1,8 +1,10 @@
 #include "./qrpc_token_pool.h"
-#include "../../qstm/src/qstm_types.h"
 #include <QTimer>
+#include <QMutex>
+
 
 namespace QRpc {
+Q_GLOBAL_STATIC(TokenPool, staticTokenPool)
 
 class TokenPoolPvt : public QObject
 {
@@ -29,15 +31,15 @@ TokenPool::TokenPool(QObject *parent) : QThread{nullptr}
     this->moveToThread(this);
 }
 
-QRpc::TokenPool::~TokenPool()
+TokenPool &TokenPool::i()
 {
-    delete p;
+    return *staticTokenPool;
 }
 
 QVariantHash TokenPool::token(const QByteArray &md5) const
 {
 
-    QMutexLOCKER locker(&p->mutex);
+    QMutexLocker<QMutex> locker(&p->mutex);
     return p->tokenMap.value(md5);
 }
 
@@ -66,21 +68,21 @@ void TokenPool::tokenCheck(const QByteArray &md5, TokenPoolCallBack callback)
 void TokenPool::tokenInsert(const QByteArray &md5, QVariantHash &tokenPayload)
 {
 
-    QMutexLOCKER locker(&p->mutex);
+    QMutexLocker<QMutex> locker(&p->mutex);
     p->tokenMap.insert(md5, tokenPayload);
 }
 
 void TokenPool::tokenRemove(const QByteArray &md5)
 {
 
-    QMutexLOCKER locker(&p->mutex);
+    QMutexLocker<QMutex> locker(&p->mutex);
     p->tokenMap.remove(md5);
 }
 
 void TokenPool::tokenClear()
 {
 
-    QMutexLOCKER locker(&p->mutex);
+    QMutexLocker<QMutex> locker(&p->mutex);
     p->tokenMap.clear();
 }
 

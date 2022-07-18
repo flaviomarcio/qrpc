@@ -132,7 +132,7 @@ RequestJob::RequestJob():QThread{nullptr}
     this->p=new RequestJobPvt{this};
     this->moveToThread(this);
     static qlonglong taskCount=0;
-    this->setObjectName(qsl("ReqJob%1").arg(++taskCount));
+    this->setObjectName(QStringLiteral("ReqJob%1").arg(++taskCount));
 }
 
 void RequestJob::run()
@@ -181,7 +181,7 @@ RequestJob &RequestJob::start()
 
 RequestJob &RequestJob::release()
 {
-    QMutexLOCKER locker(requestJobMutex);
+    QMutexLocker<QMutex> locker(requestJobMutex);
     requestJobPool->append(this);
     return *this;
 }

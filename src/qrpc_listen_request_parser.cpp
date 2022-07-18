@@ -8,7 +8,6 @@
 #include <QMetaMethod>
 #include <QMetaType>
 #include <QMutex>
-#include <QMutexLocker>
 #include <QThread>
 #include <QUuid>
 #include <QVariantHash>
@@ -46,9 +45,9 @@ QStringList &ListenRequestParser::basePath() const
     QVariantList vList;
     if(notation.isValid()){
         auto v = notation.value();
-        switch (qTypeId(v)) {
-        case QMetaType_QStringList:
-        case QMetaType_QVariantList:{
+        switch (v.typeId()) {
+        case QMetaType::QStringList:
+        case QMetaType::QVariantList:{
             vList=v.toList();
             break;
         }
@@ -64,7 +63,7 @@ QStringList &ListenRequestParser::basePath() const
         }
     }
     if(p->basePathList.isEmpty())
-        p->basePathList.append(QStringList{qsl("/")});
+        p->basePathList.append(QStringList{QStringLiteral("/")});
     return p->basePathList;
 }
 
@@ -105,7 +104,7 @@ bool ListenRequestParser::routeToMethod(const QMetaObject &metaObject,
                                         const QString &route,
                                         QMetaMethod &outMethod)
 {
-    auto vRoute = QRpc::Util::routeParser(route).split(qbl("/")).join(qbl("/"));
+    auto vRoute = QRpc::Util::routeParser(route).split(QByteArrayLiteral("/")).join(QByteArrayLiteral("/"));
     if (ListenRequestParser::canRoute(metaObject, vRoute)) {
         auto list = staticMetaObjectMetaMethod->values(metaObject.className());
         auto v0 = QRpc::Util::routeExtractMethod(route);
@@ -132,19 +131,19 @@ void ListenRequestParser::initializeInstalleds(const QMetaObject &metaObject)
     if (parser == nullptr)
         return;
 
-    static const auto ignoreNames = QStringList{qsl("route"), qsl("initializeInstalleds")};
+    static const auto ignoreNames = QStringList{QStringLiteral("route"), QStringLiteral("initializeInstalleds")};
     auto className = QByteArray(metaObject.className());
     if (staticMetaObjectRoute->contains(className))
         return;
 
     auto routeList = parser->basePath();
 
-    QMutexLOCKER locker(staticMetaObjectLock);
+    QMutexLocker<QMutex> locker(staticMetaObjectLock);
     for(auto &route:routeList){
         staticMetaObjectRoute->insert(className, route);
         for (int methodIndex = 0; methodIndex < metaObject.methodCount(); ++methodIndex) {
             auto method = metaObject.method(methodIndex);
-            if (method.returnType() != QMetaType_Bool)
+            if (method.returnType() != QMetaType::Bool)
                 continue;
 
             if (method.parameterCount() > 0)
@@ -166,18 +165,16 @@ bool ListenRequestParser::parse(const QMetaMethod &metaMethod)
 {
     bool returnVariant = false;
     auto argReturn = Q_RETURN_ARG(bool, returnVariant);
-    const auto &className = this->metaObject()->className();
-
     if (!metaMethod.invoke(this, Qt::DirectConnection, argReturn)) {
 #if Q_RPC_LOG
-        sWarning() << "Parser not valid " << className;
+        rWarning() << "Parser not valid " << className;
 #endif
         return this->rq().co().setInternalServerError().isOK();
     }
 
     if (!returnVariant) { //Unauthorized
 #if Q_RPC_LOG
-        sWarning() << "Parser validation error " << className;
+        rWarning() << "Parser validation error " << className;
 #endif
         return this->rq().co().setInternalServerError().isOK();
     }

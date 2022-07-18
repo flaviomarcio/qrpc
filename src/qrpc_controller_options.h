@@ -48,7 +48,7 @@ public:
     //! \return
     //!
     virtual bool load(const QVariant &settings);
-    virtual bool load(const QVariantHash&settings) const;
+    virtual bool load(const QVariantHash &settings) const;
     virtual bool load(const ControllerOptions &manager) const;
     virtual bool load(QObject *settingsObject) const;
 

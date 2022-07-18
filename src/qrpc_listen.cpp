@@ -2,6 +2,10 @@
 #include "./qrpc_listen_colletion.h"
 #include "./qrpc_listen_request_cache.h"
 #include "./qrpc_startup.h"
+#include "./qrpc_const.h"
+#if Q_RPC_LOG
+#include "./qrpc_macro.h"
+#endif
 #include <QCoreApplication>
 #include <QCryptographicHash>
 #include <QDateTime>
@@ -19,7 +23,7 @@ Q_GLOBAL_STATIC(QByteArray, baseUuid)
 static void init()
 {
     QProcess process;
-    auto bytes = process.environment().join(qsl(",")).toUtf8()
+    auto bytes = process.environment().join(QStringLiteral(",")).toUtf8()
                  + QDateTime::currentDateTime().toString().toUtf8();
     *baseUuid = QCryptographicHash::hash(bytes, QCryptographicHash::Md5).toHex();
 }
@@ -59,8 +63,8 @@ int Listen::install(const QVariant &type, const QMetaObject &metaObject)
     if (!staticListenInstalledHash->contains(itype)) {
 #if Q_RPC_LOG_VERBOSE
         if (staticListenInstalledHash->isEmpty())
-            sInfo() << qsl("interface registered: ") << metaObject.className();
-        qInfo() << qbl("interface: ") + metaObject.className();
+            rInfo() << QStringLiteral("interface registered: ") << metaObject.className();
+        qInfo() << QByteArrayLiteral("interface: ") + metaObject.className();
 #endif
         QPair<int, const QMetaObject *> pair(itype, &metaObject);
         staticListenInstalledHash->insert(itype, pair);

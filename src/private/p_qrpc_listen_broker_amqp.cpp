@@ -1,5 +1,4 @@
 #include "./p_qrpc_listen_broker_amqp.h"
-#include <QCryptographicHash>
 
 namespace QRpc {
 

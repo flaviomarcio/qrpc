@@ -1,6 +1,6 @@
 #pragma once
 
-#include "./qrpc_listen.h"
+#include "./qrpc_global.h"
 #include "./qrpc_types.h"
 #include <QThread>
 #include <QVariant>

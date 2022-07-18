@@ -133,28 +133,28 @@ static const QHash<int,QString>&makeStateCodes()
     //https://restfulapi.net/http-status-codes/
     //REST Specific Status Codes
     static QHash<int,QString> state_codes;
-    state_codes[200]=qsl("(OK)");
-    state_codes[201]=qsl("(Created)");
-    state_codes[202]=qsl("(Accepted)");
-    state_codes[203]=qsl("(Non-Authoritative Information)");
-    state_codes[204]=qsl("(No Content)");
-    state_codes[300]=qsl("(Multiple Choices)");
-    state_codes[301]=qsl("(Moved Permanently)");
-    state_codes[302]=qsl("(Found)");
-    state_codes[303]=qsl("(See Other)");
-    state_codes[304]=qsl("(Not Modified)");
-    state_codes[307]=qsl("(Temporary Redirect)");
-    state_codes[400]=qsl("(Bad Request)");
-    state_codes[401]=qsl("(Unauthorized)");
-    state_codes[403]=qsl("(Forbidden)");
-    state_codes[404]=qsl("(Not Found)");
-    state_codes[405]=qsl("(Method Not Allowed)");
-    state_codes[406]=qsl("(Not Acceptable)");
-    state_codes[412]=qsl("(Precondition Failed)");
-    state_codes[415]=qsl("(Unsupported Media Type)");
-    state_codes[500]=qsl("(Internal Server Error)");
-    state_codes[501]=qsl("(Not Implemented)");
-    state_codes[502]=qsl("(Bad Gateway Error)");
+    state_codes[200]=QStringLiteral("(OK)");
+    state_codes[201]=QStringLiteral("(Created)");
+    state_codes[202]=QStringLiteral("(Accepted)");
+    state_codes[203]=QStringLiteral("(Non-Authoritative Information)");
+    state_codes[204]=QStringLiteral("(No Content)");
+    state_codes[300]=QStringLiteral("(Multiple Choices)");
+    state_codes[301]=QStringLiteral("(Moved Permanently)");
+    state_codes[302]=QStringLiteral("(Found)");
+    state_codes[303]=QStringLiteral("(See Other)");
+    state_codes[304]=QStringLiteral("(Not Modified)");
+    state_codes[307]=QStringLiteral("(Temporary Redirect)");
+    state_codes[400]=QStringLiteral("(Bad Request)");
+    state_codes[401]=QStringLiteral("(Unauthorized)");
+    state_codes[403]=QStringLiteral("(Forbidden)");
+    state_codes[404]=QStringLiteral("(Not Found)");
+    state_codes[405]=QStringLiteral("(Method Not Allowed)");
+    state_codes[406]=QStringLiteral("(Not Acceptable)");
+    state_codes[412]=QStringLiteral("(Precondition Failed)");
+    state_codes[415]=QStringLiteral("(Unsupported Media Type)");
+    state_codes[500]=QStringLiteral("(Internal Server Error)");
+    state_codes[501]=QStringLiteral("(Not Implemented)");
+    state_codes[502]=QStringLiteral("(Bad Gateway Error)");
     return state_codes;
 }
 
@@ -163,39 +163,39 @@ static const auto &stateCodes=makeStateCodes();
 
 static QMap<QNetworkReply::NetworkError, QString>&makeStaticError(){
     static QMap<QNetworkReply::NetworkError, QString> staticError;
-    staticError[QNetworkReply::ConnectionRefusedError]=qsl("ConnectionRefusedError");
-    staticError[QNetworkReply::RemoteHostClosedError]=qsl("RemoteHostClosedError");
-    staticError[QNetworkReply::HostNotFoundError]=qsl("HostNotFoundError");
-    staticError[QNetworkReply::TimeoutError]=qsl("TimeoutError");
-    staticError[QNetworkReply::OperationCanceledError]=qsl("OperationCanceledError");
-    staticError[QNetworkReply::SslHandshakeFailedError]=qsl("SslHandshakeFailedError");
-    staticError[QNetworkReply::TemporaryNetworkFailureError]=qsl("TemporaryNetworkFailureError");
-    staticError[QNetworkReply::NetworkSessionFailedError]=qsl("NetworkSessionFailedError");
-    staticError[QNetworkReply::BackgroundRequestNotAllowedError]=qsl("BackgroundRequestNotAllowedError");
-    staticError[QNetworkReply::TooManyRedirectsError]=qsl("TooManyRedirectsError");
-    staticError[QNetworkReply::InsecureRedirectError]=qsl("InsecureRedirectError");
-    staticError[QNetworkReply::UnknownNetworkError]=qsl("UnknownNetworkError");
-    staticError[QNetworkReply::ProxyConnectionRefusedError]=qsl("ProxyConnectionRefusedError");
-    staticError[QNetworkReply::ProxyConnectionClosedError]=qsl("ProxyConnectionClosedError");
-    staticError[QNetworkReply::ProxyNotFoundError]=qsl("ProxyNotFoundError");
-    staticError[QNetworkReply::ProxyTimeoutError]=qsl("ProxyTimeoutError");
-    staticError[QNetworkReply::ProxyAuthenticationRequiredError]=qsl("ProxyAuthenticationRequiredError");
-    staticError[QNetworkReply::UnknownProxyError]=qsl("UnknownProxyError");
-    staticError[QNetworkReply::ContentAccessDenied]=qsl("ContentAccessDenied");
-    staticError[QNetworkReply::ContentOperationNotPermittedError]=qsl("ContentOperationNotPermittedError");
-    staticError[QNetworkReply::ContentNotFoundError]=qsl("ContentNotSFoundError");
-    staticError[QNetworkReply::AuthenticationRequiredError]=qsl("AuthenticationRequiredError");
-    staticError[QNetworkReply::ContentReSendError]=qsl("ContentReSendError");
-    staticError[QNetworkReply::ContentConflictError]=qsl("ContentConflictError");
-    staticError[QNetworkReply::ContentGoneError]=qsl("ContentGoneError");
-    staticError[QNetworkReply::UnknownContentError]=qsl("UnknownContentError");
-    staticError[QNetworkReply::ProtocolUnknownError]=qsl("ProtocolUnknownError");
-    staticError[QNetworkReply::ProtocolInvalidOperationError]=qsl("ProtocolInvalidOperationError");
-    staticError[QNetworkReply::ProtocolFailure]=qsl("ProtocolFailure");
-    staticError[QNetworkReply::InternalServerError]=qsl("InternalServerError");
-    staticError[QNetworkReply::OperationNotImplementedError]=qsl("OperationNotImplementedError");
-    staticError[QNetworkReply::ServiceUnavailableError]=qsl("ServiceUnavailableError");
-    staticError[QNetworkReply::UnknownServerError]=qsl("UnknownServerError");
+    staticError[QNetworkReply::ConnectionRefusedError]=QStringLiteral("ConnectionRefusedError");
+    staticError[QNetworkReply::RemoteHostClosedError]=QStringLiteral("RemoteHostClosedError");
+    staticError[QNetworkReply::HostNotFoundError]=QStringLiteral("HostNotFoundError");
+    staticError[QNetworkReply::TimeoutError]=QStringLiteral("TimeoutError");
+    staticError[QNetworkReply::OperationCanceledError]=QStringLiteral("OperationCanceledError");
+    staticError[QNetworkReply::SslHandshakeFailedError]=QStringLiteral("SslHandshakeFailedError");
+    staticError[QNetworkReply::TemporaryNetworkFailureError]=QStringLiteral("TemporaryNetworkFailureError");
+    staticError[QNetworkReply::NetworkSessionFailedError]=QStringLiteral("NetworkSessionFailedError");
+    staticError[QNetworkReply::BackgroundRequestNotAllowedError]=QStringLiteral("BackgroundRequestNotAllowedError");
+    staticError[QNetworkReply::TooManyRedirectsError]=QStringLiteral("TooManyRedirectsError");
+    staticError[QNetworkReply::InsecureRedirectError]=QStringLiteral("InsecureRedirectError");
+    staticError[QNetworkReply::UnknownNetworkError]=QStringLiteral("UnknownNetworkError");
+    staticError[QNetworkReply::ProxyConnectionRefusedError]=QStringLiteral("ProxyConnectionRefusedError");
+    staticError[QNetworkReply::ProxyConnectionClosedError]=QStringLiteral("ProxyConnectionClosedError");
+    staticError[QNetworkReply::ProxyNotFoundError]=QStringLiteral("ProxyNotFoundError");
+    staticError[QNetworkReply::ProxyTimeoutError]=QStringLiteral("ProxyTimeoutError");
+    staticError[QNetworkReply::ProxyAuthenticationRequiredError]=QStringLiteral("ProxyAuthenticationRequiredError");
+    staticError[QNetworkReply::UnknownProxyError]=QStringLiteral("UnknownProxyError");
+    staticError[QNetworkReply::ContentAccessDenied]=QStringLiteral("ContentAccessDenied");
+    staticError[QNetworkReply::ContentOperationNotPermittedError]=QStringLiteral("ContentOperationNotPermittedError");
+    staticError[QNetworkReply::ContentNotFoundError]=QStringLiteral("ContentNotSFoundError");
+    staticError[QNetworkReply::AuthenticationRequiredError]=QStringLiteral("AuthenticationRequiredError");
+    staticError[QNetworkReply::ContentReSendError]=QStringLiteral("ContentReSendError");
+    staticError[QNetworkReply::ContentConflictError]=QStringLiteral("ContentConflictError");
+    staticError[QNetworkReply::ContentGoneError]=QStringLiteral("ContentGoneError");
+    staticError[QNetworkReply::UnknownContentError]=QStringLiteral("UnknownContentError");
+    staticError[QNetworkReply::ProtocolUnknownError]=QStringLiteral("ProtocolUnknownError");
+    staticError[QNetworkReply::ProtocolInvalidOperationError]=QStringLiteral("ProtocolInvalidOperationError");
+    staticError[QNetworkReply::ProtocolFailure]=QStringLiteral("ProtocolFailure");
+    staticError[QNetworkReply::InternalServerError]=QStringLiteral("InternalServerError");
+    staticError[QNetworkReply::OperationNotImplementedError]=QStringLiteral("OperationNotImplementedError");
+    staticError[QNetworkReply::ServiceUnavailableError]=QStringLiteral("ServiceUnavailableError");
+    staticError[QNetworkReply::UnknownServerError]=QStringLiteral("UnknownServerError");
 
     return staticError;
 }
@@ -218,13 +218,13 @@ ListenRequestCode &ListenRequestCode::operator=(const QVariant &v)
 {
     QVariant code;
     QVariant phrase;
-    switch (qTypeId(v)) {
-    case QMetaType_QVariantMap:
-    case QMetaType_QVariantHash:
+    switch (v.typeId()) {
+    case QMetaType::QVariantMap:
+    case QMetaType::QVariantHash:
     {
         auto vv=v.toHash();
-        code=vv.value(qsl("code")).toInt();
-        phrase=vv.value(qsl("phrase")).toString();
+        code=vv.value(QStringLiteral("code")).toInt();
+        phrase=vv.value(QStringLiteral("phrase")).toString();
         break;
     }
     default:

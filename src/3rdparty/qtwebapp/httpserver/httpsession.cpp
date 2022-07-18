@@ -108,7 +108,7 @@ bool HttpSession::isNull() const {
     return dataPtr==nullptr;
 }
 
-void HttpSession::set(const QByteArray& key, const QVariant & value)
+void HttpSession::set(const QByteArray & key, const QVariant & value)
 {
     if (dataPtr)
     {
@@ -118,7 +118,7 @@ void HttpSession::set(const QByteArray& key, const QVariant & value)
     }
 }
 
-void HttpSession::remove(const QByteArray& key)
+void HttpSession::remove(const QByteArray & key)
 {
     if (dataPtr)
     {
@@ -128,7 +128,7 @@ void HttpSession::remove(const QByteArray& key)
     }
 }
 
-QVariant HttpSession::get(const QByteArray& key) const
+QVariant HttpSession::get(const QByteArray & key) const
 {
     QVariant value;
     if (dataPtr)
@@ -140,7 +140,7 @@ QVariant HttpSession::get(const QByteArray& key) const
     return value;
 }
 
-bool HttpSession::contains(const QByteArray& key) const
+bool HttpSession::contains(const QByteArray & key) const
 {
     bool found=false;
     if (dataPtr)

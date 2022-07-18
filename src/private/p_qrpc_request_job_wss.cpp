@@ -15,8 +15,8 @@ bool RequestJobWSS::call(RequestJobResponse *response)
 
     this->response=response;
 
-    QFile certFile(qsl(":/sslconfiguration/rpc.cert"));
-    QFile keyFile(qsl(":/sslconfiguration/rpc.key"));
+    QFile certFile(QStringLiteral(":/sslconfiguration/rpc.cert"));
+    QFile keyFile(QStringLiteral(":/sslconfiguration/rpc.key"));
 
     if(!certFile.open(QIODevice::ReadOnly)){
         sWarning()<<tr("WebsocketListener: Cannot load certfile : %1").arg(certFile.fileName());

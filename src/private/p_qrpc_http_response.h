@@ -33,7 +33,7 @@ public:
     //! \brief body
     //! \return
     //!
-    virtual QByteArray&body() const;
+    virtual QByteArray &body() const;
 
     //!
     //! \brief bodyVariant

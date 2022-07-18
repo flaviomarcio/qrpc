@@ -1,9 +1,9 @@
 #include "./qrpc_controller_notation.h"
-#include <QNotation>
+#include <QAnnotation>
 
 namespace QRpcPrivate{
 
-NotationsExtended::NotationsExtended(QObject *parent):QNotation::Extended{parent}
+NotationsExtended::NotationsExtended(QObject *parent):QAnnotation::Extended{parent}
 {
 
 }

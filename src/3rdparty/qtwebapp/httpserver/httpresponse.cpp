@@ -181,7 +181,7 @@ QHash<QByteArray,HttpCookie>& HttpResponse::getCookies()
 }
 
 
-void HttpResponse::redirect(const QByteArray& url)
+void HttpResponse::redirect(const QByteArray & url)
 {
     setStatus(303,"See Other");
     setHeader("Location",url);

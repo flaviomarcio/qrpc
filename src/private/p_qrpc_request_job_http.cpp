@@ -1,10 +1,14 @@
 #include "./p_qrpc_request_job_http.h"
+#include "../qrpc_const.h"
+#if Q_RPC_LOG
+#include "../qrpc_macro.h"
+#endif
 
 namespace QRpc {
 
 RequestJobHttp::RequestJobHttp(QObject *parent):RequestJobProtocol(parent)
 {
-    this->tempLocation=qsl("%1/%2.%3.tmp").arg(QStandardPaths::writableLocation(QStandardPaths::TempLocation), qAppName().replace(qsl_space, qsl_underline),qsl("%1"));
+    this->tempLocation=QStringLiteral("%1/%2.%3.tmp").arg(QStandardPaths::writableLocation(QStandardPaths::TempLocation), qAppName().replace(QStringLiteral(" "), qsl_underline),QStringLiteral("%1"));
 }
 
 RequestJobHttp::~RequestJobHttp()
@@ -35,14 +39,14 @@ void RequestJobHttp::fileFree()
 
 bool RequestJobHttp::call(RequestJobResponse *response)
 {
-    static const QStringList removeHeaders={{qsl("host")},{qsl("content-length")}};
+    static const QStringList removeHeaders={{QStringLiteral("host")},{QStringLiteral("content-length")}};
     static const QStringList ignoreHeaders={{ContentDispositionName}, {ContentTypeName}, {QString(ContentDispositionName).toLower()}, {QString(ContentTypeName).toLower()}};
 
     if(this->nam==nullptr)
         this->nam = new QNetworkAccessManager(nullptr);
 
 #if Q_RPC_LOG_SUPER_VERBOSE
-    sWarning()<<tr("request.url: %1").arg(response->request_url);
+    rWarning()<<tr("request.url: %1").arg(response->request_url);
 #endif
 
     const auto &request_url=response->request_url.toUrl();
@@ -65,24 +69,24 @@ bool RequestJobHttp::call(RequestJobResponse *response)
                 else{
                     auto v=i.value();
                     QStringList headerValues;
-                    switch (qTypeId(v)) {
-                    case QMetaType_QVariantList:
-                    case QMetaType_QStringList:
+                    switch (v.typeId()) {
+                    case QMetaType::QVariantList:
+                    case QMetaType::QStringList:
                     {
                         auto vList=v.toList();
                         for(auto &r:vList){
-                            headerValues<<r.toString().replace(qsl("\n"), qsl(";"));
+                            headerValues<<r.toString().replace(QStringLiteral("\n"), QStringLiteral(";"));
                         }
                         break;
                     }
-                    case QMetaType_QVariantHash:
-                    case QMetaType_QVariantMap:
+                    case QMetaType::QVariantHash:
+                    case QMetaType::QVariantMap:
                     {
                         auto vMap=v.toHash();
                         QHashIterator<QString, QVariant> i(vMap);
                         while (i.hasNext()) {
                             i.next();
-                            auto r=qsl("%1=%2").arg(i.value().toString(), v.toString()).replace(qsl("\n"), qsl(";"));
+                            auto r=QStringLiteral("%1=%2").arg(i.value().toString(), v.toString()).replace(QStringLiteral("\n"), QStringLiteral(";"));
                             headerValues<<r;
                         }
                         break;
@@ -91,14 +95,14 @@ bool RequestJobHttp::call(RequestJobResponse *response)
                         headerValues<<v.toString();
                     }
 
-                    v=headerValues.join(qsl("; "));
+                    v=headerValues.join(QStringLiteral("; "));
                     auto k=i.key().toUtf8().trimmed();
                     if(!ignoreHeaders.contains(k.toLower()))
                         request_header.insert(k, v.toByteArray());
                     else
                         request_header_ignored.insert(k, v.toByteArray());
 #if Q_RPC_LOG_SUPER_VERBOSE
-                    sInfo()<<":request.setRawHeader("<<i.key()<<", "<<i.value()<<")";
+                    rInfo()<<":request.setRawHeader("<<i.key()<<", "<<i.value()<<")";
 #endif
                 }
             }
@@ -135,15 +139,15 @@ bool RequestJobHttp::call(RequestJobResponse *response)
             this->fileUpload.close();
         this->fileUpload.setFileName(this->action_fileName);
         if(!this->fileUpload.exists()){
-            auto msg=qsl("invalid upload fileName:%1")+this->fileDownload.fileName();
-            sWarning()<<msg;
+            auto msg=QStringLiteral("invalid upload fileName:%1")+this->fileDownload.fileName();
+            rWarning()<<msg;
             response->response_qt_status_code=QNetworkReply::NoError;
             response->response_status_code=-1;
             response->response_status_reason_phrase=msg.toUtf8();
         }
         else if(!this->fileUpload.open(this->fileUpload.ReadOnly)){
-            auto msg=qsl("invalid upload fileName:%1, %2").arg(this->fileDownload.fileName(), this->fileUpload.errorString());
-            sWarning()<<msg;
+            auto msg=QStringLiteral("invalid upload fileName:%1, %2").arg(this->fileDownload.fileName(), this->fileUpload.errorString());
+            rWarning()<<msg;
             response->response_qt_status_code=QNetworkReply::NoError;
             response->response_status_code=-1;
             response->response_status_reason_phrase=msg.toUtf8();
@@ -172,15 +176,15 @@ bool RequestJobHttp::call(RequestJobResponse *response)
         this->fileMake();
         this->fileDownload.setFileName(this->action_fileName);
         if(!this->fileDownload.open(QFile::Truncate | QFile::WriteOnly | QFile::Unbuffered)){
-            auto msg=qsl("invalid download fileName: %1").arg(this->fileDownload.fileName());
-            sWarning()<<msg;
+            auto msg=QStringLiteral("invalid download fileName: %1").arg(this->fileDownload.fileName());
+            rWarning()<<msg;
             response->response_qt_status_code=QNetworkReply::NoError;
             response->response_status_code=-1;
             response->response_status_reason_phrase = msg.toUtf8();
         }
         else if(!this->fileTemp.open(QFile::Truncate | QFile::Unbuffered | QFile::WriteOnly)){
-            auto msg=qsl("invalid download temporary fileName: %1").arg(this->fileTemp.fileName());
-            sWarning()<<msg;
+            auto msg=QStringLiteral("invalid download temporary fileName: %1").arg(this->fileTemp.fileName());
+            rWarning()<<msg;
             response->response_qt_status_code=QNetworkReply::NoError;
             response->response_status_code=-1;
             response->response_status_reason_phrase = msg.toUtf8();
@@ -202,7 +206,7 @@ bool RequestJobHttp::call(RequestJobResponse *response)
         {
             auto v=this->request.header(QNetworkRequest::ContentTypeHeader);
             if(!v.isValid()){
-                this->request.setHeader(QNetworkRequest::ContentTypeHeader, qsl("application/x-www-form-urlencoded"));
+                this->request.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/x-www-form-urlencoded"));
             }
             break;
         }
@@ -290,7 +294,7 @@ void RequestJobHttp::onReplyFinish()
     if(this->reply==nullptr)
         return;
 
-    QMutexLOCKER locker(&mutexRequestFinished);
+    QMutexLocker<QMutex> locker(&mutexRequestFinished);
     if(response->response_qt_status_code!=QNetworkReply::NoError)
         return;
 
@@ -303,11 +307,11 @@ void RequestJobHttp::onReplyFinish()
 void RequestJobHttp::onReplyTimeout()
 {
     {
-        QMutexLOCKER locker(&mutexRequestFinished);
+        QMutexLocker<QMutex> locker(&mutexRequestFinished);
         if(response->response_qt_status_code==QNetworkReply::NoError){
             response->response_qt_status_code=QNetworkReply::TimeoutError;
 #if Q_RPC_LOG
-            sWarning()<<":local timeout forced, url:"<<this->response->request_url;
+            rWarning()<<":local timeout forced, url:"<<this->response->request_url;
 #endif
         }
     }

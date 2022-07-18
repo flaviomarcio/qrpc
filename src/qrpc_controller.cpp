@@ -1,7 +1,10 @@
 #include "./qrpc_controller.h"
 #include "./private/p_qrpc_util.h"
 #include "./qrpc_listen_request_parser.h"
-#include "./qrpc_request.h"
+#include "./qrpc_const.h"
+#if Q_RPC_LOG
+#include "./qrpc_macro.h"
+#endif
 #include "./qrpc_server.h"
 #include "./qrpc_startup.h"
 #include <QCoreApplication>
@@ -86,9 +89,9 @@ Controller::MethodInfoCollection Controller::invokableMethod() const
     static QStm::Network network;
     static ByteArrayVector methodBlackList=QRPC_METHOD_BACK_LIST;
     for(auto basePath:vBasePathList){
-        basePath=qsl("/")+basePath+qsl("/");
-        while(basePath.contains(qsl("//")))
-            basePath=basePath.replace(qsl("//"),qsl("/"));
+        basePath=QStringLiteral("/")+basePath+QStringLiteral("/");
+        while(basePath.contains(QStringLiteral("//")))
+            basePath=basePath.replace(QStringLiteral("//"),QStringLiteral("/"));
         for (auto i = 0; i < metaObject->methodCount(); ++i) {
             auto method = metaObject->method(i);
             MethodInfo info;
@@ -105,10 +108,10 @@ Controller::MethodInfoCollection Controller::invokableMethod() const
             if (methodBlackList.contains(info.name))
                 continue;
 
-            if (info.name.startsWith(qbl("_"))) //ignore methods with [_] in start name
+            if (info.name.startsWith(QByteArrayLiteral("_"))) //ignore methods with [_] in start name
                 continue;
 
-            info.notations=QNotation::Collection{controller->notation(info.method)};
+            info.notations=QAnnotation::Collection{controller->notation(info.method)};
             info.excluded=info.notations.contains(nottionExcludeMethod);
             if(info.excluded)
                 continue;
@@ -166,9 +169,9 @@ Controller::MethodInfoCollection Controller::invokableMethod() const
             if(info.group.isEmpty())
                 continue;
 
-            auto fullPath=qsl("%1/%2").arg(info.basePath, info.path);
-            while(fullPath.contains(qsl("//")))
-                fullPath=fullPath.replace(qsl("//"),qsl("/"));
+            auto fullPath=QStringLiteral("%1/%2").arg(info.basePath, info.path);
+            while(fullPath.contains(QStringLiteral("//")))
+                fullPath=fullPath.replace(QStringLiteral("//"),QStringLiteral("/"));
             info.fullPath=fullPath.toUtf8();
             __return.append(info);
         }
@@ -187,9 +190,9 @@ QStringList &Controller::basePath() const
     QVariantList vList;
     if(notation.isValid()){
         auto v = notation.value();
-        switch (qTypeId(v)) {
-        case QMetaType_QStringList:
-        case QMetaType_QVariantList:{
+        switch (v.typeId()) {
+        case QMetaType::QStringList:
+        case QMetaType::QVariantList:{
             vList=v.toList();
             break;
         }
@@ -205,7 +208,7 @@ QStringList &Controller::basePath() const
         }
     }
     if(p->basePathList.isEmpty())
-        p->basePathList<<QStringList{qsl("/")};
+        p->basePathList<<QStringList{QStringLiteral("/")};
     return p->basePathList;
 }
 
@@ -275,7 +278,7 @@ bool Controller::requestSettings()
             i.next();
             vHash.insert(QRpc::Util::headerFormatName(i.key()), i.value());
         }
-        vHash.remove(qsl("host"));
+        vHash.remove(QStringLiteral("host"));
         vHearder = vHash;
     }
 
@@ -288,30 +291,30 @@ bool Controller::requestSettings()
     };
 
     auto header_application_json = vHearder.value(ContentTypeName).toString().trimmed();
-    auto origin = vHearder.value(qsl("Origin")).toString();
-    auto referer = vHearder.value(qsl("Referer")).toString();
-    auto connectionType = vHearder.value(qsl("Connection-Type")).toString();
-    auto connection = vHearder.value(qsl("Connection")).toString();
-    auto accessControlRequestHeaders = vHearder.value(qsl("Access-Control-Request-Headers"))
+    auto origin = vHearder.value(QStringLiteral("Origin")).toString();
+    auto referer = vHearder.value(QStringLiteral("Referer")).toString();
+    auto connectionType = vHearder.value(QStringLiteral("Connection-Type")).toString();
+    auto connection = vHearder.value(QStringLiteral("Connection")).toString();
+    auto accessControlRequestHeaders = vHearder.value(QStringLiteral("Access-Control-Request-Headers"))
                                            .toString();
-    auto accessControlAllowMethods = vHearder.value(qsl("Access-Control-Request-Method")).toString();
+    auto accessControlAllowMethods = vHearder.value(QStringLiteral("Access-Control-Request-Method")).toString();
     auto accessControlAllowOrigin = origin.isEmpty() ? referer : origin;
-    auto keepAlive = vHearder.value(qsl("Keep-Alive")).toString();
+    auto keepAlive = vHearder.value(QStringLiteral("Keep-Alive")).toString();
 
     if (rq.isMethodOptions()) {
         //https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
         //https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Methods/OPTIONS
         header_application_json = (!header_application_json.isEmpty()) ? header_application_json
-                                                                       : qsl("text/javascripton");
-        insertHeaderResponse(qsl("Date"), QDateTime::currentDateTime().toString(Qt::TextDate));
-        insertHeaderResponse(qsl("Server"), this->server()->serverName());
-        insertHeaderResponse(qsl("Access-Control-Allow-Origin"), accessControlAllowOrigin);
-        insertHeaderResponse(qsl("Access-Control-Allow-Methods"), accessControlAllowMethods);
-        insertHeaderResponse(qsl("Access-Control-Allow-Headers"), accessControlRequestHeaders);
-        insertHeaderResponse(qsl("Access-Control-Max-Age"), qsl("86400"));
-        insertHeaderResponse(qsl("Vary"), qsl("Accept-Encoding, Origin"));
-        insertHeaderResponse(qsl("Keep-Alive"), keepAlive);
-        insertHeaderResponse(qsl("Connection"), connection);
+                                                                       : QStringLiteral("text/javascripton");
+        insertHeaderResponse(QStringLiteral("Date"), QDateTime::currentDateTime().toString(Qt::TextDate));
+        insertHeaderResponse(QStringLiteral("Server"), this->server()->serverName());
+        insertHeaderResponse(QStringLiteral("Access-Control-Allow-Origin"), accessControlAllowOrigin);
+        insertHeaderResponse(QStringLiteral("Access-Control-Allow-Methods"), accessControlAllowMethods);
+        insertHeaderResponse(QStringLiteral("Access-Control-Allow-Headers"), accessControlRequestHeaders);
+        insertHeaderResponse(QStringLiteral("Access-Control-Max-Age"), QStringLiteral("86400"));
+        insertHeaderResponse(QStringLiteral("Vary"), QStringLiteral("Accept-Encoding, Origin"));
+        insertHeaderResponse(QStringLiteral("Keep-Alive"), keepAlive);
+        insertHeaderResponse(QStringLiteral("Connection"), connection);
 
         rq.setResponseHeader(vHearderResponse);
         rq.co().setOK();
@@ -320,14 +323,14 @@ bool Controller::requestSettings()
 
     //https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
     header_application_json = (!header_application_json.isEmpty()) ? header_application_json
-                                                                   : qsl("text/javascripton");
-    insertHeaderResponse(qsl("Date"), QDateTime::currentDateTime().toString(Qt::TextDate));
-    insertHeaderResponse(qsl("Server"), this->server()->serverName());
-    insertHeaderResponse(qsl("Access-Control-Allow-Origin"), accessControlAllowOrigin);
-    insertHeaderResponse(qsl("Vary"), qsl("Accept-Encoding, Origin"));
-    insertHeaderResponse(qsl("Keep-Alive"), keepAlive);
-    insertHeaderResponse(qsl("Connection"), connection);
-    insertHeaderResponse(qsl("Connection-Type"), connectionType);
+                                                                   : QStringLiteral("text/javascripton");
+    insertHeaderResponse(QStringLiteral("Date"), QDateTime::currentDateTime().toString(Qt::TextDate));
+    insertHeaderResponse(QStringLiteral("Server"), this->server()->serverName());
+    insertHeaderResponse(QStringLiteral("Access-Control-Allow-Origin"), accessControlAllowOrigin);
+    insertHeaderResponse(QStringLiteral("Vary"), QStringLiteral("Accept-Encoding, Origin"));
+    insertHeaderResponse(QStringLiteral("Keep-Alive"), keepAlive);
+    insertHeaderResponse(QStringLiteral("Connection"), connection);
+    insertHeaderResponse(QStringLiteral("Connection-Type"), connectionType);
 
     rq.setResponseHeader(vHearderResponse);
     rq.co().setOK();
@@ -361,7 +364,7 @@ bool Controller::canOperation(const QMetaMethod &method)
     if (notations.contains(opCrud))
         return true;
 
-    auto operation = qsl("op%1").arg(QString::fromUtf8(rq.requestMethod())).toLower();
+    auto operation = QStringLiteral("op%1").arg(QString::fromUtf8(rq.requestMethod())).toLower();
     if (notations.contains(operation))
         return true;
 
@@ -448,10 +451,10 @@ const QMetaObject &Controller::install(const QMetaObject &metaObject)
     if (!staticInstalled->contains(&metaObject)) {
 #if Q_RPC_LOG_VERBOSE
         if (staticInstalled->isEmpty())
-            sInfo() << qsl("interface registered: ") << metaObject.className();
-        qInfo() << qbl("interface: ") + metaObject.className();
+            sInfo() << QStringLiteral("interface registered: ") << metaObject.className();
+        qInfo() << QByteArrayLiteral("interface: ") + metaObject.className();
 #endif
-        (*staticInstalled) << &metaObject;
+        (*staticInstalled).append(&metaObject);
     }
     return metaObject;
 }
@@ -461,8 +464,8 @@ const QMetaObject &Controller::installParser(const QMetaObject &metaObject)
     if (!staticParserInstalled->contains(&metaObject)) {
 #if Q_RPC_LOG_VERBOSE
         if (staticParserInstalled->isEmpty())
-            sInfo() << qsl("parser interface registered: ") << metaObject.className();
-        qInfo() << qbl("parser interface") + metaObject.className();
+            sInfo() << QStringLiteral("parser interface registered: ") << metaObject.className();
+        qInfo() << QByteArrayLiteral("parser interface") + metaObject.className();
 #endif
         (*staticParserInstalled) << &metaObject;
     }

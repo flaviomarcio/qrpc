@@ -59,16 +59,16 @@ public:
     bool isNull() const;
 
     /** Set a value. This method is thread safe. */
-    void set(const QByteArray& key, const QVariant & value);
+    void set(const QByteArray & key, const QVariant & value);
 
     /** Remove a value. This method is thread safe. */
-    void remove(const QByteArray& key);
+    void remove(const QByteArray & key);
 
     /** Get a value. This method is thread safe. */
-    QVariant get(const QByteArray& key) const;
+    QVariant get(const QByteArray & key) const;
 
     /** Check if a key exists. This method is thread safe. */
-    bool contains(const QByteArray& key) const;
+    bool contains(const QByteArray & key) const;
 
     /**
       Get a copy of all data stored in this session.

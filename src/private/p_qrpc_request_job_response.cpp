@@ -66,20 +66,20 @@ QVariantHash RequestJobResponse::toMapResponse()
 {
     QVariantHash map;
     Q_DECLARE_VU;
-    map.insert(qsl("finish"), QDateTime::currentDateTime());
-    map.insert(qsl("header"), this->responseHeader);
-    map.insert(qsl("status_code"), this->response_status_code);
-    map.insert(qsl("qt_status_code"), this->response_qt_status_code);
-    map.insert(qsl("status_reason_phrase"), this->response_status_reason_phrase);
-    map.insert(qsl("body"), vu.toVariant(this->response_body));
+    map.insert(QStringLiteral("finish"), QDateTime::currentDateTime());
+    map.insert(QStringLiteral("header"), this->responseHeader);
+    map.insert(QStringLiteral("status_code"), this->response_status_code);
+    map.insert(QStringLiteral("qt_status_code"), this->response_qt_status_code);
+    map.insert(QStringLiteral("status_reason_phrase"), this->response_status_reason_phrase);
+    map.insert(QStringLiteral("body"), vu.toVariant(this->response_body));
     return map;
 }
 
 QVariantHash RequestJobResponse::toVariant()
 {
-    auto rpclog = QVariantList{qvh{{qsl("resquest"), this->toMapResquest()}},qvh{ {qsl("response"), this->toMapResponse()}}};
+    auto rpclog = QVariantList{QVariantHash{{QStringLiteral("resquest"), this->toMapResquest()}},QVariantHash{ {QStringLiteral("response"), this->toMapResponse()}}};
     ///*{"openapi", this->toMapOpenAPI()}*,/
-    return qvh({{qsl("rpclog"), rpclog}});
+    return qvh({{QStringLiteral("rpclog"), rpclog}});
 }
 
 

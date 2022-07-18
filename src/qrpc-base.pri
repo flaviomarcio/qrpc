@@ -29,6 +29,7 @@ SOURCES += \
     $$PWD/qrpc_controller_options.cpp \
     $$PWD/qrpc_last_error.cpp \
     $$PWD/qrpc_service_thread.cpp \
+    $$PWD/qrpc_setting_manager.cpp \
     $$PWD/qrpc_startup.cpp \
     $$PWD/qrpc_types.cpp
 

@@ -4,7 +4,7 @@
 #include <QThread>
 
 namespace QRpc {
-
+class ThreadPvt;
 //!
 //! \brief The QRPCThread class
 //!
@@ -17,11 +17,6 @@ public:
     //! \param parent
     //!
     Q_INVOKABLE explicit Thread(QObject *parent = nullptr);
-
-    //!
-    //! \brief ~QRPCThread
-    //!
-    ~Thread();
 
     //!
     //! \brief run
@@ -53,6 +48,6 @@ public slots:
     virtual bool quit();
 
 private:
-    void *p = nullptr;
+    ThreadPvt *p = nullptr;
 };
 } // namespace QRpc

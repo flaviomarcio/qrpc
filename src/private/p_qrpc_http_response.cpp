@@ -1,10 +1,8 @@
 #include "./p_qrpc_http_response.h"
 #include "./p_qrpc_listen_request_code.h"
 #include "./p_qrpc_request_job_response.h"
-#include "./p_qrpc_util.h"
 #include "../qrpc_macro.h"
-
-#include <QStm>
+//#include <QStm>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
@@ -45,12 +43,12 @@ HttpHeaders &HttpResponse::header() const
 void HttpResponse::setBody(const QVariant &vBody)
 {
 
-    auto typeId=qTypeId(vBody);
+    auto typeId=vBody.typeId();
     switch (typeId) {
-    case QMetaType_QVariantMap:
-    case QMetaType_QVariantHash:
-    case QMetaType_QVariantList:
-    case QMetaType_QStringList:
+    case QMetaType::QVariantMap:
+    case QMetaType::QVariantHash:
+    case QMetaType::QVariantList:
+    case QMetaType::QStringList:
     {
         if(this->header().isContentType(AppJson)){
             auto doc=QJsonDocument::fromVariant(vBody);
@@ -67,8 +65,8 @@ void HttpResponse::setBody(const QVariant &vBody)
         p->response_body=doc.toJson(doc.Compact);
         break;
     }
-    case QMetaType_QString:
-    case QMetaType_QByteArray:
+    case QMetaType::QString:
+    case QMetaType::QByteArray:
     {
         if(this->header().isContentType(AppJson)){
             auto doc=QJsonDocument::fromJson(vBody.toByteArray());
@@ -162,9 +160,9 @@ QVariantList HttpResponse::bodyArray() const
 QVariantList HttpResponse::bodyToList() const
 {
     auto v=this->bodyVariant();
-    switch (qTypeId(v)) {
-    case QMetaType_QVariantList:
-    case QMetaType_QStringList:
+    switch (v.typeId()) {
+    case QMetaType::QVariantList:
+    case QMetaType::QStringList:
         return v.toList();
     default:
         if(v.isValid())
@@ -208,10 +206,10 @@ QVariantHash HttpResponse::toResponse() const
 
     auto response_body=QJsonDocument::fromJson(p->response_body).object().toVariantHash();
     QVariantHash vBody;
-    vBody[qsl("response_body")]=response_body;
-    vBody[qsl("qt_status_code")]=p->response_qt_status_code;
-    vBody[qsl("status_code")]=p->response_status_code;
-    vBody[qsl("reason_phrase")]=p->response_reason_phrase;
+    vBody[QStringLiteral("response_body")]=response_body;
+    vBody[QStringLiteral("qt_status_code")]=p->response_qt_status_code;
+    vBody[QStringLiteral("status_code")]=p->response_status_code;
+    vBody[QStringLiteral("reason_phrase")]=p->response_reason_phrase;
     return vBody;
 }
 
@@ -276,7 +274,7 @@ QString HttpResponse::toString() const
 
     auto &response=*this;
     auto qt_text=ListenRequestCode::qt_network_error_phrase(p->response_qt_status_code);
-    auto msg=qsl("QtStatus: Status:%1, %2, %3").arg(QString::number(response.qtStatusCode()), response.reasonPhrase(),qt_text);
+    auto msg=QStringLiteral("QtStatus: Status:%1, %2, %3").arg(QString::number(response.qtStatusCode()), response.reasonPhrase(),qt_text);
     return msg;
 }
 
@@ -295,19 +293,19 @@ HttpResponse::operator bool() const
 HttpResponse&HttpResponse::print(const QString &output)
 {
     for(auto &v:this->printOut(output))
-        sInfo()<<v;
+        rInfo()<<v;
     return*this;
 }
 
 QStringList HttpResponse::printOut(const QString &output)
 {
-    auto space=output.trimmed().isEmpty()?qsl_null:qsl("    ");
+    auto space=output.trimmed().isEmpty()?"":QStringLiteral("    ");
     Q_DECLARE_VU;
     auto out=this->header().printOut(output);
-    out<<qsl("%1%2.     %3").arg(space, output, this->toString().trimmed());
-    out<<qsl("%1%2.     statusCode==%3").arg(space, output).arg(this->statusCode());
-    out<<qsl("%1%2.     qtStatusCode==%3").arg(space, output).arg(this->qtStatusCode());
-    out<<qsl("%1%2.     reasonPhrase==%3").arg(space, output, this->reasonPhrase());
+    out<<QStringLiteral("%1%2.     %3").arg(space, output, this->toString().trimmed());
+    out<<QStringLiteral("%1%2.     statusCode==%3").arg(space, output).arg(this->statusCode());
+    out<<QStringLiteral("%1%2.     qtStatusCode==%3").arg(space, output).arg(this->qtStatusCode());
+    out<<QStringLiteral("%1%2.     reasonPhrase==%3").arg(space, output, this->reasonPhrase());
     return out;
 }
 

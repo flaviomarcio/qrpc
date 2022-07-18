@@ -1,11 +1,9 @@
 #pragma once
 
 #include "./qrpc_global.h"
-#include "./qrpc_types.h"
 #include <QObject>
 #include <QVariant>
-
-class QSettings;
+#include <QSettings>
 
 namespace QRpc {
 class Listen;

@@ -1,7 +1,8 @@
 #pragma once
 
 #include "../qrpc_listen.h"
-#include <QtSql/QSqlDriver>
+#include "../qrpc_macro.h"
+#include <QSqlDriver>
 
 namespace QRpc {
 
@@ -44,6 +45,6 @@ signals:
                            const QVariantHash &responseBody);
 };
 
-QRPC_LISTTEN_AUTO_REGISTER(Database, ListenBrokerDataBase)
+//QRPC_LISTTEN_AUTO_REGISTER(Database, ListenBrokerDataBase)
 
 } // namespace QRpc

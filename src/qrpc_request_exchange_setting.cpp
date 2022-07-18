@@ -1,11 +1,8 @@
 #include "./qrpc_request_exchange_setting.h"
+#include "./qrpc_macro.h"
 #include <QMetaProperty>
-#include <QStm>
 
 namespace QRpc {
-
-#define dPvt()\
-    auto &p =*reinterpret_cast<RequestExchangeSettingPvt*>(this->p)
 
 const static auto staticDefaultLimit=60000;
 
@@ -71,7 +68,7 @@ RequestExchangeSetting &RequestExchangeSetting::clear()
     auto &e=*this;
     for(int i = 0; i < e.metaObject()->propertyCount(); ++i) {
         auto property=e.metaObject()->property(i);
-        if(QByteArray{property.name()} == qbl("objectName"))
+        if(QByteArray{property.name()} == QByteArrayLiteral("objectName"))
             continue;
 
         property.write(this, {});
@@ -92,7 +89,7 @@ QVariantMap RequestExchangeSetting::toMap() const
     auto &e=*this;
     for(int i = 0; i < e.metaObject()->propertyCount(); ++i) {
         auto property=e.metaObject()->property(i);
-        if(QByteArray{property.name()} == qbl("objectName"))
+        if(QByteArray{property.name()} == QByteArrayLiteral("objectName"))
             continue;
 
         auto v=property.read(&e);
@@ -108,7 +105,7 @@ QVariantHash RequestExchangeSetting::toHash() const
     auto &e=*this;
     for(int i = 0; i < e.metaObject()->propertyCount(); ++i) {
         auto property=e.metaObject()->property(i);
-        if(QByteArray{property.name()} == qbl("objectName"))
+        if(QByteArray{property.name()} == QByteArrayLiteral("objectName"))
             continue;
 
         auto v=property.read(&e);
@@ -120,10 +117,10 @@ QVariantHash RequestExchangeSetting::toHash() const
 
 QString RequestExchangeSetting::url() const
 {
-    auto __return = qsl("%1:||%2:%3/%4").arg(this->protocolName(),this->hostName(),QString::number(this->port()),this->route());
-    while(__return.contains(qsl("//")))
-        __return=__return.replace(qsl("//"), qsl("/"));
-    __return=__return.replace(qsl("||"), qsl("//"));
+    auto __return = QStringLiteral("%1:||%2:%3/%4").arg(this->protocolName(),this->hostName(),QString::number(this->port()),this->route());
+    while(__return.contains(QStringLiteral("//")))
+        __return=__return.replace(QStringLiteral("//"), QStringLiteral("/"));
+    __return=__return.replace(QStringLiteral("||"), QStringLiteral("//"));
 
     return __return;
 }
@@ -139,7 +136,7 @@ bool RequestExchangeSetting::isValid() const
 RequestExchangeSetting &RequestExchangeSetting::print(const QString &output)
 {
     for(auto &v:this->printOut(output))
-        sInfo()<<v;
+        rInfo()<<v;
     return*this;
 }
 
@@ -147,19 +144,19 @@ QStringList RequestExchangeSetting::printOut(const QString &output)
 {
     Q_DECLARE_VU;
 
-    auto space=output.trimmed().isEmpty()?qsl_null:qsl("    ");
+    auto space=output.trimmed().isEmpty()?"":QStringLiteral("    ");
     auto vHash=this->toHash();
     if(vHash.isEmpty())
         return {};
 
     QStringList out;
-    out<<qsl("%1%2 attributes").arg(space, output).trimmed();
+    out<<QStringLiteral("%1%2 attributes").arg(space, output).trimmed();
     QHashIterator<QString, QVariant> i(vHash);
     while (i.hasNext()){
         i.next();
-        if(i.key().toLower()==qsl("password"))
+        if(i.key().toLower()==QStringLiteral("password"))
             continue;
-        out<<qsl("%1%2     %2:%3").arg(space, output, i.key(), vu.toStr(i.value()));
+        out<<QStringLiteral("%1%2     %2:%3").arg(space, output, i.key(), vu.toStr(i.value()));
     }
     return out;
 }
@@ -309,18 +306,16 @@ QString &RequestExchangeSetting::route() const
 
 void RequestExchangeSetting::setRoute(const QVariant &value)
 {
-
-    auto typeId=qTypeId(value);
-    switch (typeId) {
-    case QMetaType_QUrl:
+    switch (value.typeId()) {
+    case QMetaType::QUrl:
         p->route = value.toUrl().toString();
         break;
     default:
         p->route = value.toString().trimmed();
     }
-    while(p->route.contains(qsl("//")))
-        p->route=p->route.replace(qsl("//"),qsl("/"));
-    while(p->route.endsWith(qsl("/")))
+    while(p->route.contains(QStringLiteral("//")))
+        p->route=p->route.replace(QStringLiteral("//"),QStringLiteral("/"));
+    while(p->route.endsWith(QStringLiteral("/")))
         p->route=p->route.left(p->route.length()-1);
 }
 

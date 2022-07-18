@@ -1,12 +1,12 @@
 #include "./qrpc_listen_colletion.h"
 #include "./qrpc_listen.h"
 #include "./qrpc_listen_protocol.h"
+#include "./private/p_qrpc_listen_qrpc.h"
 #include "./qrpc_server.h"
 #include <QDir>
 #include <QMutex>
 #include <QSettings>
 
-#include "./private/p_qrpc_server.h"
 //#include "./private/p_qrpc_listen_tcp->h"
 //#include "./private/p_qrpc_listen_udp->h"
 //#include "./private/p_qrpc_listen_wss.h"
@@ -60,7 +60,7 @@ public:
         if(this->listenProtocol.isEmpty())
             return;
 
-        auto settingsDefault = this->settings.value(qsl("default")).toHash();
+        auto settingsDefault = this->settings.value(QStringLiteral("default")).toHash();
         for (auto &v : this->listenProtocol) {
             auto optionName = v->optionName();
             auto settings = this->settings.value(optionName).toHash();
@@ -83,12 +83,12 @@ public:
 
     bool makeOption(int protocol, const QMetaObject &metaObject)
     {
-        QMutexLOCKER locker(&this->lockMake);
+        QMutexLocker<QMutex> locker(&this->lockMake);
         if (this->listenProtocol.contains(protocol))
             return true;
 
         auto option = new ListenProtocol(protocol, metaObject, this->parent());
-        option->setObjectName(qsl("set_%1").arg(QString::fromUtf8(option->protocolName())));
+        option->setObjectName(QStringLiteral("set_%1").arg(QString::fromUtf8(option->protocolName())));
         this->listenProtocol.insert(option->protocol(), option);
         return true;
     }
@@ -258,7 +258,7 @@ bool ListenColletions::start()
     if (p->lockRunning.tryLock(1000)) {
         p->lockWaitRun.lock();
         QThread::start();
-        QMutexLOCKER locker(&p->lockWaitRun);
+        QMutexLocker<QMutex> locker(&p->lockWaitRun);
         __return = this->isRunning();
     }
     return __return;
@@ -273,11 +273,11 @@ bool ListenColletions::quit()
 {
 
     p->lockWaitQuit.lock();
-    QMutexLOCKER lockerRun(
+    QMutexLocker<QMutex> lockerRun(
         &p->lockWaitRun); //evitar crash antes da inicializacao de todos os listainers
     p->listenQuit();
     QThread::quit();
-    QMutexLOCKER lockerQuit(&p->lockWaitQuit);
+    QMutexLocker<QMutex> lockerQuit(&p->lockWaitQuit);
     QThread::wait();
     return true;
 }

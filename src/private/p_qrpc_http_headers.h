@@ -1,6 +1,9 @@
 #pragma once
 
 #include "../qrpc_global.h"
+#include "../qrpc_types.h"
+#include <QVariant>
+#include <QVariantHash>
 
 namespace QRpc {
 class HttpHeadersPvt;
@@ -27,7 +30,7 @@ public:
     //!
     virtual QVariantHash &rawHeader() const;
     virtual QVariant rawHeader(const QString &headername) const;
-    virtual HttpHeaders &setRawHeader(const QVariantHash&rawHeader);
+    virtual HttpHeaders &setRawHeader(const QVariantHash &rawHeader);
     virtual HttpHeaders &setRawHeader(const QString &header, const QVariant &value);
 
     //!
@@ -35,7 +38,7 @@ public:
     //! \param rawHeader
     //! \return
     //!
-    virtual HttpHeaders &addRawHeader(const QVariantHash&rawHeader);
+    virtual HttpHeaders &addRawHeader(const QVariantHash &rawHeader);
     virtual HttpHeaders &addRawHeader(const QString &header, const QVariant &value);
 
     //!

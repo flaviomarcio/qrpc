@@ -1,17 +1,10 @@
 #pragma once
 
-#include "../qrpc_controller.h"
+#include <QDebug>
+#include <QList>
 #include "../qrpc_controller_options.h"
 #include "../qrpc_listen_colletion.h"
 #include "../qrpc_server.h"
-#include "./p_qrpc_listen_qrpc.h"
-#include <QCryptographicHash>
-#include <QDebug>
-#include <QFile>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QList>
-#include <QMutex>
 
 namespace QRpc {
 
@@ -86,7 +79,7 @@ public:
     virtual bool load(const QVariantHash &settings) const;
 
 public:
-    QByteArray settingsGroup = qbl("RPCServer");
+    QByteArray settingsGroup = QByteArrayLiteral("RPCServer");
     QVariantHash settings;
     QList<const QMetaObject *> controllers;
     QList<const QMetaObject *> controllerParsers;

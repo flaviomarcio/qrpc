@@ -4,14 +4,16 @@
 #include "../qrpc_listen_request_parser.h"
 #include "../qrpc_server.h"
 #include "./p_qrpc_listen_qrpc_slot.h"
+#include "../qrpc_const.h"
+#if Q_RPC_LOG
+#include "../qrpc_macro.h"
+#endif
 #include <QCryptographicHash>
 #include <QDebug>
 #include <QMetaMethod>
 #include <QMutex>
 
 namespace QRpc {
-
-#define dPvt() auto &p = *reinterpret_cast<ListenQRPCPvt *>(this->p)
 
 class ListenQRPCPvt : public QObject
 {
@@ -37,37 +39,20 @@ public:
         auto list = listenSlotCache.values();
         listenSlotCache.clear();
         qDeleteAll(list);
-    }
 
-//    auto basePathToStringList(const QVariant &vBasePath)
-//    {
-//        QStringList vList;
-//        switch (qTypeId(vBasePath)) {
-//        case QMetaType_QStringList:
-//        case QMetaType_QVariantList: {
-//            for (auto &v : vBasePath.toList()) {
-//                auto path = v.toString().trimmed().trimmed().toLower();
-//                if (path.isEmpty())
-//                    continue;
-//                vList << path;
-//            }
-//            break;
-//        }
-//        default:
-//            vList = QStringList{vBasePath.toString().toLower()};
-//        }
-//        return vList;
-//    }
+        this->mutexLockerRunning.tryLock(5000);//wait finish threads
+        this->mutexLockerRunning.unlock();
+    }
 
     auto basePathParser(const QString &path, const QString &methodName)
     {
         auto __return = path.trimmed().simplified();
-        __return = __return.replace(qsl("*"), qsl_null).toLower().toUtf8();
-        __return = qbl("/") + __return + qbl("/") + methodName;
-        while (__return.contains(qbl("\"")) || __return.contains(qbl("//"))) {
+        __return = __return.replace(QStringLiteral("*"), "").toLower().toUtf8();
+        __return = QByteArrayLiteral("/") + __return + QByteArrayLiteral("/") + methodName;
+        while (__return.contains(QByteArrayLiteral("\"")) || __return.contains(QByteArrayLiteral("//"))) {
             __return = QString(__return)
-                           .replace(qsl("\""), qsl_null)
-                           .replace(qsl("//"), qsl("/"))
+                           .replace(QStringLiteral("\""), "")
+                           .replace(QStringLiteral("//"), QStringLiteral("/"))
                            .toUtf8();
         }
         return __return.toUtf8();
@@ -120,7 +105,7 @@ public:
 
 
 #if Q_RPC_LOG_SUPER_VERBOSE
-        sWarning() << "registered class : " << makeObject->metaObject()->className();
+        rWarning() << "registered class : " << makeObject->metaObject()->className();
 #endif
 
         static auto nottionExcludeMethod=QVariantList{controller->rqRedirect, controller->rqExcludePath};
@@ -137,7 +122,7 @@ public:
 
             if (method.parameterCount() > 0) {
 #if Q_RPC_LOG_SUPER_VERBOSE
-                sWarning() << qsl("Method(%1) ignored").arg(mMth.name().constData());
+                rWarning() << QStringLiteral("Method(%1) ignored").arg(mMth.name().constData());
 #endif
                 continue;
             }
@@ -146,12 +131,12 @@ public:
 
             if (methodBlackList.contains(methodName)) {
 #if Q_RPC_LOG_SUPER_VERBOSE
-                sWarning() << qsl("Method(%1) in blacklist").arg(mMth.name().constData());
+                rWarning() << QStringLiteral("Method(%1) in blacklist").arg(mMth.name().constData());
 #endif
                 continue;
             }
 
-            if (methodName.startsWith(qbl("_"))) //ignore methods with [_] in start name
+            if (methodName.startsWith(QByteArrayLiteral("_"))) //ignore methods with [_] in start name
                 continue;
 
             const auto &notations=controller->notation(method);
@@ -174,7 +159,7 @@ public:
         controllerMethods.clear();
         auto server = this->listenQRPC->server();
         if (server == nullptr) {
-            qWarning() << qsl("Invalid server");
+            qWarning() << QStringLiteral("Invalid server");
             return;
         }
 
@@ -202,7 +187,7 @@ public:
     {
         auto server = this->listenQRPC->server();
         if (server == nullptr) {
-            qWarning() << qsl("Invalid server");
+            qWarning() << QStringLiteral("Invalid server");
             return;
         }
         this->controllerParsers.clear();
@@ -241,7 +226,7 @@ public slots:
         auto vHash = request.toHash();
         ListenSlotList *listenSlotList = nullptr;
         { //locker
-            QMutexLOCKER locker(&mutexLockerHash);
+            QMutexLocker<QMutex> locker(&mutexLockerHash);
             auto md5 = request.hash();
             listenSlotList = this->listenSlotCache.value(md5);
             if (listenSlotList == nullptr) {
@@ -263,7 +248,7 @@ public slots:
 
         ListenQRPCSlot *thread = nullptr;
         while (!requestInvoke(thread)) {
-            QMutexLOCKER locker(&mutexLockerHash);
+            QMutexLocker<QMutex> locker(&mutexLockerHash);
             auto thread = new ListenQRPCSlot(this->listenQRPC);
             thread->start();
             listenSlotList->append(thread);
@@ -275,12 +260,6 @@ ListenQRPC::ListenQRPC(QObject *parent) : Listen(nullptr)
 {
     Q_UNUSED(parent)
     this->p = new ListenQRPCPvt{this};
-}
-
-ListenQRPC::~ListenQRPC()
-{
-    p->mutexLockerRunning.tryLock(5000);//wait finish threads
-    p->mutexLockerRunning.unlock();
 }
 
 void ListenQRPC::run()

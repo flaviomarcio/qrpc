@@ -1,5 +1,6 @@
 #include "./qrpc_request_exchange.h"
-#include "./private/p_qrpc_request_job.h"
+#include "./qrpc_macro.h"
+
 namespace QRpc {
 
 #define dPvt()\
@@ -65,19 +66,19 @@ RequestExchangeSetting &RequestExchange::back()
 QVariantMap RequestExchange::toMap() const
 {
 
-    return QVariantMap{{qsl("call"),p->call.toHash()}, {qsl("back"),p->back.toHash()}};
+    return QVariantMap{{QStringLiteral("call"),p->call.toHash()}, {QStringLiteral("back"),p->back.toHash()}};
 }
 
 QVariantHash RequestExchange::toHash() const
 {
 
-    return QVariantHash{{qsl("call"),p->call.toHash()}, {qsl("back"),p->back.toHash()}};
+    return QVariantHash{{QStringLiteral("call"),p->call.toHash()}, {QStringLiteral("back"),p->back.toHash()}};
 }
 
 RequestExchange &RequestExchange::print(const QString &output)
 {
     for(auto &v:this->printOut(output))
-        sInfo()<<v;
+        rInfo()<<v;
     return*this;
 }
 
@@ -85,16 +86,16 @@ QStringList RequestExchange::printOut(const QString &output)
 {
 
     QStringList out;
-    auto space=output.trimmed().isEmpty()?qsl_null:qsl("    ");
+    auto space=output.trimmed().isEmpty()?"":QStringLiteral("    ");
     if(p->call.isValid()){
-        out<<qsl("%1%2 exchange.call").arg(space, output).trimmed();
-        auto outtext=space+qsl(".    ");
+        out<<QStringLiteral("%1%2 exchange.call").arg(space, output).trimmed();
+        auto outtext=space+QStringLiteral(".    ");
         for(auto &v:p->call.printOut(outtext))
             out<<v;
     }
     if(p->back.isValid()){
-        out<<qsl("%1%2 exchange.back").arg(space, output).trimmed();
-        auto outtext=space+qsl(".    ");
+        out<<QStringLiteral("%1%2 exchange.back").arg(space, output).trimmed();
+        auto outtext=space+QStringLiteral(".    ");
         for(auto &v:p->back.printOut(outtext))
             out<<v;
     }

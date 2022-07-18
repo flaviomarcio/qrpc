@@ -1,4 +1,10 @@
 #include "./p_qrpc_request_job_database.h"
+#include "../qrpc_const.h"
+#if Q_RPC_LOG
+#include "../qrpc_macro.h"
+#endif
+#include <QSqlQuery>
+#include <QSqlError>
 
 namespace QRpc {
 
@@ -14,7 +20,7 @@ ListenRequest &RequestJobDataBase::requestMake(RequestJobResponse *response){
     const auto &request_url=response->request_url;
     this->response=response;
 
-    static const auto removeHeaders=QStringList{qsl("host"),qsl("content-length")};
+    static const auto removeHeaders=QStringList{QStringLiteral("host"),QStringLiteral("content-length")};
     static const auto ignoreHeaders=QStringList{ContentDispositionName,ContentTypeName,QString(ContentDispositionName).toLower(), QString(ContentTypeName).toLower()};
     this->listen_request.clear();
     this->listen_request.makeUuid();
@@ -40,24 +46,24 @@ ListenRequest &RequestJobDataBase::requestMake(RequestJobResponse *response){
             auto v=i.value();
             QStringList headerValues;
 
-            switch (qTypeId(v)) {
-            case QMetaType_QVariantList:
-            case QMetaType_QStringList:
+            switch (v.typeId()) {
+            case QMetaType::QVariantList:
+            case QMetaType::QStringList:
             {
                 auto vList=v.toList();
                 for(auto &r:vList){
-                    headerValues<<r.toString().replace(qsl("\n"), qsl(";"));
+                    headerValues<<r.toString().replace(QStringLiteral("\n"), QStringLiteral(";"));
                 }
                 break;
             }
-            case QMetaType_QVariantHash:
-            case QMetaType_QVariantMap:
+            case QMetaType::QVariantHash:
+            case QMetaType::QVariantMap:
             {
                 auto vMap=v.toHash();
                 QHashIterator<QString, QVariant> i(vMap);
                 while (i.hasNext()) {
                     i.next();
-                    auto r=qsl("%1=%2").arg(i.value().toString(), v.toString()).replace(qsl("\n"), qsl(";"));
+                    auto r=QStringLiteral("%1=%2").arg(i.value().toString(), v.toString()).replace(QStringLiteral("\n"), QStringLiteral(";"));
                     headerValues<<r;
                 }
                 break;
@@ -65,23 +71,23 @@ ListenRequest &RequestJobDataBase::requestMake(RequestJobResponse *response){
             default:
                 headerValues<<v.toString();
             }
-            v=headerValues.join(qsl("; "));
+            v=headerValues.join(QStringLiteral("; "));
             auto key=i.key().toUtf8().trimmed();
             requestHeader[key]=v;
 #if Q_RPC_LOG_SUPER_VERBOSE
-            sInfo()<<":request.setRawHeader("<<i.key()<<", "<<i.value()<<")";
+            rInfo()<<":request.setRawHeader("<<i.key()<<", "<<i.value()<<")";
 #endif
         }
     };
 
     configureHeaders();
 
-    requestHeader[qsl("broker-topic-request")]=request_url;
-    requestHeader[qsl("broker-topic-response")]=this->listen_request.requestUuid().toString();
+    requestHeader[QStringLiteral("broker-topic-request")]=request_url;
+    requestHeader[QStringLiteral("broker-topic-response")]=this->listen_request.requestUuid().toString();
 
-    auto v=requestHeader[qsl("Content-Type")];
+    auto v=requestHeader[QStringLiteral("Content-Type")];
     if(!v.isValid()){
-        requestHeader[qsl("Content-Type")]=qsl("application/x-www-form-urlencoded");
+        requestHeader[QStringLiteral("Content-Type")]=QStringLiteral("application/x-www-form-urlencoded");
     }
     response->request_start=QDateTime::currentDateTime();
     response->response_qt_status_code=QNetworkReply::NoError;
@@ -90,7 +96,7 @@ ListenRequest &RequestJobDataBase::requestMake(RequestJobResponse *response){
     auto requestMethod=response->request_exchange.call().method();
     auto methodRoute=response->request_exchange.call().route().toUtf8().toUpper();
     auto topicName=response->request_exchange.call().topic().toUtf8().toUpper();
-    auto requestPath=methodRoute+qsl("/")+topicName;
+    auto requestPath=methodRoute+QStringLiteral("/")+topicName;
 
     this->listen_request.setRequestMethod(requestMethod);
     this->listen_request.setRequestPath(requestPath);
@@ -124,19 +130,19 @@ bool RequestJobDataBase::connectionMake(QSqlDatabase &outConnection)
     auto userName=exchange_call.userName();
     auto password=exchange_call.passWord();
     auto port=exchange_call.port();
-    auto connectOptions=settings[qsl("connectionoptions")].toString().trimmed();
+    auto connectOptions=settings[QStringLiteral("connectionoptions")].toString().trimmed();
 
     static int seq=0;
-    auto connectionName=qsl("broker-%1-%2-%3").arg(driver).arg(port).arg(++seq).toLower();
+    auto connectionName=QStringLiteral("broker-%1-%2-%3").arg(driver).arg(port).arg(++seq).toLower();
     auto __connection=QSqlDatabase::addDatabase(driver,connectionName);
 
 
     if(__connection.isValid()){
         QString dataBaseName;
         if(__connection.driver()->dbmsType()==QSqlDriver::PostgreSQL)
-            dataBaseName=qsl("postgres");
+            dataBaseName=QStringLiteral("postgres");
         else if(__connection.driver()->dbmsType()==QSqlDriver::MSSqlServer)
-            dataBaseName=qsl("master");
+            dataBaseName=QStringLiteral("master");
         __connection.setHostName(hostName);
         __connection.setUserName(userName);
         __connection.setPassword(password);
@@ -145,7 +151,7 @@ bool RequestJobDataBase::connectionMake(QSqlDatabase &outConnection)
         __connection.setConnectOptions(connectOptions);
         if(!__connection.open()){
             auto msg=__connection.lastError().text();
-            sWarning()<<msg;
+            rWarning()<<msg;
             this->onBrokerError(msg);
         }
     }
@@ -159,7 +165,7 @@ bool RequestJobDataBase::connectionMake(QSqlDatabase &outConnection)
         this->responsePath=this->listen_request.requestUuid().toString();
         if(!this->sqlDriver->subscribeToNotification(this->responsePath)){
             auto msg=__connection.lastError().text();
-            sWarning()<<msg;
+            rWarning()<<msg;
             this->onBrokerError(msg);
         }
         else{
@@ -176,12 +182,12 @@ bool RequestJobDataBase::call(RequestJobResponse *response)
     auto &request=this->requestMake(response);
     QSqlDatabase __connection;
     if(!this->connectionMake(__connection)){
-        this->onBrokerError(qsl("invalid database connection"));
+        this->onBrokerError(QStringLiteral("invalid database connection"));
         return false;
     }
 
     if(!__connection.isValid() || !__connection.isOpen()){
-        this->onBrokerError(qsl("invalid database connection"));
+        this->onBrokerError(QStringLiteral("invalid database connection"));
         return false;
     }
 
@@ -191,14 +197,14 @@ bool RequestJobDataBase::call(RequestJobResponse *response)
         auto requestBody=request.toJson();
         QString command;
         if(dbDriverType==QSqlDriver::PostgreSQL){
-            command=qsl("select pg_notify('%1', '%2');").arg(request_url.toString(), requestBody);
+            command=QStringLiteral("select pg_notify('%1', '%2');").arg(request_url.toString(), requestBody);
         }
         if(!command.isEmpty()){
             QSqlQuery q(__connection);
             q.prepare(command);
             if(!q.exec()){
                 auto msg=q.lastError().text().trimmed();
-                sWarning()<<msg;
+                rWarning()<<msg;
                 __return=msg.isEmpty();
             }
             else{
@@ -219,7 +225,7 @@ void RequestJobDataBase::onReceiveBroker(const QString &responseTopic, QSqlDrive
     if(!this->listen_response.fromHash(responseBody.toHash())){
         response->response_qt_status_code=QNetworkReply::InternalServerError;
         response->response_status_code=501;
-        response->response_status_reason_phrase=qbl("Bad response");
+        response->response_status_reason_phrase=QByteArrayLiteral("Bad response");
     }
     else{
         auto topicUuidRequest=this->listen_request.requestUuid().toString();
@@ -228,7 +234,7 @@ void RequestJobDataBase::onReceiveBroker(const QString &responseTopic, QSqlDrive
         if(!(topicUuidRequest==topicUuidResponse && topicUuidRequest==topicUuidTopic)){
             response->response_qt_status_code=QNetworkReply::InternalServerError;
             response->response_status_code=501;
-            response->response_status_reason_phrase=qbl("Bad identification");
+            response->response_status_reason_phrase=QByteArrayLiteral("Bad identification");
         }
         else{
             response->response_qt_status_code=QNetworkReply::NoError;
@@ -261,12 +267,12 @@ void RequestJobDataBase::onFinish()
     if(!listen_response.isValid()){
         response->response_qt_status_code=QNetworkReply::InternalServerError;
         response->response_status_code=404;
-        response->response_status_reason_phrase=qbl("Internal server error");
+        response->response_status_reason_phrase=QByteArrayLiteral("Internal server error");
         response->response_body.clear();
     }
     else if(response->response_status_code!=QNetworkReply::NoError){
         response->response_qt_status_code=QNetworkReply::InternalServerError;
-        response->response_status_reason_phrase=qbl("Request timeout");
+        response->response_status_reason_phrase=QByteArrayLiteral("Request timeout");
         response->response_body.clear();
     }
     else{

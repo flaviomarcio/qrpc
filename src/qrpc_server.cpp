@@ -1,4 +1,5 @@
 #include "./qrpc_server.h"
+#include "./qrpc_controller.h"
 #include "./private/p_qrpc_server.h"
 
 namespace QRpc {
@@ -98,7 +99,7 @@ QVariant Server::settingsFileName()
 
 bool Server::setSettingsFileName(const QString &fileName)
 {
-    return p->v_load(qvsl{fileName});
+    return p->v_load(QStringList{fileName});
 }
 
 bool Server::setSettings(const QVariant &settings) const

@@ -1,4 +1,13 @@
 #include "./p_qrpc_server.h"
+#include "../../qstm/src/qstm_util_variant.h"
+#include "../qrpc_const.h"
+#if Q_RPC_LOG
+#include "../qrpc_macro.h"
+#endif
+#include <QCryptographicHash>
+#include <QFile>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 namespace QRpc {
 
@@ -30,11 +39,11 @@ bool ServerPvt::serverStart()
 {
     if (this->server->objectName().isEmpty()) {
         static int countServerName = 0;
-        auto name = qsl("Server_%1").arg(++countServerName);
+        auto name = QStringLiteral("Server_%1").arg(++countServerName);
         this->server->setObjectName(name);
     }
 
-    this->listenColletions->setObjectName(this->server->objectName() + qsl("Pvt"));
+    this->listenColletions->setObjectName(this->server->objectName() + QStringLiteral("Pvt"));
     if (!this->listenColletions->isRunning())
         return this->listenColletions->start();
     return this->listenColletions->isRunning();
@@ -48,12 +57,12 @@ bool ServerPvt::serverStop()
 
 bool ServerPvt::v_load(const QVariant &v)
 {
-    switch (qTypeId(v)){
-    case QMetaType_QVariantList:
-    case QMetaType_QStringList:
+    switch (v.typeId()){
+    case QMetaType::QVariantList:
+    case QMetaType::QStringList:
         return this->load(v.toStringList());
-    case QMetaType_QVariantHash:
-    case QMetaType_QVariantMap:
+    case QMetaType::QVariantHash:
+    case QMetaType::QVariantMap:
         return this->load(v.toHash());
     default:
         if(v.toString().trimmed().isEmpty())
@@ -74,14 +83,14 @@ bool ServerPvt::load(const QStringList &settingsFileName)
 
         if (!file.exists()) {
 #if Q_RPC_LOG
-            sWarning() << tr("file not exists %1").arg(file.fileName());
+            rWarning() << tr("file not exists %1").arg(file.fileName());
 #endif
             continue;
         }
 
         if (!file.open(QFile::ReadOnly)) {
 #if Q_RPC_LOG
-            sWarning() << tr("%1, %2").arg(file.fileName(), file.errorString());
+            rWarning() << tr("%1, %2").arg(file.fileName(), file.errorString());
 #endif
             continue;
         }
@@ -92,14 +101,14 @@ bool ServerPvt::load(const QStringList &settingsFileName)
         auto doc = QJsonDocument::fromJson(bytes, error);
         if (error != nullptr) {
 #if Q_RPC_LOG
-            sWarning() << tr("%1, %2").arg(file.fileName(), error->errorString());
+            rWarning() << tr("%1, %2").arg(file.fileName(), error->errorString());
 #endif
             continue;
         }
 
         if (doc.object().isEmpty()) {
 #if Q_RPC_LOG
-            sWarning() << tr("object is empty, %2").arg(file.fileName());
+            rWarning() << tr("object is empty, %2").arg(file.fileName());
 #endif
             continue;
         }
@@ -126,14 +135,14 @@ bool ServerPvt::load(const QString &settingsFileName)
 
     if (!file.exists()) {
 #if Q_RPC_LOG
-        sWarning() << tr("file not exists %1").arg(file.fileName());
+        rWarning() << tr("file not exists %1").arg(file.fileName());
 #endif
         return false;
     }
 
     if (!file.open(QFile::ReadOnly)) {
 #if Q_RPC_LOG
-        sWarning() << tr("%1, %2").arg(file.fileName(), file.errorString());
+        rWarning() << tr("%1, %2").arg(file.fileName(), file.errorString());
 #endif
         return false;
     }
@@ -145,14 +154,14 @@ bool ServerPvt::load(const QString &settingsFileName)
     auto doc = QJsonDocument::fromJson(bytes, error);
     if (error != nullptr) {
 #if Q_RPC_LOG
-        sWarning() << tr("%1, %2").arg(file.fileName(), error->errorString());
+        rWarning() << tr("%1, %2").arg(file.fileName(), error->errorString());
 #endif
         return false;
     }
 
     if (doc.object().isEmpty()) {
 #if Q_RPC_LOG
-        sWarning() << tr("object is empty, %2").arg(file.fileName());
+        rWarning() << tr("object is empty, %2").arg(file.fileName());
 #endif
         return false;
     }
@@ -162,19 +171,19 @@ bool ServerPvt::load(const QString &settingsFileName)
 
 bool ServerPvt::load(const QVariantHash &settings) const
 {
-    if (!settings.contains(qsl("protocol"))) {
+    if (!settings.contains(QStringLiteral("protocol"))) {
 #if Q_RPC_LOG
-        sWarning() << tr("Json property [protocol] not detected");
+        rWarning() << tr("Json property [protocol] not detected");
 #endif
         return false;
     }
 
-    auto protocol = settings.value(qsl("protocol")).toHash();
-    auto controller = settings.value(qsl("controller")).toHash();
+    auto protocol = settings.value(QStringLiteral("protocol")).toHash();
+    auto controller = settings.value(QStringLiteral("controller")).toHash();
 
     if (protocol.isEmpty()) {
 #if Q_RPC_LOG
-        sWarning() << tr("Json property [protocol] is empty");
+        rWarning() << tr("Json property [protocol] is empty");
 #endif
         return false;
     }

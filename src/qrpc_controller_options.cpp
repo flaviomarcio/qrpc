@@ -60,7 +60,7 @@ ControllerOptions &ControllerOptions::insert(const QVariantHash &value)
 
 ControllerSetting&ControllerOptions::setting()
 {
-    return this->setting(qsl_null);
+    return this->setting({});
 }
 
 ControllerSetting&ControllerOptions::setting(const QString &value)

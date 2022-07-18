@@ -4,7 +4,7 @@
 #include <QVariantHash>
 #include <QVariantList>
 #include <QString>
-#include <QNotation>
+#include <QAnnotation>
 #include "./qrpc_global.h"
 
 namespace QRpcPrivate
@@ -13,7 +13,7 @@ namespace QRpcPrivate
 //!
 //! \brief The NotationsExtended class
 //!
-class Q_RPC_EXPORT NotationsExtended:public QNotation::Extended
+class Q_RPC_EXPORT NotationsExtended:public QAnnotation::Extended
 {
 public:
 
@@ -32,123 +32,123 @@ public:
     //!
     //! \brief apiDoc
     //!
-    Q_NOTATION_DECLARE(apiDoc, Documentation)
+    Q_ANNOTATION_DECLARE(apiDoc, Documentation)
 
     //!
     //! \brief apiName
     //!
-    Q_NOTATION_DECLARE_FUNC(apiName, Information)
+    Q_ANNOTATION_DECLARE_FUNC(apiName, Information)
 
     //!
     //! \brief apiDescription
     //!
-    Q_NOTATION_DECLARE_FUNC(apiDescription, Information)
+    Q_ANNOTATION_DECLARE_FUNC(apiDescription, Information)
 
     //!
     //! \brief apiGroup
     //!
-    Q_NOTATION_DECLARE_FUNC(apiGroup, Information)
+    Q_ANNOTATION_DECLARE_FUNC(apiGroup, Information)
 
     //!
     //! \brief apiModule
     //!
-    Q_NOTATION_DECLARE_FUNC(apiModule, Information)
+    Q_ANNOTATION_DECLARE_FUNC(apiModule, Information)
 
     //!
     //! \brief apiRedirect
     //!
-    Q_NOTATION_DECLARE(apiRedirect, Information)
+    Q_ANNOTATION_DECLARE(apiRedirect, Information)
 
     //!
     //! \brief apiBasePath
     //!
-    Q_NOTATION_DECLARE_FUNC(apiBasePath, Information)
+    Q_ANNOTATION_DECLARE_FUNC(apiBasePath, Information)
 
     //!
     //!
-    Q_NOTATION_DECLARE_FUNC(opName, Information)
+    Q_ANNOTATION_DECLARE_FUNC(opName, Information)
 
     //!
     //! \brief opDescription
     //!
-    Q_NOTATION_DECLARE_FUNC(opDescription, Information)
+    Q_ANNOTATION_DECLARE_FUNC(opDescription, Information)
 
     //!
     //! \brief opGroup
     //!
-    Q_NOTATION_DECLARE_FUNC(opGroup, Information)
+    Q_ANNOTATION_DECLARE_FUNC(opGroup, Information)
 
     //!
     //! \brief opPath
     //! \param path
     //! \return
     //!
-    Q_NOTATION_DECLARE_FUNC(opPath, Information)
+    Q_ANNOTATION_DECLARE_FUNC(opPath, Information)
 
     //!
     //! \brief opCrud
     //!
-    Q_NOTATION_DECLARE(opCrud, ApiOperation)
+    Q_ANNOTATION_DECLARE(opCrud, ApiOperation)
 
     //!
     //! \brief opTrace
     //!
-    Q_NOTATION_DECLARE(opTrace, ApiOperation)
+    Q_ANNOTATION_DECLARE(opTrace, ApiOperation)
 
     //!
     //! \brief opPatch
     //!
-    Q_NOTATION_DECLARE(opPatch, ApiOperation)
+    Q_ANNOTATION_DECLARE(opPatch, ApiOperation)
 
     //!
     //! \brief opHead
     //!
-    Q_NOTATION_DECLARE(opHead, ApiOperation)
+    Q_ANNOTATION_DECLARE(opHead, ApiOperation)
 
     //!
     //! \brief opOptions
     //!
-    Q_NOTATION_DECLARE(opOptions, ApiOperation)
+    Q_ANNOTATION_DECLARE(opOptions, ApiOperation)
 
     //!
     //! \brief opGet
     //!
-    Q_NOTATION_DECLARE(opGet, ApiOperation)
+    Q_ANNOTATION_DECLARE(opGet, ApiOperation)
 
     //!
     //! \brief opPost
     //!
-    Q_NOTATION_DECLARE(opPost, ApiOperation)
+    Q_ANNOTATION_DECLARE(opPost, ApiOperation)
 
     //!
     //! \brief opPut
     //!
-    Q_NOTATION_DECLARE(opPut, ApiOperation)
+    Q_ANNOTATION_DECLARE(opPut, ApiOperation)
 
     //!
     //! \brief opDelete
     //!
-    Q_NOTATION_DECLARE(opDelete, ApiOperation)
+    Q_ANNOTATION_DECLARE(opDelete, ApiOperation)
 
     //!
     //! \brief opRules
     //!
-    Q_NOTATION_DECLARE_FUNC(opRules, Security)
+    Q_ANNOTATION_DECLARE_FUNC(opRules, Security)
 
     //!
     //! \brief rqExcludePath
     //!
-    Q_NOTATION_DECLARE(rqExcludePath, Information)
+    Q_ANNOTATION_DECLARE(rqExcludePath, Information)
 
     //!
     //! \brief rqSecurityIgnore
     //!
-    Q_NOTATION_DECLARE(rqSecurityIgnore, Security)
+    Q_ANNOTATION_DECLARE(rqSecurityIgnore, Security)
 
     //!
     //! \brief apiRedirect
     //!
-    Q_NOTATION_DECLARE(rqRedirect, Operation)
+    Q_ANNOTATION_DECLARE(rqRedirect, Operation)
 private:
 
 };

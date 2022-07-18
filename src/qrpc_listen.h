@@ -1,6 +1,7 @@
 #pragma once
 
 #include "./qrpc_global.h"
+#include "./qrpc_types.h"
 #include <QTemporaryFile>
 #include <QThread>
 #include <QUuid>

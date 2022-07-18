@@ -5,8 +5,10 @@
 #include "../qrpc_listen_protocol.h"
 #include "../qrpc_listen_request.h"
 #include "../qrpc_listen_request_cache.h"
+#include "../qrpc_const.h"
+#if Q_RPC_LOG
 #include "../qrpc_macro.h"
-#include "../qrpc_server.h"
+#endif
 #include <QFile>
 #include <QSslCertificate>
 #include <QSslConfiguration>
@@ -55,17 +57,17 @@ public:
             if (port <= 0)
                 continue;
 
-            QFile certFile(qsl(":/sslconfiguration/rpc.cert"));
-            QFile keyFile(qsl(":/sslconfiguration/rpc.key"));
+            QFile certFile(QStringLiteral(":/sslconfiguration/rpc.cert"));
+            QFile keyFile(QStringLiteral(":/sslconfiguration/rpc.key"));
 
             if (!certFile.open(QIODevice::ReadOnly)) {
-                sWarning() << tr("LocalServerListener: Cannot load certfile : %1")
+                rWarning() << tr("LocalServerListener: Cannot load certfile : %1")
                                   .arg(certFile.fileName());
                 continue;
             }
 
             if (!keyFile.open(QIODevice::ReadOnly)) {
-                sWarning() << tr("LocalServerListener: Cannot load keyfile : %s")
+                rWarning() << tr("LocalServerListener: Cannot load keyfile : %s")
                                   .arg(keyFile.fileName());
                 continue;
             }
@@ -79,7 +81,7 @@ public:
             sslConfiguration.setLocalCertificate(certificate);
             sslConfiguration.setPrivateKey(sslKey);
 
-            auto server = new QWebSocketServer(qsl("SSL QRpcServer"),
+            auto server = new QWebSocketServer(QStringLiteral("SSL QRpcServer"),
                                                QWebSocketServer::NonSecureMode,
                                                this);
 
@@ -93,7 +95,7 @@ public:
                              &WebSocketServer::onServerClosed);
 
             if (!server->listen(QHostAddress(QHostAddress::LocalHost), port)) {
-                sWarning() << tr("LocalServerListener: Cannot bind on port %1: %2")
+                rWarning() << tr("LocalServerListener: Cannot bind on port %1: %2")
                                   .arg(port)
                                   .arg(server->errorString());
                 server->close();
@@ -102,7 +104,7 @@ public:
             }
 
             if (!server->isListening()) {
-                sWarning() << tr("LocalServerListener: Cannot bind on port %1: %2")
+                rWarning() << tr("LocalServerListener: Cannot bind on port %1: %2")
                                   .arg(port)
                                   .arg(server->errorString());
                 server->close();
