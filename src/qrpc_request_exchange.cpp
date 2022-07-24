@@ -40,7 +40,7 @@ RequestExchange&RequestExchange::operator =(RequestExchange &e)
 
     p->call=e.call();
     p->back=e.back();
-    return*this;
+    return *this;
 }
 
 RequestExchange &RequestExchange::clear()
@@ -48,7 +48,7 @@ RequestExchange &RequestExchange::clear()
 
     p->call.clear();
     p->back.clear();
-    return*this;
+    return *this;
 }
 
 RequestExchangeSetting &RequestExchange::call()
@@ -79,7 +79,7 @@ RequestExchange &RequestExchange::print(const QString &output)
 {
     for(auto &v:this->printOut(output))
         rInfo()<<v;
-    return*this;
+    return *this;
 }
 
 QStringList RequestExchange::printOut(const QString &output)

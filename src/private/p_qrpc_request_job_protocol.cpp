@@ -13,7 +13,7 @@ RequestJobProtocol::~RequestJobProtocol()
 
 RequestJobProtocol &RequestJobProtocol::clear()
 {
-    return*this;
+    return *this;
 }
 
 bool RequestJobProtocol::call(RequestJobResponse *response)

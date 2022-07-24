@@ -266,7 +266,7 @@ HttpResponse &HttpResponse::setResponse(QObject *objectResponse)
         p->response_reason_phrase=response.response_status_reason_phrase;
         p->response_body=response.response_body;
     }
-    return*this;
+    return *this;
 }
 
 QString HttpResponse::toString() const
@@ -294,7 +294,7 @@ HttpResponse&HttpResponse::print(const QString &output)
 {
     for(auto &v:this->printOut(output))
         rInfo()<<v;
-    return*this;
+    return *this;
 }
 
 QStringList HttpResponse::printOut(const QString &output)

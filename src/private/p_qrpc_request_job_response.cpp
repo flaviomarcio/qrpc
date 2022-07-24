@@ -34,7 +34,7 @@ RequestJobResponse &RequestJobResponse::operator =(RequestJobResponse &e)
     this->response_body=e.response_body;
     this->response_qt_status_code=e.response_qt_status_code;
     this->responseHeader=e.responseHeader;
-    return*this;
+    return *this;
 }
 
 void RequestJobResponse::clear()

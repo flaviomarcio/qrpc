@@ -60,7 +60,7 @@ RequestExchangeSetting&RequestExchangeSetting::operator=(const RequestExchangeSe
     QStm::MetaObjectUtil util(*e.metaObject());
     auto values=util.toHash(&e);\
     util.writeHash(this, values);
-    return*this;
+    return *this;
 }
 
 RequestExchangeSetting &RequestExchangeSetting::clear()
@@ -73,14 +73,14 @@ RequestExchangeSetting &RequestExchangeSetting::clear()
 
         property.write(this, {});
     }
-    return*this;
+    return *this;
 }
 
 RequestExchangeSetting &RequestExchangeSetting::operator=(const QVariantHash &e)
 {
     QStm::MetaObjectUtil util;
     util.writeHash(this, e);
-    return*this;
+    return *this;
 }
 
 QVariantMap RequestExchangeSetting::toMap() const
@@ -137,7 +137,7 @@ RequestExchangeSetting &RequestExchangeSetting::print(const QString &output)
 {
     for(auto &v:this->printOut(output))
         rInfo()<<v;
-    return*this;
+    return *this;
 }
 
 QStringList RequestExchangeSetting::printOut(const QString &output)

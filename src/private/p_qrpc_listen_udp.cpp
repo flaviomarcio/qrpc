@@ -109,7 +109,6 @@ public:
     {
         this->listenServer->stop();
         delete this->listenServer;
-        this->listenServer = nullptr;
     }
 };
 

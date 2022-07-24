@@ -72,7 +72,7 @@ HttpHeaders &HttpHeaders::clear()
 {
 
     p->header.clear();
-    return*this;
+    return *this;
 }
 
 QVariantHash &HttpHeaders::rawHeader()const
@@ -121,7 +121,7 @@ HttpHeaders &HttpHeaders::setRawHeader(const QVariantHash &rawHeader)
         const auto value=i.value();
         this->setRawHeader(key,value);
     }
-    return*this;
+    return *this;
 }
 
 HttpHeaders &HttpHeaders::setRawHeader(const QString &header, const QVariant &value)
@@ -164,7 +164,7 @@ HttpHeaders &HttpHeaders::setRawHeader(const QString &header, const QVariant &va
     }
 
     p->header[headerName]=vList;
-    return*this;
+    return *this;
 }
 
 HttpHeaders &HttpHeaders::addRawHeader(const QVariantHash &rawHeader)
@@ -175,7 +175,7 @@ HttpHeaders &HttpHeaders::addRawHeader(const QVariantHash &rawHeader)
         i.next();
         this->addRawHeader(i.key(), i.value());
     }
-    return*this;
+    return *this;
 }
 
 HttpHeaders &HttpHeaders::addRawHeader(const QString &header, const QVariant &value)
@@ -209,7 +209,7 @@ HttpHeaders &HttpHeaders::addRawHeader(const QString &header, const QVariant &va
         vList<<vv.trimmed();
     }
     this->setRawHeader(headerName, vList);
-    return*this;
+    return *this;
 }
 
 HttpHeaders &HttpHeaders::setContentType(const int contentType)
@@ -242,7 +242,7 @@ HttpHeaders &HttpHeaders::setContentType(const QVariant &v)
     }
     if(value.isValid())
         p->header.insert(ContentTypeName,value);
-    return*this;
+    return *this;
 }
 
 bool HttpHeaders::isContentType(int contentType) const
@@ -303,7 +303,7 @@ HttpHeaders &HttpHeaders::setAuthorization(const QString &authorization, const Q
 
     if(!type.isEmpty() && !scredentials.isEmpty())
         this->setRawHeader(authorization.toUtf8(), QStringLiteral("%1 %2").arg(type,scredentials).toUtf8());
-    return*this;
+    return *this;
 }
 
 HttpHeaders &HttpHeaders::setAuthorization(const QString &authorization, const AuthorizationType &type, const QVariant &credentials)
@@ -486,7 +486,7 @@ HttpHeaders &HttpHeaders::print(const QString &output)
 {
     for(auto &v:this->printOut(output))
         rInfo()<<v;
-    return*this;
+    return *this;
 }
 
 QStringList HttpHeaders::printOut(const QString &output)
@@ -538,7 +538,7 @@ HttpHeaders &HttpHeaders::operator<<(const QVariant &v)
         i.next();
         this->addRawHeader(i.key(), i.value());
     }
-    return*this;
+    return *this;
 }
 
 }

@@ -85,7 +85,7 @@ Request &Request::setSettings(const ServiceSetting &setting)
 {
 
     p->setSettings(setting);
-    return*this;
+    return *this;
 }
 
 Request &Request::setSettings(const QVariantHash &setting)
@@ -115,7 +115,7 @@ Request &Request::setSettings(const QVariantHash &setting)
     };
 
 
-    return*this;
+    return *this;
 }
 
 QString Request::url() const
@@ -154,7 +154,7 @@ Request &Request::setProtocol(const QVariant &value)
 {
 
     p->exchange.setProtocol(value);
-    return*this;
+    return *this;
 }
 
 RequestMethod Request::method() const
@@ -167,21 +167,21 @@ Request &Request::setMethod(const QString &value)
 {
 
     p->exchange.setMethod(value);
-    return*this;
+    return *this;
 }
 
 Request &Request::setMethod(const QByteArray &value)
 {
 
     p->exchange.setMethod(value);
-    return*this;
+    return *this;
 }
 
 Request &Request::setMethod(const int &value)
 {
 
     p->exchange.setMethod(RequestMethod(value));
-    return*this;
+    return *this;
 }
 
 QString Request::driver() const
@@ -194,7 +194,7 @@ Request &Request::setDriver(const QString &value)
 {
 
     p->exchange.call().setDriver(value);
-    return*this;
+    return *this;
 }
 
 QString Request::hostName() const
@@ -207,7 +207,7 @@ Request &Request::setHostName(const QString &value)
 {
 
     p->exchange.setHostName(value);
-    return*this;
+    return *this;
 }
 
 QString Request::userName() const
@@ -220,7 +220,7 @@ Request &Request::setUserName(const QString &value)
 {
 
     p->exchange.call().setUserName(value);
-    return*this;
+    return *this;
 }
 
 QString Request::password() const
@@ -233,7 +233,7 @@ Request &Request::setPassword(const QString &value)
 {
 
     p->exchange.call().setPassWord(value);
-    return*this;
+    return *this;
 }
 
 QString &Request::route() const
@@ -246,7 +246,7 @@ Request &Request::setRoute(const QVariant &value)
 {
 
     p->exchange.call().setRoute(value);
-    return*this;
+    return *this;
 }
 
 QVariant Request::body() const
@@ -259,7 +259,7 @@ Request &Request::setBody(const QVariant &value)
 {
 
     p->qrpcBody.setBody(value);
-    return*this;
+    return *this;
 }
 
 QVariant Request::port() const
@@ -291,7 +291,7 @@ Request &Request::setPort(const QVariant &value)
         v=value.toInt();
     }
     p->exchange.setPort(v.toInt());
-    return*this;
+    return *this;
 }
 
 qlonglong Request::activityLimit() const
@@ -304,7 +304,7 @@ Request &Request::setActivityLimit(const QVariant &value)
 {
 
     p->exchange.call().setActivityLimit(value);
-    return*this;
+    return *this;
 }
 
 RequestExchange &Request::exchange()
@@ -341,21 +341,21 @@ Request &Request::setRequestRecovery(int statusCode)
 {
 
     p->requestRecovery[statusCode]=1;
-    return*this;
+    return *this;
 }
 
 Request &Request::setRequestRecovery(int statusCode, int repeatCount)
 {
 
     p->requestRecovery[statusCode]=repeatCount;
-    return*this;
+    return *this;
 }
 
 Request &Request::setRequestRecoveryOnBadGateway(int repeatCount)
 {
 
     p->requestRecovery[ListenRequestCode::ssBadGateway]=repeatCount;
-    return*this;
+    return *this;
 }
 
 LastError &Request::lastError()
@@ -475,7 +475,7 @@ HttpResponse &Request::call(const RequestMethod &method, const QString &route, Q
 Request &Request::operator=(const QRpc::ServiceSetting &value)
 {
     this->setSettings(value);
-    return*this;
+    return *this;
 }
 
 HttpResponse &Request::upload(QFile &file)
@@ -584,7 +584,7 @@ Request &Request::autoSetCookie()
         }
     }
     this->header().setCookies(cookies);
-    return*this;
+    return *this;
 }
 
 QString Request::toString() const
@@ -611,14 +611,14 @@ Request &Request::setSslConfiguration(const QSslConfiguration &value)
 {
 
     p->sslConfiguration = value;
-    return*this;
+    return *this;
 }
 
 Request &Request::print()
 {
     for(auto &v:this->printOut())
         rInfo()<<v;
-    return*this;
+    return *this;
 }
 
 QStringList Request::printOut()

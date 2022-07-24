@@ -234,7 +234,7 @@ ListenRequestCode &ListenRequestCode::operator=(const QVariant &v)
         this->setCode(code.toInt(), phrase.toByteArray());
     else
         this->setOK();
-    return*this;
+    return *this;
 }
 
 QVariant ListenRequestCode::emptyData()
@@ -289,7 +289,7 @@ ListenRequestCode &ListenRequestCode::setCode(QVariant code, const QString &phra
         qFatal("invalid object");
     request->setResponseCode(code.toInt());
     request->setResponsePhrase(phrase.toUtf8());
-    return*this;
+    return *this;
 }
 
 ListenRequestCode &ListenRequestCode::setContinue(const QString &phrase)

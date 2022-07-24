@@ -176,7 +176,7 @@ RequestJob &RequestJob::start()
     while(this->eventDispatcher()==nullptr){
         QThread::msleep(1);
     }
-    return*this;
+    return *this;
 }
 
 RequestJob &RequestJob::release()
