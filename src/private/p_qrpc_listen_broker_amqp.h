@@ -1,10 +1,9 @@
 #pragma once
 
 #include "../qrpc_listen.h"
-#include "../qrpc_macro.h"
 
 namespace QRpc {
-
+class ListenBrokerAMQPPvt;
 //!
 //! \brief The ListenBrokerAMQP class
 //!
@@ -18,13 +17,8 @@ public:
     //!
     Q_INVOKABLE explicit ListenBrokerAMQP(QObject *parent = nullptr);
 
-    //!
-    //! \brief ~ListenBrokerAMQP
-    //!
-    ~ListenBrokerAMQP();
-
 private:
-    void *p = nullptr;
+    ListenBrokerAMQPPvt *p = nullptr;
 };
 
 //QRPC_LISTTEN_AUTO_REGISTER(Amqp, ListenBrokerAMQP)

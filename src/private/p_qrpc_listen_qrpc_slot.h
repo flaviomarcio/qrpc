@@ -1,13 +1,13 @@
 #pragma once
 
-#include "./p_qrpc_listen_qrpc.h"
-
-namespace QRpc {
-
 #include <QByteArray>
 #include <QEventLoop>
 #include <QVariant>
 #include <QVariantHash>
+#include "./p_qrpc_listen_qrpc.h"
+
+namespace QRpc {
+class ListenQRPCSlotPvt;
 
 //!
 //! \brief The ListenQRPCSlot class
@@ -17,7 +17,6 @@ class Q_RPC_EXPORT ListenQRPCSlot : public QThread
     Q_OBJECT
 public:
     explicit ListenQRPCSlot(ListenQRPC *listenQRPC = nullptr);
-    ~ListenQRPCSlot();
 
     //!
     //! \brief run
@@ -58,7 +57,7 @@ signals:
     void requestInvoke(QVariantHash v, const QVariant &uploadedFiles);
 
 private:
-    QObject *p = nullptr;
+    ListenQRPCSlotPvt *p = nullptr;
 };
 
 } // namespace QRpc

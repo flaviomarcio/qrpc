@@ -3,7 +3,7 @@
 #include "../qrpc_listen.h"
 
 namespace QRpc {
-
+class ListenTCPPvt;
 //!
 //! \brief The ListenTCP class
 //!
@@ -16,7 +16,6 @@ public:
     //! \param parent
     //!
     explicit ListenTCP(QObject *parent = nullptr);
-    ~ListenTCP();
 
     //!
     //! \brief start
@@ -31,7 +30,7 @@ public:
     bool stop() override;
 
 private:
-    void *p = nullptr;
+    ListenTCPPvt *p = nullptr;
 };
 
 //QRPC_LISTTEN_AUTO_REGISTER(TcpSocket, ListenTCP)

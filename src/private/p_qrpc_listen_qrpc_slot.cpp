@@ -16,8 +16,6 @@
 
 namespace QRpc {
 
-#define dPvt() auto &p = *reinterpret_cast<ListenQRPCSlotPvt *>(this->p)
-
 class ListenQRPCSlotPvt : public QObject
 {
 public:
@@ -29,7 +27,6 @@ public:
     QList<const QMetaObject *> listenQRPCParserRequest;
     ControllerMethodCollection controllerMethods;
     MultStringList controllerRedirect;
-
     QVector<const QMetaObject *> invokeControllersList;
 
     explicit ListenQRPCSlotPvt(ListenQRPCSlot *slot, ListenQRPC *listenQRPC) : QObject(slot)
@@ -45,8 +42,6 @@ public:
         this->controllerRedirect=listenQRPC->controllerRedirect();
         this->controllerRouter = ControllerRouter::newRouter(this);
     }
-
-    virtual ~ListenQRPCSlotPvt() {}
 
     bool canRedirectCheckBasePath(const QByteArray &className, const QByteArray &basePath)
     {
@@ -364,8 +359,6 @@ public:
                                                  invokeArg0);
         }
 
-
-
         if (!invokeResult) {
             if (request.co().isOK())
                 request.co().setInternalServerError();
@@ -483,8 +476,6 @@ ListenQRPCSlot::ListenQRPCSlot(ListenQRPC *listenQRPC) : QThread{nullptr}
     this->p = new ListenQRPCSlotPvt(this, listenQRPC);
 }
 
-ListenQRPCSlot::~ListenQRPCSlot() {}
-
 void ListenQRPCSlot::run()
 {
     QThread::run();
@@ -492,14 +483,13 @@ void ListenQRPCSlot::run()
 
 bool ListenQRPCSlot::canRequestInvoke(QVariantHash &v, const QVariant &uploadedFiles)
 {
-    dPvt();
-    if (p.locked)
+    if (p->locked)
         return false;
 
-    if (!p.lockedMutex.tryLock(1))
+    if (!p->lockedMutex.tryLock(1))
         return false;
 
-    p.locked = true;
+    p->locked = true;
     this->start();
     emit requestInvoke(v, uploadedFiles);
     return true;
@@ -514,17 +504,15 @@ void ListenQRPCSlot::start()
 
 bool ListenQRPCSlot::lock()
 {
-    dPvt();
-    if (p.lockedMutex.tryLock(1))
+    if (p->lockedMutex.tryLock(1))
         return true;
     return false;
 }
 
 void ListenQRPCSlot::unlock()
 {
-    dPvt();
-    p.lockedMutex.tryLock(1);
-    p.lockedMutex.unlock();
+    p->lockedMutex.tryLock(1);
+    p->lockedMutex.unlock();
 }
 
 } // namespace QRpc

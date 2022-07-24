@@ -1,9 +1,9 @@
 #pragma once
 
 #include "../qrpc_listen.h"
-#include "../qrpc_macro.h"
 
 namespace QRpc {
+class ListenBrokerKAFKAPvt;
 
 //!
 //! \brief The ListenBrokerKAFKA class
@@ -18,13 +18,8 @@ public:
     //!
     Q_INVOKABLE explicit ListenBrokerKAFKA(QObject *parent = nullptr);
 
-    //!
-    //! \brief ~ListenBrokerKAFKA
-    //!
-    ~ListenBrokerKAFKA();
-
 private:
-    void *p = nullptr;
+    ListenBrokerKAFKAPvt *p = nullptr;
 };
 
 //QRPC_LISTTEN_AUTO_REGISTER(Kafka, ListenBrokerKAFKA)

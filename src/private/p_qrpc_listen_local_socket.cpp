@@ -24,8 +24,8 @@ public:
 
     ListenLocalSocket &listen()
     {
-        auto _listen = dynamic_cast<ListenLocalSocket *>(this->parent());
-        return *_listen;
+        auto __return = dynamic_cast<ListenLocalSocket *>(this->parent());
+        return *__return;
     }
 
     explicit LocalSocketServer(QObject *parent = nullptr) : QObject{parent} {}
@@ -175,22 +175,20 @@ public slots:
     }
 };
 
-#define dPvt() auto &p = *reinterpret_cast<ListenLocalSocketPvt *>(this->p)
-
 class ListenLocalSocketPvt : public QObject
 {
 public:
-    LocalSocketServer *_listenServer = nullptr;
+    LocalSocketServer *listenServer = nullptr;
 
     explicit ListenLocalSocketPvt(ListenLocalSocket *parent) : QObject{parent}
     {
-        this->_listenServer = new LocalSocketServer(parent);
+        this->listenServer = new LocalSocketServer(parent);
     }
     virtual ~ListenLocalSocketPvt()
     {
-        this->_listenServer->stop();
-        delete this->_listenServer;
-        this->_listenServer = nullptr;
+        this->listenServer->stop();
+        delete this->listenServer;
+        this->listenServer = nullptr;
     }
 };
 
@@ -199,27 +197,18 @@ ListenLocalSocket::ListenLocalSocket(QObject *parent) : Listen{parent}
     this->p = new ListenLocalSocketPvt{this};
 }
 
-ListenLocalSocket::~ListenLocalSocket()
-{
-    dPvt();
-    p._listenServer->stop();
-    delete &p;
-}
-
 bool ListenLocalSocket::start()
 {
-    dPvt();
     this->stop();
     Listen::start();
-    p._listenServer = new LocalSocketServer(this);
-    connect(this, &Listen::rpcResponse, p._listenServer, &LocalSocketServer::onRpcResponse);
-    return p._listenServer->start();
+    p->listenServer = new LocalSocketServer(this);
+    connect(this, &Listen::rpcResponse, p->listenServer, &LocalSocketServer::onRpcResponse);
+    return p->listenServer->start();
 }
 
 bool ListenLocalSocket::stop()
 {
-    dPvt();
-    return p._listenServer->stop();
+    return p->listenServer->stop();
 }
 
 } // namespace QRpc

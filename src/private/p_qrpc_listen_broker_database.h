@@ -1,11 +1,10 @@
 #pragma once
 
 #include "../qrpc_listen.h"
-#include "../qrpc_macro.h"
 #include <QSqlDriver>
 
 namespace QRpc {
-
+class ListenBrokerDataBasePvt;
 //!
 //! \brief The ListenBrokerDataBase class
 //!
@@ -32,7 +31,7 @@ public:
     bool stop() override;
 
 private:
-    void *p = nullptr;
+    ListenBrokerDataBasePvt *p = nullptr;
 signals:
     //!
     //! \brief rpcResponseClient

@@ -3,7 +3,7 @@
 #include "../qrpc_listen.h"
 
 namespace QRpc {
-
+class ListenUDPPvt;
 //!
 //! \brief The ListenUDP class
 //!
@@ -12,7 +12,6 @@ class Q_RPC_EXPORT ListenUDP : public Listen
     Q_OBJECT
 public:
     explicit ListenUDP(QObject *parent = nullptr);
-    ~ListenUDP();
 
     //!
     //! \brief start
@@ -27,7 +26,7 @@ public:
     bool stop() override;
 
 private:
-    void *p = nullptr;
+    ListenUDPPvt *p = nullptr;
 };
 
 //QRPC_LISTTEN_AUTO_REGISTER(UdpSocket, ListenUDP)

@@ -231,23 +231,21 @@ public slots:
     }
 };
 
-#define dPvt() auto &p = *reinterpret_cast<ListenWebSocketPvt *>(this->p)
-
 class ListenWebSocketPvt : public QObject
 {
 public:
-    WebSocketServer *_listenServer = nullptr;
+    WebSocketServer *listenServer = nullptr;
 
     explicit ListenWebSocketPvt(ListenWebSocket *parent) : QObject{parent}
     {
-        this->_listenServer = new WebSocketServer{parent};
+        this->listenServer = new WebSocketServer{parent};
     }
 
     virtual ~ListenWebSocketPvt()
     {
-        this->_listenServer->stop();
-        delete this->_listenServer;
-        this->_listenServer = nullptr;
+        this->listenServer->stop();
+        delete this->listenServer;
+        this->listenServer = nullptr;
     }
 };
 
@@ -256,27 +254,18 @@ ListenWebSocket::ListenWebSocket(QObject *parent) : Listen{parent}
     this->p = new ListenWebSocketPvt{this};
 }
 
-ListenWebSocket::~ListenWebSocket()
-{
-    dPvt();
-    p._listenServer->stop();
-    delete &p;
-}
-
 bool ListenWebSocket::start()
 {
-    dPvt();
     this->stop();
     Listen::start();
-    p._listenServer = new WebSocketServer{this};
-    connect(this, &Listen::rpcResponse, p._listenServer, &WebSocketServer::onRpcResponse);
-    return p._listenServer->start();
+    p->listenServer = new WebSocketServer{this};
+    connect(this, &Listen::rpcResponse, p->listenServer, &WebSocketServer::onRpcResponse);
+    return p->listenServer->start();
 }
 
 bool ListenWebSocket::stop()
 {
-    dPvt();
-    return p._listenServer->stop();
+    return p->listenServer->stop();
 }
 
 } // namespace QRpc

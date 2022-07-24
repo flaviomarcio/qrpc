@@ -1,10 +1,9 @@
 #pragma once
 
 #include "../qrpc_listen.h"
-#include "../qrpc_macro.h"
 
 namespace QRpc {
-
+class ListenLocalSocketPvt;
 //!
 //! \brief The ListenLocalSocket class
 //!
@@ -17,7 +16,6 @@ public:
     //! \param parent
     //!
     explicit ListenLocalSocket(QObject *parent = nullptr);
-    ~ListenLocalSocket();
 
     //!
     //! \brief start
@@ -32,7 +30,7 @@ public:
     bool stop() override;
 
 private:
-    void *p = nullptr;
+    ListenLocalSocketPvt *p = nullptr;
 };
 
 //QRPC_LISTTEN_AUTO_REGISTER(LocalSocket, ListenLocalSocket)

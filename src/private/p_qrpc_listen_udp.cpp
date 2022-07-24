@@ -95,23 +95,21 @@ public slots:
     }
 };
 
-#define dPvt() auto &p = *reinterpret_cast<ListenUDPPvt *>(this->p)
-
 class ListenUDPPvt : public QObject
 {
 public:
-    ServerUDPSocket *_listenServer = nullptr;
+    ServerUDPSocket *listenServer = nullptr;
 
     explicit ListenUDPPvt(ListenUDP *parent) : QObject{parent}
     {
-        this->_listenServer = new ServerUDPSocket(parent);
+        this->listenServer = new ServerUDPSocket{parent};
     }
 
     virtual ~ListenUDPPvt()
     {
-        this->_listenServer->stop();
-        delete this->_listenServer;
-        this->_listenServer = nullptr;
+        this->listenServer->stop();
+        delete this->listenServer;
+        this->listenServer = nullptr;
     }
 };
 
@@ -120,23 +118,14 @@ ListenUDP::ListenUDP(QObject *parent) : Listen{parent}
     this->p = new ListenUDPPvt{this};
 }
 
-ListenUDP::~ListenUDP()
-{
-    dPvt();
-    p._listenServer->stop();
-    delete &p;
-}
-
 bool ListenUDP::start()
 {
-    dPvt();
-    return p._listenServer->start();
+    return p->listenServer->start();
 }
 
 bool ListenUDP::stop()
 {
-    dPvt();
-    return p._listenServer->stop();
+    return p->listenServer->stop();
 }
 
 } // namespace QRpc

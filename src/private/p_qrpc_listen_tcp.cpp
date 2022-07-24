@@ -167,23 +167,21 @@ public slots:
     }
 };
 
-#define dPvt() auto &p = *reinterpret_cast<ListenTCPPvt *>(this->p)
-
 class ListenTCPPvt : public QObject
 {
 public:
-    ServerTCPSocket *_listenServer = nullptr;
+    ServerTCPSocket *listenServer = nullptr;
 
     explicit ListenTCPPvt(ListenTCP *parent) : QObject{parent}
     {
-        this->_listenServer = new ServerTCPSocket(parent);
+        this->listenServer = new ServerTCPSocket(parent);
     }
 
     virtual ~ListenTCPPvt()
     {
-        this->_listenServer->stop();
-        delete this->_listenServer;
-        this->_listenServer = nullptr;
+        this->listenServer->stop();
+        delete this->listenServer;
+        this->listenServer = nullptr;
     }
 };
 
@@ -192,24 +190,15 @@ ListenTCP::ListenTCP(QObject *parent) : Listen{parent}
     this->p = new ListenTCPPvt{this};
 }
 
-ListenTCP::~ListenTCP()
-{
-    dPvt();
-    p._listenServer->stop();
-    delete &p;
-}
-
 bool ListenTCP::start()
 {
-    dPvt();
-    connect(this, &Listen::rpcResponse, p._listenServer, &ServerTCPSocket::onRpcResponse);
-    return p._listenServer->start();
+    connect(this, &Listen::rpcResponse, p->listenServer, &ServerTCPSocket::onRpcResponse);
+    return p->listenServer->start();
 }
 
 bool ListenTCP::stop()
 {
-    dPvt();
-    return p._listenServer->stop();
+    return p->listenServer->stop();
 }
 
 } // namespace QRpc

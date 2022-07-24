@@ -3,7 +3,7 @@
 #include "../qrpc_listen.h"
 
 namespace QRpc {
-
+class ListenWebSocketPvt;
 //!
 //! \brief The ListenWebSocket class
 //!
@@ -18,11 +18,6 @@ public:
     Q_INVOKABLE explicit ListenWebSocket(QObject *parent = nullptr);
 
     //!
-    //! \brief ~ListenWebSocket
-    //!
-    ~ListenWebSocket();
-
-    //!
     //! \brief start
     //! \return
     //!
@@ -35,7 +30,7 @@ public:
     bool stop() override;
 
 private:
-    void *p = nullptr;
+    ListenWebSocketPvt *p = nullptr;
 };
 
 //QRPC_LISTTEN_AUTO_REGISTER(WebSocket, ListenWebSocket)
