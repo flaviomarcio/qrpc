@@ -5,6 +5,12 @@ QT += websockets
 QTREFORCE_QRPC=true
 DEFINES += QTREFORCE_QRPC
 
+INCLUDEPATH += $$PWD/includes
+
+HEADERS += \
+    $$PWD/includes/QRpc/Client \
+    $$PWD/includes/QRpc/Server
+
 #source modules
 QRPC_BASE_SOURCE=$$PWD/src/qrpc-base.pri
 QRPC_TOKEN_SOURCE=$$PWD/src/qrpc-token.pri
