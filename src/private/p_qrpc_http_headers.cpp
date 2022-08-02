@@ -41,7 +41,7 @@ public:
                 break;
             }
             default:
-                vList<<v.toString();
+                vList.append(v.toString());
             }
         }
 
@@ -104,7 +104,7 @@ QVariant HttpHeaders::rawHeader(const QString &headername)const
         }
 
         for(auto &header:vList)
-            returnList<<header;
+            returnList.append(header);
     }
     return QVariant(returnList);
 }
@@ -132,11 +132,11 @@ HttpHeaders &HttpHeaders::setRawHeader(const QString &header, const QVariant &va
     case QMetaType::QVariantList:
     {
         for(auto &v:value.toList())
-            list<<v;
+            list.append(v);
         break;
     }
     default:
-        list<<value;
+        list.append(value);
     }
 
 
@@ -149,7 +149,7 @@ HttpHeaders &HttpHeaders::setRawHeader(const QString &header, const QVariant &va
             continue;
 
         if(!vList.contains(vv))
-            vList<<vv.trimmed();
+            vList.append(vv.trimmed());
     }
 
     for(auto &v:vList){
@@ -186,11 +186,11 @@ HttpHeaders &HttpHeaders::addRawHeader(const QString &header, const QVariant &va
     case QMetaType::QVariantList:
     {
         for(auto &v:value.toList())
-            list<<v;
+            list.append(v);
         break;
     }
     default:
-        list<<value;
+        list.append(value);
     }
 
 
@@ -206,7 +206,7 @@ HttpHeaders &HttpHeaders::addRawHeader(const QString &header, const QVariant &va
         if(vList.contains(vv))
             continue;
 
-        vList<<vv.trimmed();
+        vList.append(vv.trimmed());
     }
     this->setRawHeader(headerName, vList);
     return *this;
@@ -292,7 +292,7 @@ HttpHeaders &HttpHeaders::setAuthorization(const QString &authorization, const Q
         QHashIterator<QString, QVariant> i(credentials.toHash());
         while (i.hasNext()) {
             i.next();
-            params<<QStringLiteral("%1=%2").arg(i.key(),i.value().toString());
+            params.append(QStringLiteral("%1=%2").arg(i.key(),i.value().toString()));
         }
         scredentials=params.join(QStringLiteral(" "));
         break;
@@ -411,12 +411,12 @@ QVariant HttpHeaders::authorization(const QString &authorization, const QString 
                 auto sp=v.split(QStringLiteral("="));
                 QVariantHash map;
                 map.insert(sp.at(0),sp.at(1));
-                returnList<<map;
+                returnList.append(map);
                 continue;
             }
 
             if(!returnList.contains(v)){
-                returnList<<v;
+                returnList.append(v);
                 continue;
             }
         }
@@ -496,11 +496,11 @@ QStringList HttpHeaders::printOut(const QString &output)
     Q_DECLARE_VU;
     auto vHash=this->rawHeader();
     if(!vHash.isEmpty()){
-        __return<<QStringLiteral("%1%2 headers").arg(space, output).trimmed();
+        __return.append(QStringLiteral("%1%2 headers").arg(space, output).trimmed());
         QHashIterator<QString, QVariant> i(vHash);
         while (i.hasNext()){
             i.next();
-            __return<<QStringLiteral("%1     %2:%3").arg(space, i.key(), vu.toStr(i.value()));
+            __return.append(QStringLiteral("%1     %2:%3").arg(space, i.key(), vu.toStr(i.value())));
         }
     }
     return __return;

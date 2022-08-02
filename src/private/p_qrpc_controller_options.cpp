@@ -199,7 +199,7 @@ bool ControllerOptionsPrv::load(const QStringList &settingsFileName)
         if(map.isEmpty())
             continue;
 
-        vList<<map;
+        vList.append(map);
     }
     Q_DECLARE_VU;
     auto vHash=vu.vMerge(vList).toHash();

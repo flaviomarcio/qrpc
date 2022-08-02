@@ -197,18 +197,18 @@ QStringList &Controller::basePath() const
             break;
         }
         default:
-            vList<<v;
+            vList.append(v);
         }
 
         for (auto &row : vList) {
             auto line = row.toString().trimmed().toLower();
             if (line.isEmpty())
                 continue;
-            p->basePathList<<line;
+            p->basePathList.append(line);
         }
     }
     if(p->basePathList.isEmpty())
-        p->basePathList<<QStringList{QStringLiteral("/")};
+        p->basePathList.append(QStringList{QStringLiteral("/")});
     return p->basePathList;
 }
 
