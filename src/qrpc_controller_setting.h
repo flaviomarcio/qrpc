@@ -20,7 +20,7 @@ public:
     //! \brief ControllerSetting
     //! \param parent
     //!
-    Q_INVOKABLE explicit ControllerSetting(QObject*parent=nullptr):QStm::SettingBase{parent}
+    Q_INVOKABLE explicit ControllerSetting(QObject *parent=nullptr):QStm::SettingBase{parent}
     {
     }
     ~ControllerSetting()

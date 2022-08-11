@@ -84,7 +84,7 @@ public:
         //! \brief Body
         //! \param parent
         //!
-        explicit Body(QObject*parent=nullptr);
+        explicit Body(QObject *parent=nullptr);
 
         //!
         //! \brief body

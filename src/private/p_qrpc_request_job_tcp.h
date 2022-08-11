@@ -12,7 +12,7 @@ class RequestJobTcp : public RequestJobProtocol
 {
     Q_OBJECT
 public:
-    Q_INVOKABLE explicit RequestJobTcp(QObject*parent);
+    Q_INVOKABLE explicit RequestJobTcp(QObject *parent);
 
     ~RequestJobTcp();
 

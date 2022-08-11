@@ -15,7 +15,7 @@ public:
     //! \brief HttpResponse
     //! \param parent
     //!
-    Q_INVOKABLE explicit HttpResponse(QObject*parent=nullptr);
+    Q_INVOKABLE explicit HttpResponse(QObject *parent=nullptr);
 
     //!
     //! \brief header

@@ -14,7 +14,7 @@ class RequestJobLocalSocket : public RequestJobProtocol
 {
     Q_OBJECT
 public:
-    Q_INVOKABLE explicit RequestJobLocalSocket(QObject*parent);
+    Q_INVOKABLE explicit RequestJobLocalSocket(QObject *parent);
 
     ~RequestJobLocalSocket();
 

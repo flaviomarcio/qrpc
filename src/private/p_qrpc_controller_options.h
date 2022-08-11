@@ -22,7 +22,7 @@ public:
     QVariantHash arguments;
     QHash<QString, ControllerSetting*> settings;
     ControllerOptions*parent=nullptr;
-    QObject*parentParent=nullptr;
+    QObject *parentParent=nullptr;
 
     explicit ControllerOptionsPrv(ControllerOptions *parent);
 

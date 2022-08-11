@@ -34,7 +34,7 @@ public:
     //! \brief ServiceSetting
     //! \param parent
     //!
-    Q_INVOKABLE explicit ServiceSetting(QObject*parent=nullptr);
+    Q_INVOKABLE explicit ServiceSetting(QObject *parent=nullptr);
     ~ServiceSetting();
 };
 

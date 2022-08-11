@@ -14,9 +14,9 @@ class Q_RPC_EXPORT HttpHeaders: public QObject
 {
     Q_OBJECT
 public:
-    Q_INVOKABLE explicit HttpHeaders(QObject*parent=nullptr);
+    Q_INVOKABLE explicit HttpHeaders(QObject *parent=nullptr);
 
-    explicit HttpHeaders(const QVariant &v,QObject*parent=nullptr);
+    explicit HttpHeaders(const QVariant &v,QObject *parent=nullptr);
 
     //!
     //! \brief clear

@@ -26,7 +26,7 @@ public:
     //! \brief NotationsExtended
     //! \param parent
     //!
-    explicit NotationsExtended(QObject*parent=nullptr);
+    explicit NotationsExtended(QObject *parent=nullptr);
     virtual ~NotationsExtended();
 
     //!

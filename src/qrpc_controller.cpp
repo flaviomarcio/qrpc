@@ -35,7 +35,7 @@ static void init()
 
 Q_RPC_STARTUP_FUNCTION(init);
 
-class ControllerPvt
+class ControllerPvt:public QObject
 {
 public:
     QStringList basePathList;
@@ -46,19 +46,12 @@ public:
 
     ListenRequest ____static_request;
 
-    explicit ControllerPvt() {}
-
-    virtual ~ControllerPvt() {}
+    explicit ControllerPvt(QObject *parent):QObject{parent} {}
 };
 
 Controller::Controller(QObject *parent) : QObject{parent}, QRpcPrivate::NotationsExtended{this}
 {
-    this->p = new ControllerPvt();
-}
-
-Controller::~Controller()
-{
-
+    this->p = new ControllerPvt{this};
 }
 
 Controller::MethodInfoCollection Controller::invokableMethod() const
@@ -82,9 +75,6 @@ Controller::MethodInfoCollection Controller::invokableMethod() const
     const auto &vBasePathList = controller->basePath();
     if (vBasePathList.isEmpty())
         return {};
-
-
-
 
     static QStm::Network network;
     static ByteArrayVector methodBlackList=QRPC_METHOD_BACK_LIST;

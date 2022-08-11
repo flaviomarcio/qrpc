@@ -18,7 +18,7 @@ class RequestJobWSS : public RequestJobProtocol
 {
     Q_OBJECT
 public:
-    Q_INVOKABLE explicit RequestJobWSS(QObject*parent);
+    Q_INVOKABLE explicit RequestJobWSS(QObject *parent);
 
     ~RequestJobWSS();
 

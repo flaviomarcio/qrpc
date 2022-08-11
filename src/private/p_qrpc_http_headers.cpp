@@ -11,7 +11,7 @@ static const auto staticDefaultContentType=QRpc::AppJson;
 class HttpHeadersPvt:public QObject{
 public:
 
-    QObject*parent=nullptr;
+    QObject *parent=nullptr;
     QVariantHash header;
 
     explicit HttpHeadersPvt(HttpHeaders*parent):QObject{parent}

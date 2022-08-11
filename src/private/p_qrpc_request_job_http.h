@@ -28,7 +28,7 @@ public:
     QNetworkReply *reply = nullptr;
     QNetworkAccessManager*nam = nullptr;
 
-    Q_INVOKABLE explicit RequestJobHttp(QObject*parent);
+    Q_INVOKABLE explicit RequestJobHttp(QObject *parent);
 
     ~RequestJobHttp();
 

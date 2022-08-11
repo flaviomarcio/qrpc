@@ -43,9 +43,9 @@ public:
     QNetworkReply::NetworkError response_qt_status_code = QNetworkReply::NoError;
     QHash<QString, QVariant> responseHeader;
 
-    explicit RequestJobResponse(QObject*parent);
+    explicit RequestJobResponse(QObject *parent);
 
-    explicit RequestJobResponse(const QVariantHash &request_header, const QVariant &vUrl, Request&request, QObject*parent);
+    explicit RequestJobResponse(const QVariantHash &request_header, const QVariant &vUrl, Request&request, QObject *parent);
 
     ~RequestJobResponse();
 

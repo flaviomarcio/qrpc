@@ -27,7 +27,7 @@ public:
     QString responsePath;
     QSqlDriver*sqlDriver=nullptr;
 
-    Q_INVOKABLE explicit RequestJobDataBase(QObject*parent);
+    Q_INVOKABLE explicit RequestJobDataBase(QObject *parent);
 
     ~RequestJobDataBase();
 

@@ -55,11 +55,6 @@ public:
     Q_INVOKABLE explicit Controller(QObject *parent = nullptr);
 
     //!
-    //! \brief ~Controller
-    //!
-    ~Controller();
-
-    //!
     //! \brief invokableMethod
     //! \return
     //!

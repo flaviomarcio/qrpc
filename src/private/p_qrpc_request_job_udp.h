@@ -14,7 +14,7 @@ class RequestJobUDP : public RequestJobProtocol
 {
     Q_OBJECT
 public:
-    Q_INVOKABLE explicit RequestJobUDP(QObject*parent);
+    Q_INVOKABLE explicit RequestJobUDP(QObject *parent);
 
     ~RequestJobUDP();
 

@@ -16,7 +16,7 @@ public:
     QString action_fileName;
     QSslConfiguration sslConfiguration;
 
-    Q_INVOKABLE explicit RequestJobProtocol(QObject*parent);
+    Q_INVOKABLE explicit RequestJobProtocol(QObject *parent);
 
     ~RequestJobProtocol();
 
