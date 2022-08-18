@@ -7,15 +7,26 @@ namespace QRpc {
 
 namespace Util {
 
+static const auto __pathDelimer="/";
+static const auto __pathDelimer2="//";
+static const auto __space=" ";
+
+static const auto __url="url";
+static const auto __method="method";
+static const auto __header="header";
+static const auto __start="start";
+static const auto __finish="finish";
+static const auto __body="body";
+
 const QString routeParser(const QVariant &vRouteBase)
 {
     auto routeBase=vRouteBase.toString();
-    if(routeBase.contains(QStringLiteral("/"))){
-        auto route=QStringLiteral("/")+routeBase.trimmed().toUtf8();
-        while(route.contains("//"))
-            route=route.replace(QStringLiteral("//"), QStringLiteral("/"));
-        while(route.contains(QStringLiteral(" ")))
-            route=route.replace(QStringLiteral(" "), "");
+    if(routeBase.contains(__pathDelimer)){
+        auto route=__pathDelimer+routeBase.trimmed().toUtf8();
+        while(route.contains(__pathDelimer2))
+            route=route.replace(__pathDelimer2, __pathDelimer);
+        while(route.contains(__space))
+            route=route.replace(__space, "");
         return route.toLower();
     }
     return routeBase.toUtf8();
@@ -23,17 +34,17 @@ const QString routeParser(const QVariant &vRouteBase)
 
 const QByteArray routeExtractMethod(const QString &routeBase)
 {
-    if(routeBase.contains(QStringLiteral("/")))
-        return routeBase.split(QStringLiteral("/")).last().toUtf8().toLower();
+    if(routeBase.contains(__pathDelimer))
+        return routeBase.split(__pathDelimer).last().toUtf8().toLower();
     return {};
 }
 
 const QByteArray routeExtract(const QString &routeBase)
 {
-    if(routeBase.contains(QStringLiteral("/"))){
-        auto lst=routeBase.split(QStringLiteral("/"));
+    if(routeBase.contains(__pathDelimer)){
+        auto lst=routeBase.split(__pathDelimer);
         lst.takeLast();
-        return lst.join(QStringLiteral("/")).toUtf8().toLower();
+        return lst.join(__pathDelimer).toUtf8().toLower();
     }
     return {};
 }
@@ -41,9 +52,9 @@ const QByteArray routeExtract(const QString &routeBase)
 const QString headerFormatName(const QString &name)
 {
     auto sname=name.trimmed();
-    auto separator=QStringList{QStringLiteral("-")};
     QStringList newHeaderName;
-    for(auto &v:separator){
+    static const auto __separator=QStringList{QStringLiteral("-")};
+    for(auto &v:__separator){
         auto nameList=sname.split(v);
         for(auto &name:nameList){
             if(name.trimmed().isEmpty())
@@ -69,11 +80,11 @@ const QVariantHash toMapResquest(int method, const QVariant &request_url, const 
     Q_DECLARE_VU;
     auto request_method=RequestMethodName.value(method).toUpper();
     QVariantHash map{
-        {QStringLiteral("url"), request_url},
-        {QStringLiteral("method"), request_method},
-        {QStringLiteral("header"), request_header},
-        {QStringLiteral("start"), request_start},
-        {QStringLiteral("finish"), request_finish}
+        {__url, request_url},
+        {__method, request_method},
+        {__header, request_header},
+        {__start, request_start},
+        {__finish, request_finish}
     };
 
     QStringList headers;
@@ -97,13 +108,13 @@ const QVariantHash toMapResquest(int method, const QVariant &request_url, const 
 
     if(request_url.typeId()==QMetaType::QUrl){
         auto url=request_url.toUrl();
-        cUrl=url.toString().split(QStringLiteral("/")).join(QStringLiteral("/"));
+        cUrl=url.toString().split(__pathDelimer).join(__pathDelimer);
     }
     else{
         cUrl=request_url.toString();
     }
     if(method==QRpc::Post || method==QRpc::Put){
-        map[QStringLiteral("body")]= request_parameters;
+        map[__body]= request_parameters;
         auto body=request_body;
         body=response_body.trimmed().isEmpty()?"":QStringLiteral("-d '%1'").arg(body.replace('\n',' '));
         scUrl=QStringLiteral("curl --insecure -i -X %1 %2 %3 -G '%4'").arg(request_method, headers.join(' '), body, cUrl).trimmed();
@@ -119,7 +130,7 @@ const QVariantHash toMapResquest(int method, const QVariant &request_url, const 
         scUrl=QStringLiteral("curl --insecure -i -X %1 %2 -G '%3' %4").arg(request_method, headers.join(' '), cUrl, params.join(' ')).trimmed();
     }
 
-    map[QStringLiteral("curl")]=scUrl;
+    map.insert(QStringLiteral("curl"), scUrl);
     return map;
 }
 
