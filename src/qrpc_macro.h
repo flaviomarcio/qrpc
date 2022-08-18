@@ -83,7 +83,7 @@
         return {}; \
     }
 
-#define QRPC_V_CRUD QVariantHash{{QStringLiteral("method"), this->rq().requestMethod()}, {QStringLiteral("source"), this->rq().requestParamHash()}}
+#define QRPC_V_CRUD this->rq().requestParamHash()//QVariantHash{{QStringLiteral("method"), this->rq().requestMethod()}, {QStringLiteral("source"), this->rq().requestParamHash()}}
 
 #define QRPC_V_SET_METHOD(v) auto v = this->rq().requestMethod()
 
