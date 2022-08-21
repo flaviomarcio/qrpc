@@ -178,7 +178,7 @@ signals:
     //! \param uuid
     //! \param detail
     //!
-    void request_canceled(const QUuid&uuid, const QVariant &detail);
+    void request_canceled(const QUuid &uuid, const QVariant &detail);
 
     //!
     //! \brief request_state

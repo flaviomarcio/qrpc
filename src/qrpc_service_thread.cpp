@@ -50,7 +50,7 @@ public slots:
         ++stats.discated;
         emit service->request_state(uuid, service->Discarted, detail);
     }
-    void onRequestCanceled(const QUuid&uuid, const QVariant &detail){
+    void onRequestCanceled(const QUuid &uuid, const QVariant &detail){
         QMutexLocker<QMutex> locker(&this->mutex);
         ++stats.canceled;
         emit service->request_state(uuid, service->Canceled, detail);
