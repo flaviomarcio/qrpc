@@ -230,7 +230,7 @@ HttpHeaders &HttpHeaders::setContentType(const QVariant &v)
     p->header.remove(QString(ContentTypeName).toLower());
     QVariant value=v;
     if(v.typeId()==QMetaType::QUrl){
-        value=QVariant();
+        value={};
         auto url=v.toUrl();
         if(url.isLocalFile()){
             auto ext=url.toLocalFile().split(QStringLiteral(".")).last().trimmed();
