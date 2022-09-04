@@ -1,75 +1,14 @@
 #include "./p_qrpc_request.h"
-#include "../qrpc_startup.h"
 #include "../qrpc_const.h"
+#include "../qrpc_log.h"
 #if Q_RPC_LOG
 #include "../qrpc_macro.h"
 #endif
 
+static const auto __json="json";
+static const auto __request="request";
+
 namespace QRpc {
-
-static bool staticLogRegister=false;
-Q_GLOBAL_STATIC(QString, static_log_dir)
-
-static void static_log_dir_clear(const QString &ormLogDir)
-{
-    QStringList dir_found;
-    QStringList dir_rm_file;
-    dir_found.append(ormLogDir);
-    while(!dir_found.isEmpty()){
-        auto scanDir = dir_found.takeFirst();
-        dir_rm_file.append(scanDir);
-
-        QDir dir(scanDir);
-        if(!dir.exists(scanDir))
-            continue;
-
-        dir.setFilter(QDir::AllDirs);
-        for(auto &scanInDir:dir.entryList()){
-            if(scanInDir==QStringLiteral(".") || scanInDir==QStringLiteral(".."))
-                continue;
-
-            auto dir=QStringLiteral("%1/%2").arg(scanDir, scanInDir);
-            dir_rm_file.append(dir);
-            dir_found.append(dir);
-        }
-    }
-
-    auto ext=QStringList{QStringLiteral("*.*")};
-    for(auto &sdir:dir_rm_file){
-        QDir scanDir(sdir);
-        if(!scanDir.exists())
-            continue;
-        scanDir.setFilter(QDir::Drives | QDir::Files);
-        scanDir.setNameFilters(ext);
-        auto list=scanDir.entryList();
-        for(auto &dirFile : list){
-            auto fileName=sdir+QStringLiteral("/")+dirFile;
-            QFile::remove(fileName);
-        }
-    }
-}
-
-static void static_log_init_dir()
-{
-    auto env = QString{getenv(QByteArrayLiteral("Q_LOG_ENABLED"))}.trimmed();
-#ifdef QT_DEBUG
-    staticLogRegister = env.isEmpty()?true :QVariant{env}.toBool();
-#else
-    staticLogRegister = env.isEmpty()?false:QVariant{env}.toBool();
-#endif
-    if(!staticLogRegister)
-        return;
-
-    static const auto log_local_name=QString{__PRETTY_FUNCTION__}.split(QStringLiteral("::")).first().replace(QStringLiteral("void "), "").split(QStringLiteral(" ")).last();
-    *static_log_dir=QStringLiteral("%1/%2/%3").arg(QDir::homePath(), log_local_name, qApp->applicationName());
-    QDir dir(*static_log_dir);
-    if(!dir.exists(*static_log_dir))
-        dir.mkpath(*static_log_dir);
-    if(dir.exists(*static_log_dir))
-        static_log_dir_clear(*static_log_dir);
-}
-
-Q_RPC_STARTUP_FUNCTION(static_log_init_dir);
 
 
 RequestPvt::RequestPvt(Request *parent):
@@ -81,17 +20,9 @@ RequestPvt::RequestPvt(Request *parent):
     qrpcLastError{parent},
     sslConfiguration(QSslConfiguration::defaultConfiguration())
 {
-    auto currentName=QThread::currentThread()->objectName().trimmed();
-    if(currentName.isEmpty())
-        currentName=QString::number(qlonglong(QThread::currentThreadId()),16);
-    if(staticLogRegister)
-        this->fileLog=QStringLiteral("%1/%2.json").arg(*static_log_dir, QString::number(qlonglong(QThread::currentThreadId()),16));
     this->parent=parent;
     this->qrpcBody.p=this;
-}
-
-RequestPvt::~RequestPvt()
-{
+    this->fileLog=logFile(__json, __request);
 }
 
 void RequestPvt::setSettings(const ServiceSetting &setting)
@@ -120,10 +51,7 @@ QString RequestPvt::parseFileName(const QString &fileName)
 
 void RequestPvt::writeLog(RequestJobResponse &response, const QVariant &request)
 {
-    if(!staticLogRegister)
-        return;
-
-    if(!request.isValid())
+    if(!logRegister())
         return;
 
     QFile file(this->fileLog);
@@ -132,7 +60,7 @@ void RequestPvt::writeLog(RequestJobResponse &response, const QVariant &request)
 
     QTextStream outText(&file);
     auto &e=response.request_exchange.call();
-    outText << RequestMethodName[e.method()]<<QStringLiteral(": ")<<response.request_url.toString()<<QStringLiteral("\n");
+    outText << RequestMethodName.value(e.method())<<QStringLiteral(": ")<<response.request_url.toString()<<'\n';
     outText << QJsonDocument::fromVariant(request).toJson(QJsonDocument::Indented);
     outText << QStringLiteral("\n");
     outText << QStringLiteral("\n");
