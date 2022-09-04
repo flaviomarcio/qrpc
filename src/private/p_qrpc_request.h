@@ -51,10 +51,7 @@ public:
 
     explicit RequestPvt(Request*parent);
 
-    virtual ~RequestPvt();
-
     void setSettings(const ServiceSetting &setting);
-
 
     QString parseFileName(const QString &fileName);
 
