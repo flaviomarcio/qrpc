@@ -7,7 +7,7 @@
 
 namespace QRpc {
 
-static bool static_log_register=false;
+static bool staticLogRegister=false;
 Q_GLOBAL_STATIC(QString, static_log_dir)
 
 static void static_log_dir_clear(const QString &ormLogDir)
@@ -53,11 +53,11 @@ static void static_log_init_dir()
 {
     auto env = QString{getenv(QByteArrayLiteral("Q_LOG_ENABLED"))}.trimmed();
 #ifdef QT_DEBUG
-    static_log_register = env.isEmpty()?true :QVariant{env}.toBool();
+    staticLogRegister = env.isEmpty()?true :QVariant{env}.toBool();
 #else
-    static_log_register = env.isEmpty()?false:QVariant{env}.toBool();
+    staticLogRegister = env.isEmpty()?false:QVariant{env}.toBool();
 #endif
-    if(!static_log_register)
+    if(!staticLogRegister)
         return;
 
     static const auto log_local_name=QString{__PRETTY_FUNCTION__}.split(QStringLiteral("::")).first().replace(QStringLiteral("void "), "").split(QStringLiteral(" ")).last();
@@ -84,7 +84,7 @@ RequestPvt::RequestPvt(Request *parent):
     auto currentName=QThread::currentThread()->objectName().trimmed();
     if(currentName.isEmpty())
         currentName=QString::number(qlonglong(QThread::currentThreadId()),16);
-    if(static_log_register)
+    if(staticLogRegister)
         this->fileLog=QStringLiteral("%1/%2.json").arg(*static_log_dir, QString::number(qlonglong(QThread::currentThreadId()),16));
     this->parent=parent;
     this->qrpcBody.p=this;
@@ -120,7 +120,7 @@ QString RequestPvt::parseFileName(const QString &fileName)
 
 void RequestPvt::writeLog(RequestJobResponse &response, const QVariant &request)
 {
-    if(!static_log_register)
+    if(!staticLogRegister)
         return;
 
     if(!request.isValid())
