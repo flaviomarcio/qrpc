@@ -2,6 +2,7 @@
 #define Q_RPC_RequestFunctionalCORS_H
 
 #include "./qrpc_test_functional.h"
+#include <QtReforce/QRpc>
 
 namespace QRpc {
 
@@ -17,7 +18,8 @@ public:
                                               QStringLiteral("Access-Control-Allow-Methods"),
                                               QStringLiteral("Access-Control-Allow-Headers"),
                                               QStringLiteral("Access-Control-Max-Age"),
-                                              QStringLiteral("Vary")};
+                                              QStringLiteral("Vary")
+    };
         for (auto &v : headersName) {
             if (!responseHeader.contains(v)) {
                 sWarning() << v;
@@ -37,11 +39,11 @@ QRPC_DECLARE_REQUEST_CLASS(Q_RPC_RequestFunctionalV1CORS, QRpc::AppJson, "/")
     request.header().addRawHeader("Accept-Language: en-US,en;q=0.5", "*/*"); \
     request.header().addRawHeader("Accept-Encoding: gzip, deflate", "*/*"); \
     request.header().addRawHeader("Access-Control-Request-Method: POST", "*/*"); \
-    request.header().addRawHeader("Access-Control-Request-Headers: authorization,content-type", \
-                                  "*/*"); \
+    request.header().addRawHeader("Access-Control-Request-Headers: authorization,content-type", "*/*"); \
     request.header().addRawHeader("Referer: http://localhost:9999", "*/*"); \
     request.header().addRawHeader("Connection", "keep-alive"); \
     request.setPort(public_record.server_port_http);
+
 
 TEST_F(Q_RPC_RequestFunctionalCORS, serviceStart)
 {

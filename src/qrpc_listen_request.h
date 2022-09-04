@@ -64,8 +64,6 @@ public:
     //!
     explicit ListenRequest(const QVariant &requestBody, const ControllerSetting &setting, QObject *parent=nullptr);
 
-
-    ~ListenRequest();
 public:
 
     //!

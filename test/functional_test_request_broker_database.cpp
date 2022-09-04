@@ -1,6 +1,7 @@
 #ifndef Q_RPC_RequestFunctionalBrokerDatabase_H
 #define Q_RPC_RequestFunctionalBrokerDatabase_H
 
+#include <QtReforce/QRpc>
 #include "./qrpc_test_functional.h"
 
 namespace QRpc {

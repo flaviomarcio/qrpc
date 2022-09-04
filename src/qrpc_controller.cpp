@@ -285,23 +285,40 @@ bool Controller::requestSettings()
     auto referer = vHearder.value(QStringLiteral("Referer")).toString();
     auto connectionType = vHearder.value(QStringLiteral("Connection-Type")).toString();
     auto connection = vHearder.value(QStringLiteral("Connection")).toString();
-    auto accessControlRequestHeaders = vHearder.value(QStringLiteral("Access-Control-Request-Headers"))
-                                           .toString();
+    auto accessControlRequestHeaders = vHearder.value(QStringLiteral("Access-Control-Request-Headers")).toString();
     auto accessControlAllowMethods = vHearder.value(QStringLiteral("Access-Control-Request-Method")).toString();
     auto accessControlAllowOrigin = origin.isEmpty() ? referer : origin;
     auto keepAlive = vHearder.value(QStringLiteral("Keep-Alive")).toString();
 
+
     if (rq.isMethodOptions()) {
         //https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
         //https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Methods/OPTIONS
-        header_application_json = (!header_application_json.isEmpty()) ? header_application_json
-                                                                       : QStringLiteral("text/javascripton");
+        header_application_json = (!header_application_json.isEmpty()) ? header_application_json: QStringLiteral("text/javascripton");
         insertHeaderResponse(QStringLiteral("Date"), QDateTime::currentDateTime().toString(Qt::TextDate));
         insertHeaderResponse(QStringLiteral("Server"), this->server()->serverName());
+        //TODO REVER CORS
+        //  https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+        //  Note: When responding to a credentialed requests request, the server must specify an origin in the value of the Access-Control-Allow-Origin header, instead of specifying the "*" wildcard.
         insertHeaderResponse(QStringLiteral("Access-Control-Allow-Origin"), accessControlAllowOrigin);
+
+        //TODO DEVE RETORNAR AS POSSIBILIDADES DE METHODS DO METHODO REQUISITADO
+        //  https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
         insertHeaderResponse(QStringLiteral("Access-Control-Allow-Methods"), accessControlAllowMethods);
+
+        //TODO REVER CORS
+        //  https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+        //O cabeçalho Access-Control-Allow-Headers é usado em resposta a uma solicitação de comprovação para indicar quais cabeçalhos HTTP podem ser usados ao fazer a solicitação real. Este cabeçalho é a resposta do lado do servidor ao cabeçalho Access-Control-Request-Headers do navegador.
         insertHeaderResponse(QStringLiteral("Access-Control-Allow-Headers"), accessControlRequestHeaders);
+
+        //TODO REVER CORS
+        //  https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+        //  O cabeçalho Access-Control-Max-Age indica por quanto tempo os resultados de uma solicitação de comprovação podem ser armazenados em cache. Para obter um exemplo de solicitação de comprovação, consulte os exemplos acima.
         insertHeaderResponse(QStringLiteral("Access-Control-Max-Age"), QStringLiteral("86400"));
+
+        //TODO REVER CORDS
+        //  https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+        //Se o servidor especificar uma única origem (que pode mudar dinamicamente com base na origem solicitante como parte de uma lista de permissões) em vez do curinga "*", o servidor também deverá incluir Origem no cabeçalho de resposta Vary para indicar aos clientes que as respostas do servidor será diferente com base no valor do cabeçalho da solicitação Origem.
         insertHeaderResponse(QStringLiteral("Vary"), QStringLiteral("Accept-Encoding, Origin"));
         insertHeaderResponse(QStringLiteral("Keep-Alive"), keepAlive);
         insertHeaderResponse(QStringLiteral("Connection"), connection);
@@ -312,11 +329,17 @@ bool Controller::requestSettings()
     }
 
     //https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
-    header_application_json = (!header_application_json.isEmpty()) ? header_application_json
-                                                                   : QStringLiteral("text/javascripton");
+    header_application_json = (!header_application_json.isEmpty()) ? header_application_json: QStringLiteral("text/javascripton");
     insertHeaderResponse(QStringLiteral("Date"), QDateTime::currentDateTime().toString(Qt::TextDate));
     insertHeaderResponse(QStringLiteral("Server"), this->server()->serverName());
+    //TODO REVER CORS
+    //  https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+    //  Note: When responding to a credentialed requests request, the server must specify an origin in the value of the Access-Control-Allow-Origin header, instead of specifying the "*" wildcard.
     insertHeaderResponse(QStringLiteral("Access-Control-Allow-Origin"), accessControlAllowOrigin);
+
+    //TODO REVER CORDS
+    //  https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+    //Se o servidor especificar uma única origem (que pode mudar dinamicamente com base na origem solicitante como parte de uma lista de permissões) em vez do curinga "*", o servidor também deverá incluir Origem no cabeçalho de resposta Vary para indicar aos clientes que as respostas do servidor será diferente com base no valor do cabeçalho da solicitação Origem.
     insertHeaderResponse(QStringLiteral("Vary"), QStringLiteral("Accept-Encoding, Origin"));
     insertHeaderResponse(QStringLiteral("Keep-Alive"), keepAlive);
     insertHeaderResponse(QStringLiteral("Connection"), connection);
@@ -432,7 +455,6 @@ bool Controller::requestAfterInvoke()
 
 Server *Controller::server()
 {
-
     return p->server;
 }
 

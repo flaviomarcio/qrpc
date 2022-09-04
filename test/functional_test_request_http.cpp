@@ -2,6 +2,7 @@
 #define QRPC_RequestHTTPFunctional_H
 
 #include "./qrpc_test_functional.h"
+#include <QtReforce/QRpc>
 
 namespace QRpc {
 

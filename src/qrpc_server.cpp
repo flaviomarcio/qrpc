@@ -115,6 +115,8 @@ bool Server::authorizationRequest(const ListenRequest &request) const
 
 QString &Server::serverName() const
 {
+    if(p->serverName.trimmed().isEmpty())
+        p->serverName=this->metaObject()->className();
     return p->serverName;
 }
 

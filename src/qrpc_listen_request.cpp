@@ -218,7 +218,7 @@ public:
 
     QByteArray authorizationParser(const QByteArray &type) const
     {
-        const auto stype=type.toLower();
+        const auto stype=type.toLower().trimmed();
         QHashIterator<QString, QVariant> i(this->requestHeader);
         while (i.hasNext()) {
             i.next();
@@ -254,7 +254,6 @@ ListenRequest::ListenRequest(QObject *parent):QObject{parent}
 ListenRequest::ListenRequest(const QVariant &requestBody, QObject *parent):QObject{parent}
 {
     this->p = new ListenRequestPvt{this};
-
     p->mergeMap(requestBody);
 }
 
@@ -267,73 +266,58 @@ ListenRequest::ListenRequest(const QVariant &requestBody, const ControllerSettin
     p->mergeMap(requestBody);
 }
 
-ListenRequest::~ListenRequest()
-{
-}
-
 QVariantHash ListenRequest::authorizationHeaders() const
 {
-
     return p->authorizationHeaders();
 }
 
 QString QRpc::ListenRequest::authorizationBasic() const
 {
-
     return p->authorizationParser(QByteArrayLiteral("Basic"));
 }
 
 QString ListenRequest::authorizationBearer() const
 {
-
     return p->authorizationParser(QByteArrayLiteral("Bearer"));
 }
 
 QString ListenRequest::authorizationService() const
 {
-
     return p->authorizationParser(QByteArrayLiteral("Service"));
 }
 
 bool ListenRequest::isMethodHead() const
 {
-
     return (p->requestMethod==QByteArrayLiteral("head"));
 }
 
 bool ListenRequest::isMethodGet()const
 {
-
     return (p->requestMethod==QByteArrayLiteral("get"));
 }
 
 bool ListenRequest::isMethodPost()const
 {
-
     return (p->requestMethod==QByteArrayLiteral("post"));
 }
 
 bool ListenRequest::isMethodPut() const
 {
-
     return (p->requestMethod==QByteArrayLiteral("put"));
 }
 
 bool ListenRequest::isMethodDelete() const
 {
-
     return (p->requestMethod==QByteArrayLiteral("delete"));
 }
 
 bool ListenRequest::isMethodUpload() const
 {
-
     return !p->uploadedFiles.isEmpty();
 }
 
 bool ListenRequest::isMethodOptions() const
 {
-
     return (p->requestMethod==QByteArrayLiteral("options"));
 }
 
@@ -400,39 +384,32 @@ void ListenRequest::start()
 
 ListenRequestCode &ListenRequest::codeOption()
 {
-
     return p->listenCode;
 }
 
 ListenRequestCode &ListenRequest::co()
 {
-
     return p->listenCode;
 }
 
 ListenRequestCode &ListenRequest::co(const QVariant &v)
 {
-
     p->listenCode=v;
     return p->listenCode;
 }
 
 QByteArray ListenRequest::hash() const
 {
-
-    auto bytes=p->requestPath;
-    return QCryptographicHash::hash(bytes, QCryptographicHash::Md5).toHex();
+    return QCryptographicHash::hash(p->requestPath, QCryptographicHash::Md5).toHex();
 }
 
 bool ListenRequest::isValid() const
 {
-
     return !p->requestUuid.isNull();
 }
 
 bool ListenRequest::isEmpty() const
 {
-
     if(p->requestPath.trimmed().isEmpty())
         return false;
 
@@ -444,7 +421,6 @@ bool ListenRequest::isEmpty() const
 
 void ListenRequest::clear()
 {
-
     p->clear();
 }
 
@@ -455,7 +431,6 @@ bool ListenRequest::fromRequest(const ListenRequest &request)
 
 bool ListenRequest::fromMap(const QVariantMap &vRequest)
 {
-
     p->clear();
     return this->mergeMap(vRequest);
 }
@@ -574,7 +549,6 @@ bool ListenRequest::mergeMap(const QVariantMap &vRequest)
 
 bool ListenRequest::fromHash(const QVariantHash &vRequest)
 {
-
     p->clear();
     return this->mergeHash(vRequest);
 }
@@ -693,7 +667,6 @@ bool ListenRequest::mergeHash(const QVariantHash &vRequest)
 
 bool ListenRequest::fromResponseMap(const QVariantHash &vRequest)
 {
-
     p->clearResponse();
     const QMetaObject* metaObject = this->metaObject();
     for(int i = metaObject->propertyOffset() ; i < metaObject->propertyCount() ; i++){
@@ -766,7 +739,6 @@ bool ListenRequest::fromResponseMap(const QVariantHash &vRequest)
 
 bool ListenRequest::fromResponseHash(const QVariantHash &vRequest)
 {
-
     p->clearResponse();
     const QMetaObject* metaObject = this->metaObject();
     for(int i = metaObject->propertyOffset() ; i < metaObject->propertyCount() ; i++){
@@ -853,57 +825,47 @@ QByteArray ListenRequest::toJson() const
 
 QVariantMap ListenRequest::toMap() const
 {
-
     return p->toVMap<QVariantMap>();
 }
 
 QVariantHash ListenRequest::toHash() const
 {
-
     return p->toVMap<QVariantHash>();
 }
 
 void ListenRequest::requestStart()
 {
-
-    emit
-        QTimer::singleShot(p->requestTimeout, &p->eventLoop, &QEventLoop::quit);
+    QTimer::singleShot(p->requestTimeout, &p->eventLoop, &QEventLoop::quit);
     p->eventLoop.exec();
 }
 
 QUuid &ListenRequest::listenUuid() const
 {
-
     return p->listenUuid;
 }
 
 void ListenRequest::setListenUuid(const QUuid &value)
 {
-
     p->listenUuid=value;
 }
 
 QUuid &ListenRequest::requestUuid() const
 {
-
     return p->requestUuid;
 }
 
 void ListenRequest::setRequestUuid(const QUuid &value)
 {
-
     p->requestUuid = value;
 }
 
 QByteArray &ListenRequest::requestProtocol() const
 {
-
     return p->requestProtocol;
 }
 
 void ListenRequest::setRequestProtocol(const QVariant &value)
 {
-
     auto ivalue=value.toLongLong();
     if(ivalue>0){
         auto name=ProtocolUrlName.value(Protocol(ivalue)).toUtf8();
@@ -916,38 +878,32 @@ void ListenRequest::setRequestProtocol(const QVariant &value)
 
 int ListenRequest::requestPort() const
 {
-
     return p->requestPort;
 }
 
 void ListenRequest::setRequestPort(int value)
 {
-
     p->requestPort=value;
     emit requestPortChanged();
 }
 
 QByteArray &ListenRequest::requestPath() const
 {
-
     return p->requestPath;
 }
 
 void QRpc::ListenRequest::setRequestPath(const QVariant &value)
 {
-
     p->requestPath=value.toByteArray();
 }
 
 QByteArray &ListenRequest::requestMethod() const
 {
-
     return p->requestMethod;
 }
 
 void ListenRequest::setRequestMethod(const QVariant &value)
 {
-
     auto ivalue=value.toLongLong();
     if(ivalue>0)
         p->requestMethod=RequestMethodName.value(ivalue).toUtf8();
@@ -957,38 +913,32 @@ void ListenRequest::setRequestMethod(const QVariant &value)
 
 QVariantHash &ListenRequest::requestHeader() const
 {
-
     return p->requestHeader;
 }
 
 void ListenRequest::setRequestHeader(const QVariantHash &value)
 {
-
     p->setRequestHeader(value);
 }
 
 QVariantHash &ListenRequest::requestParameter() const
 {
-
     return p->requestParameter;
 }
 
 void ListenRequest::setRequestParameter(const QVariantHash &value)
 {
-
     p->requestParamCache.clear();
     p->requestParameter=value;
 }
 
 QVariant &ListenRequest::requestBody() const
 {
-
     return p->requestBody;
 }
 
 QVariantMap ListenRequest::requestBodyMap() const
 {
-
     switch (p->requestBody.typeId())
     {
     case QMetaType::QVariantMap:
@@ -1004,7 +954,6 @@ QVariantMap ListenRequest::requestBodyMap() const
 
 QVariantHash ListenRequest::requestBodyHash() const
 {
-
     switch (p->requestBody.typeId())
     {
     case QMetaType::QVariantMap:
@@ -1020,7 +969,6 @@ QVariantHash ListenRequest::requestBodyHash() const
 
 bool ListenRequest::requestParserBodyMap()
 {
-
     QVariantMap body;
     if(!this->requestParserBodyMap(p->requestParserProperty, body))
         return this->co().setBadRequest().isOK();
@@ -1087,11 +1035,9 @@ bool ListenRequest::requestParserBodyMap(const QVariant &property, QVariantMap &
 
 bool ListenRequest::requestParserBodyHash()
 {
-
     QVariantHash body;
     if(!this->requestParserBodyHash(p->requestParserProperty, body))
         return this->co().setBadRequest().isOK();
-
     return true;
 }
 
@@ -1103,7 +1049,6 @@ bool ListenRequest::requestParserBodyHash(const QVariant &property)
 
 bool ListenRequest::requestParserBodyHash(const QVariant &property, QVariantHash &body) const
 {
-
     bool __return=true;
     if(property.isValid()){
         p->requestParserProperty.clear();
@@ -1154,7 +1099,6 @@ bool ListenRequest::requestParserBodyHash(const QVariant &property, QVariantHash
 
 QVariantList &ListenRequest::requestParserProperty()
 {
-
     return p->requestParserProperty;
 }
 
@@ -1172,7 +1116,6 @@ QVariantMap ListenRequest::requestParamMap()const
 
 QVariant ListenRequest::requestParamHash(const QByteArray &key) const
 {
-
     const auto &map=p->requestParam();
     auto akey=key.trimmed().toLower();
     QHashIterator<QString, QVariant> i(map);
@@ -1201,13 +1144,11 @@ QVariant ListenRequest::requestParamHash(const QByteArray &key) const
 
 QVariantHash ListenRequest::requestParamHash() const
 {
-
     return p->requestParam();
 }
 
 QVariantList ListenRequest::requestBodyList() const
 {
-
     switch (p->requestBody.typeId()) {
     case QMetaType::QVariantList:
     case QMetaType::QStringList:
@@ -1219,7 +1160,6 @@ QVariantList ListenRequest::requestBodyList() const
 
 void ListenRequest::setRequestBody(const QVariant &value)
 {
-
     QVariant _body;
     switch (value.typeId()) {
     case QMetaType::QVariantList:
@@ -1263,13 +1203,11 @@ void ListenRequest::setRequestBody(const QVariant &value)
 
 int ListenRequest::requestTimeout() const
 {
-
     return p->requestTimeout;
 }
 
 void ListenRequest::setRequestTimeout(int value)
 {
-
     p->requestTimeout = value;
 }
 
@@ -1282,7 +1220,6 @@ QString ListenRequest::uploadedFileName() const
 
 QFile *ListenRequest::uploadedFile() const
 {
-
     if(p->uploadedFiles.isEmpty())
         return nullptr;
 
@@ -1291,13 +1228,11 @@ QFile *ListenRequest::uploadedFile() const
 
 QHash<QString, QFile *> &ListenRequest::uploadedFiles() const
 {
-
     return p->uploadedFiles;
 }
 
 void ListenRequest::setUploadedFiles(const QVariant &vFiles)
 {
-
     auto files=vFiles.toStringList();
     p->freeFiles();
     for(const auto &v:files){
@@ -1321,13 +1256,11 @@ QFile *ListenRequest::temporaryFile(const QString &fileName)
 
 QVariantHash &ListenRequest::responseHeader() const
 {
-
     return p->responseHeader;
 }
 
 void ListenRequest::setResponseHeader(const QVariantHash &value)
 {
-
     p->responseHeader.clear();
     Q_V_HASH_ITERATOR(value){
         i.next();
@@ -1345,25 +1278,21 @@ void ListenRequest::setResponseHeader(const HttpHeaders &value)
 
 QVariantHash &ListenRequest::responseCallback() const
 {
-
     return p->responseCallback;
 }
 
 void ListenRequest::setResponseCallback(const QVariantHash &value)
 {
-
     p->responseCallback=value;
 }
 
 QVariant &ListenRequest::responseBody() const
 {
-
     return p->responseBody;
 }
 
 QByteArray ListenRequest::responseBodyBytes() const
 {
-
     QVariant v;
     const auto &response = p->responseBody;
     auto typeId=response.typeId();
@@ -1419,7 +1348,6 @@ QByteArray ListenRequest::responseBodyBytes() const
 
 void ListenRequest::setResponseBody(const QVariant &value)
 {
-
     switch (value.typeId()) {
     case QMetaType::QByteArray:
     case QMetaType::QString:
@@ -1439,19 +1367,16 @@ void ListenRequest::setResponseBody(const QVariant &value)
 
 int ListenRequest::responseCode(int code) const
 {
-
     return (p->responseCode>0)?p->responseCode:code;
 }
 
 void ListenRequest::setResponseCode(const int &value)
 {
-
     p->responseCode = value;
 }
 
 QByteArray ListenRequest::responsePhrase() const
 {
-
     if(p->responsePhrase.isEmpty())
         return ListenRequestCode::reasonPhrase(this->responseCode()).toUtf8();
     return p->responsePhrase;
@@ -1465,26 +1390,22 @@ QByteArray ListenRequest::responsePhrase(const int code)const
 
 void ListenRequest::setResponsePhrase(const QByteArray &value)
 {
-
     p->responsePhrase = value;
 }
 
 const QUuid ListenRequest::makeUuid()
 {
-
     p->makeUuid();
     return p->requestUuid;
 }
 
 int ListenRequest::requestContentType() const
 {
-
     return p->requestContentType;
 }
 
 void ListenRequest::setRequestContentType(const QVariant &value)
 {
-
     auto content_type=ContentType(value.toInt());
     if(!ContentTypeHeaderTypeToHeader.contains(content_type))
         p->requestContentType = QRpc::AppNone;
