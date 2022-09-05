@@ -27,7 +27,7 @@ class RequestJobResponse:public QObject{
 public:
 
     RequestExchange request_exchange;
-    Request*qrpcRequest=nullptr;
+    Request*localRequest=nullptr;
 
     QUuid request_uuid=QUuid::createUuidV3(QUuid::createUuid(), QUuid::createUuid().toString().toUtf8());
     QVariant request_url;
@@ -46,8 +46,6 @@ public:
     explicit RequestJobResponse(QObject *parent);
 
     explicit RequestJobResponse(const QVariantHash &request_header, const QVariant &vUrl, Request&request, QObject *parent);
-
-    ~RequestJobResponse();
 
     RequestJobResponse &operator =(RequestJobResponse &e);
 

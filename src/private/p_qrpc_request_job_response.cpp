@@ -16,14 +16,10 @@ RequestJobResponse::RequestJobResponse(const QVariantHash &request_header, const
     this->request_exchange = request.exchange();
 }
 
-RequestJobResponse::~RequestJobResponse()
-{
-}
-
 RequestJobResponse &RequestJobResponse::operator =(RequestJobResponse &e)
 {
     this->request_exchange=e.request_exchange;
-    this->qrpcRequest=e.qrpcRequest;
+    this->localRequest=e.localRequest;
     this->request_url=e.request_url;
     this->request_header=e.request_header;
     this->request_body=e.request_body;
@@ -40,15 +36,15 @@ RequestJobResponse &RequestJobResponse::operator =(RequestJobResponse &e)
 void RequestJobResponse::clear()
 {
     this->request_exchange.clear();
-    this->qrpcRequest=nullptr;
+    this->localRequest=nullptr;
 
     this->request_uuid=QUuid::createUuidV3(QUuid::createUuid(), QUuid::createUuid().toString().toUtf8());
     this->request_header.clear();
     this->request_parameters.clear();
     this->request_body.clear();
     this->activityLimit=120000;
-    this->request_start=QDateTime();
-    this->request_finish=QDateTime();
+    this->request_start={};
+    this->request_finish={};
     this->response_status_code = QNetworkReply::NoError;
     this->response_status_reason_phrase.clear();
     this->response_body.clear();

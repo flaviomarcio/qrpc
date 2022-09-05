@@ -3,7 +3,6 @@
 #include <QList>
 #include <QMetaMethod>
 #include <QMetaObject>
-#include <QAnnotation>
 #include "./qrpc_global.h"
 #include "./qrpc_controller_notation.h"
 #include "./qrpc_controller_setting.h"

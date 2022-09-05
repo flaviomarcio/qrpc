@@ -4,7 +4,8 @@
 #include <QVariantHash>
 #include <QVariantList>
 #include <QString>
-#include <QAnnotation>
+#include "../../qnotation/src/qannotation_extended.h"
+#include "../../qnotation/src/qannotation_macros.h"
 #include "./qrpc_global.h"
 
 namespace QRpcPrivate
@@ -27,7 +28,6 @@ public:
     //! \param parent
     //!
     explicit NotationsExtended(QObject *parent=nullptr);
-    virtual ~NotationsExtended();
 
     //!
     //! \brief apiDoc
