@@ -91,7 +91,7 @@ public:
     QByteArray server_broker_database_driver="QPSQL";
     QByteArray server_broker_database_username="erpv1";
     QByteArray server_broker_database_password="erpv1";
-    int server_broker_database_port=5432;
+    int server_broker_database_port=25432;
 };
 
 Q_GLOBAL_STATIC(PublicRecord, __public_record);
