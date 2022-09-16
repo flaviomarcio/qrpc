@@ -67,14 +67,14 @@ public:
     //! \param v
     //! \return
     //!
-    static const QByteArray toMd5(const QVariant&v);
+    static const QByteArray toMd5(const QVariant &v);
 
     //!
     //! \brief toVar
     //! \param v
     //! \return
     //!
-    static const QVariant toVar(const QVariant&v);
+    static const QVariant toVar(const QVariant &v);
 
     //!
     //! \brief serviceStart

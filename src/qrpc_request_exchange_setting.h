@@ -82,14 +82,14 @@ public:
     //! \param output
     //! \return
     //!
-    virtual RequestExchangeSetting &print(const QString &output=QString());
+    virtual RequestExchangeSetting &print(const QString &output={});
 
     //!
     //! \brief printOut
     //! \param output
     //! \return
     //!
-    virtual QStringList printOut(const QString &output=QString());
+    virtual QStringList printOut(const QString &output={});
 
     //!
     //! \brief method

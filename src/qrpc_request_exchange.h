@@ -62,14 +62,14 @@ public:
     //! \param output
     //! \return
     //!
-    virtual RequestExchange &print(const QString &output=QString());
+    virtual RequestExchange &print(const QString &output={});
 
     //!
     //! \brief printOut
     //! \param output
     //! \return
     //!
-    virtual QStringList printOut(const QString &output=QString());
+    virtual QStringList printOut(const QString &output={});
 
     //!
     //! \brief setProtocol
