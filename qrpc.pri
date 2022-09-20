@@ -3,7 +3,7 @@ QT += network
 QT += websockets
 
 QTREFORCE_QRPC=true
-DEFINES += QTREFORCE_QRPC
+DEFINES+=QTREFORCE_QRPC
 
 INCLUDEPATH += $$PWD/includes
 
