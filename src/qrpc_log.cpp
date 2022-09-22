@@ -8,7 +8,6 @@
 namespace QRpc {
 
 Q_GLOBAL_STATIC(QString, staticLogDir);
-static bool static_Q_LOG_ENABLED=false;
 static bool staticLogRegister=false;
 
 static void staticLogDirClear(const QString &ormLogDir)
@@ -51,13 +50,10 @@ static void staticLogDirClear(const QString &ormLogDir)
 static void staticLogInitDir()
 {
 #ifdef QT_DEBUG
-    static_Q_LOG_ENABLED = true;
+    staticLogRegister = true;
 #else
-    auto static_Q_LOG_ENABLED = QVariant{QString{getenv(QByteArrayLiteral("Q_LOG_ENABLED"))}.trimmed()}.toBool();
-    static_Q_LOG_ENABLED = env.isEmpty()?false:QVariant(env).toBool();
+    staticLogRegister = QVariant{QString{getenv(QByteArrayLiteral("Q_LOG_ENABLED"))}.trimmed()}.toBool();
 #endif
-
-    staticLogRegister=static_Q_LOG_ENABLED;
 
     const auto log_local_name=QString{__PRETTY_FUNCTION__}.split(QStringLiteral("::")).first().replace(QStringLiteral("void "), "").split(QStringLiteral(" ")).last();
     *staticLogDir=(new QString("%1/%2/%3"))->arg(QDir::homePath(), log_local_name, qApp->applicationName());
