@@ -114,8 +114,10 @@ bool ServerPvt::load(const QStringList &settingsFileName)
         }
 
         auto vHash = doc.object().toVariantHash();
-        if (!vHash.isEmpty())
-            vList << vHash;
+        if (!vHash.isEmpty()){
+            rWarning() << tr("loaded settings: %1").arg(file.fileName());
+            vList.append(vHash);
+        }
     }
     Q_DECLARE_VU;
     auto vHash = vu.vMerge(vList).toHash();
@@ -123,6 +125,7 @@ bool ServerPvt::load(const QStringList &settingsFileName)
         p.settingsFileName = settingsFileName;
     else
         p.settingsFileName.clear();
+
     return !p.settingsFileName.isNull();
 }
 
