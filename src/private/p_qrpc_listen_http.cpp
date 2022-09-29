@@ -29,6 +29,7 @@ public:
     static HttpListeners3drparty *make(stefanfrings::HttpRequestHandler *requestHandler, QSettings *settings)
     {
         auto __return = new HttpListeners3drparty{requestHandler};
+
         __return->settings = settings;
         settings->setParent(requestHandler);
         __return->listener = new stefanfrings::HttpListener{settings, requestHandler, requestHandler};
@@ -43,6 +44,7 @@ public:
 class HttpServer3rdparty : public stefanfrings::HttpRequestHandler
 {
 public:
+    QByteArray contextPath;
     HttpListeners3drparty *listener=nullptr;
     int port=-1;
 
@@ -52,6 +54,7 @@ public:
     explicit HttpServer3rdparty(QSettings *settings, ListenHTTP *listen = nullptr)
         : stefanfrings::HttpRequestHandler{listen}
     {
+        this->contextPath=settings->value("contextPath").toByteArray();
         this->port=settings->value(QStringLiteral("port")).toInt();
         this->listen=listen;
         this->listener=HttpListeners3drparty::make(this, settings);
@@ -97,7 +100,7 @@ public:
 
 
         auto &request = listen->cacheRequest()->createRequest();
-        auto requestPath = QString{req.getPath()}.trimmed();
+        auto requestPath = QString{req.getPath()}.trimmed().toLower();
         auto requestBody = QString{req.getBody()}.trimmed();
         auto requestMethod = QString{req.getMethod()}.toLower();
         auto requestPort = this->port;
@@ -107,6 +110,9 @@ public:
             if (c == '/')
                 requestPath = requestPath.left(requestPath.length() - 1);
         }
+
+        if(!this->contextPath.isEmpty() && requestPath.startsWith(this->contextPath))
+            requestPath = requestPath.right(requestPath.length()-this->contextPath.length());
 
         request.setRequestProtocol(QRpc::Http);
         request.setRequestPort(requestPort);
@@ -273,7 +279,10 @@ public:
 
     explicit ListenHTTPPvt(ListenHTTP *parent) : QObject{parent} { this->parent = parent; }
 
-
+    ~ListenHTTPPvt()
+    {
+        this->stop();
+    }
 
     bool start()
     {
@@ -333,11 +342,6 @@ public:
 ListenHTTP::ListenHTTP(QObject *parent) : Listen{parent}
 {
     this->p = new ListenHTTPPvt{this};
-}
-
-ListenHTTP::~ListenHTTP()
-{
-    p->stop();
 }
 
 bool ListenHTTP::start()

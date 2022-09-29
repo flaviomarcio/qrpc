@@ -21,14 +21,11 @@ public:
     Q_PROPERTY(int protocol READ protocol WRITE setProtocol NOTIFY protocolChanged)
     Q_PROPERTY(QByteArray protocolName READ protocolName NOTIFY protocolNameChanged)
     Q_PROPERTY(QByteArray optionName READ optionName WRITE setOptionName NOTIFY optionNameChanged)
-    Q_PROPERTY(int cleanupInterval READ cleanupInterval WRITE setCleanupInterval NOTIFY
-                   cleanupIntervalChanged)
+    Q_PROPERTY(int cleanupInterval READ cleanupInterval WRITE setCleanupInterval NOTIFY cleanupIntervalChanged)
     Q_PROPERTY(int minThreads READ minThreads WRITE setMinThreads NOTIFY minThreadsChanged)
     Q_PROPERTY(int maxThreads READ maxThreads WRITE setMaxThreads NOTIFY maxThreadsChanged)
-    Q_PROPERTY(
-        int maxRequestSize READ maxRequestSize WRITE setMaxRequestSize NOTIFY maxRequestSizeChanged)
-    Q_PROPERTY(int maxMultiPartSize READ maxMultiPartSize WRITE setMaxMultiPartSize NOTIFY
-                   maxMultiPartSizeChanged)
+    Q_PROPERTY(int maxRequestSize READ maxRequestSize WRITE setMaxRequestSize NOTIFY maxRequestSizeChanged)
+    Q_PROPERTY(int maxMultiPartSize READ maxMultiPartSize WRITE setMaxMultiPartSize NOTIFY maxMultiPartSizeChanged)
     Q_PROPERTY(QByteArray driver READ driver WRITE setDriver NOTIFY driverChanged)
     Q_PROPERTY(QByteArray hostName READ hostName WRITE setHostName NOTIFY hostNameChanged)
     Q_PROPERTY(QByteArray userName READ userName WRITE setUserName NOTIFY userNameChanged)
@@ -36,12 +33,12 @@ public:
     Q_PROPERTY(QByteArray database READ database WRITE setDatabase NOTIFY databaseChanged)
     Q_PROPERTY(QByteArray options READ options WRITE setOptions NOTIFY optionsChanged)
     Q_PROPERTY(QVariantList port READ port WRITE setPort NOTIFY portChanged)
+    Q_PROPERTY(QByteArray contextPath READ contextPath WRITE setContextPath RESET resetContextPath NOTIFY contextPathChanged)
     Q_PROPERTY(QVariantList queue READ queue WRITE setQueue NOTIFY queueChanged)
     Q_PROPERTY(QByteArray sslKeyFile READ sslKeyFile WRITE setSslKeyFile NOTIFY sslKeyFileChanged)
     Q_PROPERTY(QByteArray sslCertFile READ sslCertFile WRITE setSslCertFile NOTIFY sslCertFileChanged)
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
-    Q_PROPERTY(bool realMessageOnException READ realMessageOnException WRITE
-                   setRealMessageOnException NOTIFY realMessageOnExceptionChanged)
+    Q_PROPERTY(bool realMessageOnException READ realMessageOnException WRITE setRealMessageOnException NOTIFY realMessageOnExceptionChanged)
 
     //!
     //! \brief ListenProtocol
@@ -240,6 +237,14 @@ public:
     virtual void setOptions(const QByteArray &value);
 
     //!
+    //! \brief contextPath
+    //! \return
+    //!
+    const QByteArray &contextPath() const;
+    void setContextPath(const QByteArray &newContextPath);
+    void resetContextPath();
+
+    //!
     //! \brief queue
     //! \return
     //!
@@ -352,6 +357,7 @@ public:
 
 private:
     ListenProtocolPvt *p = nullptr;
+
 signals:
     void protocolChanged();
     void protocolNameChanged();
@@ -373,6 +379,7 @@ signals:
     void sslCertFileChanged();
     void enabledChanged();
     void realMessageOnExceptionChanged();
+    void contextPathChanged();
 };
 
 } // namespace QRpc

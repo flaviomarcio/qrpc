@@ -8,14 +8,16 @@
 
 namespace QRpc {
 
-static const char *listen_tcp_port = "555";
-static const char *listen_udp_port = "556";
-static const char *listen_web_port = "8081";
-static const char *listen_amqp_port = "5672";
-static const char *listen_mqtt_port = "1883";
-static const char *listen_http_port = "8080";
-static const char *listen_database_port = "5434";
-static const char *listen_kafka_port = "2181";
+static const auto listen_tcp_port = "555";
+static const auto listen_udp_port = "556";
+static const auto listen_web_port = "8081";
+static const auto listen_amqp_port = "5672";
+static const auto listen_mqtt_port = "1883";
+static const auto listen_http_port = "8080";
+static const auto listen_database_port = "5434";
+static const auto listen_kafka_port = "2181";
+static const auto __path_separator="/";
+static const auto __path_separatorTwo="//";
 
 class ListenProtocolPvt : public QObject
 {
@@ -37,6 +39,7 @@ public:
     QByteArray password;
     QByteArray database;
     QByteArray options;
+    QByteArray contextPath;
     QVariantList queue;
     bool enabled = false;
     QByteArray sslKeyFile;
@@ -510,6 +513,34 @@ void ListenProtocol::setRealMessageOnException(bool value)
 {
 
     p->realMessageOnException = value;
+}
+
+const QByteArray &ListenProtocol::contextPath() const
+{
+    return p->contextPath;
+}
+
+void ListenProtocol::setContextPath(const QByteArray &newContextPath)
+{
+    QByteArray contextPath=__path_separator+newContextPath.trimmed().toLower();
+    if(contextPath==__path_separator || contextPath==__path_separatorTwo)
+        contextPath={};
+
+    while(contextPath.contains(__path_separatorTwo))
+        contextPath=contextPath.replace(__path_separatorTwo, __path_separator);
+
+    if(!contextPath.isEmpty() && contextPath.at(contextPath.length()-1)=='/')
+        contextPath=contextPath.mid(0,contextPath.length()-1);
+
+    if (p->contextPath == contextPath)
+        return;
+    p->contextPath = contextPath;
+    emit contextPathChanged();
+}
+
+void ListenProtocol::resetContextPath()
+{
+    setContextPath({});
 }
 
 } // namespace QRpc

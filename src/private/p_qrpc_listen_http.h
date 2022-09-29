@@ -13,7 +13,6 @@ class Q_RPC_EXPORT ListenHTTP : public Listen
     Q_OBJECT
 public:
     Q_INVOKABLE explicit ListenHTTP(QObject *parent = nullptr);
-    ~ListenHTTP();
 
     //!
     //! \brief start
