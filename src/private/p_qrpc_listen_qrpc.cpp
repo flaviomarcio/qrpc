@@ -83,20 +83,20 @@ public:
         }
     }
 
-    void apiMakeBasePath(QObject *makeObject, const QMetaObject *metaObject)
+    QStringList apiMakeBasePath(QObject *makeObject, const QMetaObject *metaObject)
     {
         auto className = QByteArray(metaObject->className()).toLower().trimmed();
 
         if (controllerMethods.contains(className))
-            return;
+            return {};
 
         auto methodList = controllerMethods.value(className);
         if (!methodList.isEmpty())
-            return;
+            return {};
 
         auto controller = dynamic_cast<Controller *>(makeObject);
         if (controller == nullptr)
-            return;
+            return {};
 
         auto controllerIsRedirect=controller->notation().contains(controller->apiRedirect);
         if (controllerIsRedirect)
@@ -112,7 +112,7 @@ public:
         static ByteArrayVector methodBlackList=QRPC_METHOD_BACK_LIST;
         const auto &vBasePathList = controller->basePath();
         if (vBasePathList.isEmpty())
-            return;
+            return {};
 
         for (auto i = 0; i < metaObject->methodCount(); ++i) {
             auto method = metaObject->method(i);
@@ -152,6 +152,7 @@ public:
             }
         }
         this->controllerMethods.insert(className, methodList);
+        return vBasePathList;
     }
 
     void apiMakeBasePath()
@@ -163,6 +164,7 @@ public:
             return;
         }
 
+        rWarning()<<"QRpc Server working paths";
         this->controller.clear();
         for (auto &mObj : server->controllers()) {
             auto name = QString::fromUtf8(mObj->className()).toLower().toUtf8().toLower();
@@ -178,7 +180,8 @@ public:
             if (controller == nullptr)
                 continue;
 
-            apiMakeBasePath(controller, mObj);
+            for(auto path: apiMakeBasePath(controller, mObj))
+                rWarning()<<"   path: "<<path;
             this->controller.insert(name, mObj);
         }
     }
