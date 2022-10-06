@@ -1,5 +1,6 @@
 #include "./p_qrpc_listen_http.h"
 #include "../../../qstm/src/qstm_url.h"
+#include "../../../qstm/src/qstm_crypto_util.h"
 #include "../3rdparty/qtwebapp/httpserver/httplistener.h"
 #include "../3rdparty/qtwebapp/httpserver/httprequesthandler.h"
 #include "../3rdparty/qtwebapp/httpserver/httpsessionstore.h"
@@ -13,6 +14,10 @@
 //#include "../qrpc_server.h"
 #include <QCoreApplication>
 #include <QCryptographicHash>
+
+static const auto __set_crypt_mode="set-crypt-mode";
+static const auto __ENCRYPTED="ENCRYPTED";
+//static const auto __DECRYPTED="DECRYPTED";
 
 namespace QRpc {
 
@@ -38,7 +43,6 @@ public:
         QThread::msleep(100);
         return __return;
     };
-
 };
 
 class HttpServer3rdparty : public stefanfrings::HttpRequestHandler
@@ -81,7 +85,7 @@ public:
             QMultiHashIterator<QByteArray, QByteArray> i(getHeaders);
             while (i.hasNext()) {
                 i.next();
-                requestHeaders[i.key()] = i.value();
+                requestHeaders.insert(i.key(), i.value());
 #if Q_RPC_LOG_SUPER_VERBOSE
                 rInfo() << "   header - " + i.key() + ":" + i.value();
 #endif
@@ -92,7 +96,7 @@ public:
             QMultiHashIterator<QByteArray, QByteArray> i(getParameters);
             while (i.hasNext()) {
                 i.next();
-                requestParameters[i.key()] = i.value();
+                requestParameters.insert(i.key(), i.value());
 #if Q_RPC_LOG_SUPER_VERBOSE
                 rInfo() << "   parameter - " + i.key() + ":" + i.value();
 #endif
@@ -102,7 +106,7 @@ public:
 
         auto &request = listen->cacheRequest()->createRequest();
         auto requestPath = QString{req.getPath()}.trimmed().toLower();
-        auto requestBody = QString{req.getBody()}.trimmed();
+        auto requestBody = QByteArray{req.getBody()};
         auto requestMethod = QString{req.getMethod()}.toLower();
         auto requestPort = this->port;
 
@@ -114,6 +118,12 @@ public:
 
         if(!this->contextPath.isEmpty() && requestPath.startsWith(this->contextPath))
             requestPath = requestPath.right(requestPath.length()-this->contextPath.length());
+
+        auto isENCRYPTED=requestHeaders.value(__set_crypt_mode).toString().trimmed().toUpper()==__ENCRYPTED;
+        if(isENCRYPTED){
+            QStm::CryptoUtil cu;
+            requestBody=cu.CryptoUtil::decrypt(requestBody);
+        }
 
         request.setRequestProtocol(QRpc::Http);
         request.setRequestPort(requestPort);
@@ -252,6 +262,11 @@ public:
                               request.responsePhrase()); //mensagem do backend
             else
                 ret.setStatus(request.responseCode(), request.responsePhrase(0)); //mensagem padrao
+            if(isENCRYPTED){
+                ret.setHeader(__set_crypt_mode, __ENCRYPTED);
+                QStm::CryptoUtil cu;
+                body=cu.encrypt(body);
+            }
             ret.write(body, true);
         }
     }
