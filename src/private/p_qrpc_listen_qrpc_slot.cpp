@@ -275,7 +275,7 @@ public:
             return returnOK();
         }
 #if Q_RPC_LOG
-                rWarning() << QStringLiteral("QMetaMethod is not valid:: invoke fail at on %1").arg(requestPath);
+        rWarning() << QStringLiteral("QMetaMethod is not valid:: invoke fail at on %1").arg(requestPath);
 #endif
         if (request.co().isOK())
             request.co().setNotFound();
