@@ -22,7 +22,7 @@ bool RequestJobWSS::call(RequestJobResponse *response)
         sWarning()<<tr("WebsocketListener: Cannot load certfile : %1").arg(certFile.fileName());
     }
     else if(!keyFile.open(QIODevice::ReadOnly)){
-        sWarning()<<tr("WebsocketListener: Cannot load keyfile : %s").arg(keyFile.fileName());
+        sWarning()<<tr("WebsocketListener: Cannot load keyfile : %1").arg(keyFile.fileName());
     }
     else{
         QSslCertificate certificate(&certFile, QSsl::Pem);

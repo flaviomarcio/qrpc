@@ -67,7 +67,7 @@ public:
             }
 
             if (!keyFile.open(QIODevice::ReadOnly)) {
-                rWarning() << tr("LocalServerListener: Cannot load keyfile : %s")
+                rWarning() << tr("LocalServerListener: Cannot load keyfile : %1")
                                   .arg(keyFile.fileName());
                 continue;
             }
