@@ -67,7 +67,6 @@ public:
             return;
         this->listens.insert(listen->uuid(), listen);
         listen->registerListenPool(listenQRPC);
-        QObject::connect(listen, &Listen::rpcRequest, this, &ListenQRPCPvt::onRpcRequest);
     }
 
     void listenerFree()
@@ -272,7 +271,15 @@ void ListenQRPC::run()
 
     p->listenerFree();
 
+    for(auto&listen:p->listens){
+        QObject::connect(listen, &Listen::rpcRequest, this->p, &ListenQRPCPvt::onRpcRequest);
+    }
+
     Listen::run();
+
+    for(auto&listen:p->listens){
+        QObject::disconnect(listen, &Listen::rpcRequest, this->p, &ListenQRPCPvt::onRpcRequest);
+    }
 
     p->listenerFree();
 
@@ -281,7 +288,6 @@ void ListenQRPC::run()
 
 bool ListenQRPC::start()
 {
-
     p->apiMakeBasePathParser();
     p->apiMakeBasePath();
     return Listen::start();
@@ -289,37 +295,31 @@ bool ListenQRPC::start()
 
 QHash<QByteArray, const QMetaObject *> &ListenQRPC::controllers()
 {
-
     return p->controller;
 }
 
 QHash<QByteArray, const QMetaObject *> &ListenQRPC::controllerParsers()
 {
-
     return p->controllerParsers;
 }
 
 ControllerMethodCollection &ListenQRPC::controllerMethods()
 {
-
     return p->controllerMethods;
 }
 
 MultStringList &ListenQRPC::controllerRedirect()
 {
-
     return p->controllerRedirect;
 }
 
 void ListenQRPC::registerListen(Listen *listen)
 {
-
     p->listenRegister(listen);
 }
 
 Listen *ListenQRPC::childrenListen(QUuid uuid)
 {
-
     auto listen = p->listens.value(uuid);
     return listen;
 }

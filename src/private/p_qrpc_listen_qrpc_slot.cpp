@@ -474,6 +474,7 @@ private slots:
 ListenQRPCSlot::ListenQRPCSlot(ListenQRPC *listenQRPC) : QThread{nullptr}
 {
     this->p = new ListenQRPCSlotPvt(this, listenQRPC);
+    this->moveToThread(this);
 }
 
 void ListenQRPCSlot::run()

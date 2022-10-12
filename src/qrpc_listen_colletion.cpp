@@ -19,8 +19,6 @@
 
 namespace QRpc {
 
-
-
 class ListenColletionsPvt : public QObject
 {
 public:
@@ -157,13 +155,14 @@ public:
 ListenColletions::ListenColletions(Server *server) : QThread{nullptr}
 {
     this->p = new ListenColletionsPvt(server, {}, this);
+    this->moveToThread(this);
 }
 
 ListenColletions::ListenColletions(const QVariantHash &settings, Server *server)
 {
     this->p = new ListenColletionsPvt(server, settings, this);
+    this->moveToThread(this);
 }
-
 
 ListenProtocol &ListenColletions::protocol()
 {
