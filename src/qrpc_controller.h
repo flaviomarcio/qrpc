@@ -4,7 +4,7 @@
 #include <QMetaMethod>
 #include <QMetaObject>
 #include "./qrpc_global.h"
-#include "./qrpc_controller_notation.h"
+#include "./qrpc_controller_annotation.h"
 #include "./qrpc_controller_setting.h"
 #include "./qrpc_listen_request.h"
 

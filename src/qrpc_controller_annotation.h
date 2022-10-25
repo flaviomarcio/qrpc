@@ -65,6 +65,11 @@ public:
     Q_ANNOTATION_DECLARE_FUNC(apiBasePath, Information)
 
     //!
+    //! \brief apiCRUDDesciptors
+    //!
+    Q_ANNOTATION_DECLARE(apiCRUDDesciptors, Information)
+
+    //!
     //!
     Q_ANNOTATION_DECLARE_FUNC(opName, Information)
 

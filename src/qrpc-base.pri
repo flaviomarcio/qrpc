@@ -9,7 +9,7 @@ HEADERS += \
 #    $$PWD/private/p_qrpc_thread_ping.h \
     $$PWD/qrpc.h \
     $$PWD/qrpc_const.h \
-    $$PWD/qrpc_controller_notation.h \
+    $$PWD/qrpc_controller_annotation.h \
     $$PWD/qrpc_controller_options.h \
     $$PWD/qrpc_controller_setting.h \
     $$PWD/qrpc_global.h \
@@ -25,7 +25,7 @@ HEADERS += \
 SOURCES += \
 #    $$PWD/private/p_qrpc_thread_ping.cpp \
     $$PWD/private/p_qrpc_controller_options.cpp \
-    $$PWD/qrpc_controller_notation.cpp \
+    $$PWD/qrpc_controller_annotation.cpp \
     $$PWD/qrpc_log.cpp \
     $$PWD/qrpc_service_setting.cpp \
     $$PWD/qrpc_controller_options.cpp \
