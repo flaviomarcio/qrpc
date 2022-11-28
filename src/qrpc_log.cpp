@@ -3,7 +3,6 @@
 #include <QThread>
 #include <QDir>
 #include <QFile>
-#include <QStandardPaths>
 
 namespace QRpc {
 
