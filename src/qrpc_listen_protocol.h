@@ -32,7 +32,7 @@ public:
     Q_PROPERTY(QByteArray password READ password WRITE setPassword NOTIFY passwordChanged)
     Q_PROPERTY(QByteArray database READ database WRITE setDatabase NOTIFY databaseChanged)
     Q_PROPERTY(QByteArray options READ options WRITE setOptions NOTIFY optionsChanged)
-    Q_PROPERTY(QVariantList port READ port WRITE setPort NOTIFY portChanged)
+    Q_PROPERTY(QVariant port READ port WRITE setPort NOTIFY portChanged)
     Q_PROPERTY(QByteArray contextPath READ contextPath WRITE setContextPath RESET resetContextPath NOTIFY contextPathChanged)
     Q_PROPERTY(QVariantList queue READ queue WRITE setQueue NOTIFY queueChanged)
     Q_PROPERTY(QByteArray sslKeyFile READ sslKeyFile WRITE setSslKeyFile NOTIFY sslKeyFileChanged)
@@ -272,7 +272,7 @@ public:
     //! \brief setPort
     //! \param value
     //!
-    virtual void setPort(const QVariant &value);
+    virtual void setPort(const QVariant &ports);
 
     //!
     //! \brief toMap

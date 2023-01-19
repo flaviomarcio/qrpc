@@ -1,6 +1,8 @@
 #include "./qrpc_listen_protocol.h"
 #include "./qrpc_listen.h"
 #include "../../qstm/src/qstm_macro.h"
+#include "../../qstm/src/qstm_util_variant.h"
+#include "../../qstm/src/qstm_envs.h"
 //#include "./qrpc_listen_colletion.h"
 #include <QMetaProperty>
 #include <QSettings>
@@ -33,7 +35,7 @@ public:
     int maxRequestSize = 10000000;   //9,536743164 MB
     int maxMultiPartSize = 10000000; //9,536743164 MB
     QByteArray hostName;
-    QVariantList port;
+    QVariant port;
     QByteArray driver;
     QByteArray userName;
     QByteArray password;
@@ -46,7 +48,9 @@ public:
     QByteArray sslCertFile;
     bool realMessageOnException = false;
 
-    explicit ListenProtocolPvt(QObject *parent) : QObject{parent}
+    QStm::Envs env;
+
+    explicit ListenProtocolPvt(QObject *parent) : QObject{parent}, env{parent}
     {
         this->settings = new QSettings(nullptr);
     }
@@ -179,13 +183,11 @@ ListenProtocol::ListenProtocol(int protocol, const QMetaObject &metaObject, QObj
 
 bool ListenProtocol::isValid() const
 {
-
     return p->protocol >= 0;
 }
 
 Listen *ListenProtocol::makeListen()
 {
-
     auto object = p->protocolMetaObject.newInstance(Q_ARG(QObject*, this));
     if (object == nullptr)
         return nullptr;
@@ -202,196 +204,177 @@ Listen *ListenProtocol::makeListen()
 
 int ListenProtocol::protocol()
 {
-
     return p->protocol;
 }
 
 void ListenProtocol::setProtocol(const int &value)
 {
-
     p->protocol = value;
 }
 
 QByteArray ListenProtocol::protocolName()
 {
-
     return p->protocolName();
 }
 
 QByteArray ListenProtocol::optionName()
 {
-
     return p->optionName;
 }
 
 void ListenProtocol::setSettings(const QVariantHash &settings, const QVariantHash &defaultSettings)
 {
-
     p->setSettings(settings, defaultSettings);
 }
 
 void ListenProtocol::setOptionName(const QByteArray &value)
 {
-
     p->optionName = value;
 }
 
 int ListenProtocol::minThreads() const
 {
-
     return p->minThreads;
 }
 
 void ListenProtocol::setMinThreads(int value)
 {
-
     p->minThreads = value;
 }
 
 int ListenProtocol::maxThreads() const
 {
-
     return p->maxThreads;
 }
 
 void ListenProtocol::setMaxThreads(int value)
 {
-
     p->maxThreads = value;
 }
 
 int ListenProtocol::cleanupInterval() const
 {
-
     return p->cleanupInterval;
 }
 
 void ListenProtocol::setCleanupInterval(int value)
 {
-
     p->cleanupInterval = value;
 }
 
 int ListenProtocol::maxRequestSize() const
 {
-
     return p->maxRequestSize;
 }
 
 void ListenProtocol::setMaxRequestSize(int value)
 {
-
     p->maxRequestSize = value;
 }
 
 int ListenProtocol::maxMultiPartSize() const
 {
-
     return p->maxMultiPartSize;
 }
 
 void ListenProtocol::setMaxMultiPartSize(int value)
 {
-
     p->maxMultiPartSize = value;
 }
 
 QByteArray ListenProtocol::driver() const
 {
-
     return p->driver;
 }
 
 void ListenProtocol::setDriver(const QByteArray &value)
 {
-
     p->driver = value;
 }
 
 QByteArray ListenProtocol::hostName() const
 {
-
     return p->hostName;
 }
 
 void ListenProtocol::setHostName(const QByteArray &value)
 {
-
     p->hostName = value;
 }
 
 QByteArray ListenProtocol::userName() const
 {
-
     return p->userName;
 }
 
 void ListenProtocol::setUserName(const QByteArray &value)
 {
-
     p->userName = value;
 }
 
 QByteArray ListenProtocol::password() const
 {
-
     return p->password;
 }
 
 void ListenProtocol::setPassword(const QByteArray &value)
 {
-
     p->password = value;
 }
 
 QByteArray ListenProtocol::database() const
 {
-
     return p->database;
 }
 
 void ListenProtocol::setDatabase(const QByteArray &value)
 {
-
     p->database = value;
 }
 
 QByteArray ListenProtocol::options() const
 {
-
     return p->options;
 }
 
 void ListenProtocol::setOptions(const QByteArray &value)
 {
-
     p->options = value;
 }
 
 QVariantList &ListenProtocol::queue()
 {
-
     return p->queue;
 }
 
 void ListenProtocol::setQueue(const QByteArray &value)
 {
-
     p->queue.clear();
     p->queue << value;
 }
 
 void ListenProtocol::setQueue(const QVariantList &value)
 {
-
     p->queue = value;
 }
 
 QVariantList ListenProtocol::port() const
 {
+    auto value=p->env.parser(p->port);
+    QVariantList l;
+    switch (value.typeId()) {
+    case QMetaType::QStringList:
+    case QMetaType::QVariantList:
+        l = value.toList();
+        break;
+    default:
+        l.append(value);
+    }
 
-    if (!p->port.isEmpty())
-        return p->port;
+    if (value.isValid()){
+        Q_DECLARE_VU;
+        return vu.toList(value);
+    }
 
     switch (p->protocol) {
     case Protocol::TcpSocket:
@@ -412,106 +395,82 @@ QVariantList ListenProtocol::port() const
     case Protocol::Kafka:
         return QVariantList{listen_kafka_port};
     default:
-        return QVariantList{};
+        return {};
     }
 }
 
-void ListenProtocol::setPort(const QVariant &value)
+void ListenProtocol::setPort(const QVariant &ports)
 {
-
-    QVariantList l;
-    switch (value.typeId()) {
-    case QMetaType::QStringList:
-    case QMetaType::QVariantList:
-        l = value.toList();
-        break;
-    default:
-        l << value;
-    }
-    p->port = l;
+    p->port = ports;
 }
 
 QVariantMap ListenProtocol::toMap() const
 {
-
     return QVariant(p->makeHash().settingsHash).toMap();
 }
 
 QVariantHash &ListenProtocol::toHash() const
 {
-
     return p->makeHash().settingsHash;
 }
 
 QSettings &ListenProtocol::settings() const
 {
-
     return *p->makeHash().settings;
 }
 
 QSettings *ListenProtocol::makeSettings(QObject *parent)
 {
-
     auto settings = new QSettings(parent);
-    Q_V_HASH_ITERATOR(p->makeHash().settingsHash)
-    {
+    Q_V_HASH_ITERATOR(p->makeHash().settingsHash){
         i.next();
-        settings->setValue(i.key().toLower(), i.value());
+        settings->setValue(i.key().toLower(), p->env.parser(i.value()));
     }
     return settings;
 }
 
 QVariantHash ListenProtocol::makeSettingsHash() const
 {
-
     return p->makeHash().settingsHash;
 }
 
 bool ListenProtocol::enabled() const
 {
-
     return p->enabled;
 }
 
 void ListenProtocol::setEnabled(bool value)
 {
-
     p->enabled = value;
 }
 
 QByteArray ListenProtocol::sslKeyFile() const
 {
-
     return p->sslKeyFile;
 }
 
 void ListenProtocol::setSslKeyFile(const QByteArray &value)
 {
-
     p->sslKeyFile = value;
 }
 
 QByteArray ListenProtocol::sslCertFile() const
 {
-
     return p->sslCertFile;
 }
 
 void ListenProtocol::setSslCertFile(const QByteArray &value)
 {
-
     p->sslCertFile = value;
 }
 
 bool ListenProtocol::realMessageOnException() const
 {
-
     return p->realMessageOnException;
 }
 
 void ListenProtocol::setRealMessageOnException(bool value)
 {
-
     p->realMessageOnException = value;
 }
 

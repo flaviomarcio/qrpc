@@ -123,7 +123,7 @@ public:
             listen->setServer(this->server);
             listen->setColletions(this->collections());
             this->listensActive.insert(protocol->protocol(), listen);
-            listenStartOrder<<listen;
+            listenStartOrder.append(listen);
         }
 
         auto listenPool = this->collections()->listenPool();
