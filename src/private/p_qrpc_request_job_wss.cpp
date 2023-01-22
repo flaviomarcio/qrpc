@@ -19,10 +19,10 @@ bool RequestJobWSS::call(RequestJobResponse *response)
     QFile keyFile(QStringLiteral(":/sslconfiguration/rpc.key"));
 
     if(!certFile.open(QIODevice::ReadOnly)){
-        sWarning()<<tr("WebsocketListener: Cannot load certfile : %1").arg(certFile.fileName());
+        rWarning()<<tr("WebsocketListener: Cannot load certfile : %1").arg(certFile.fileName());
     }
     else if(!keyFile.open(QIODevice::ReadOnly)){
-        sWarning()<<tr("WebsocketListener: Cannot load keyfile : %1").arg(keyFile.fileName());
+        rWarning()<<tr("WebsocketListener: Cannot load keyfile : %1").arg(keyFile.fileName());
     }
     else{
         QSslCertificate certificate(&certFile, QSsl::Pem);
