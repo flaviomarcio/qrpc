@@ -463,7 +463,7 @@ const QMetaObject &Controller::install(const QMetaObject &metaObject)
     if (!staticInstalled->contains(&metaObject)) {
 #if Q_RPC_LOG_VERBOSE
         if (staticInstalled->isEmpty())
-            sInfo() << QStringLiteral("interface registered: ") << metaObject.className();
+            rInfo() << QStringLiteral("interface registered: ") << metaObject.className();
         qInfo() << QByteArrayLiteral("interface: ") + metaObject.className();
 #endif
         (*staticInstalled).append(&metaObject);
@@ -476,8 +476,8 @@ const QMetaObject &Controller::installParser(const QMetaObject &metaObject)
     if (!staticParserInstalled->contains(&metaObject)) {
 #if Q_RPC_LOG_VERBOSE
         if (staticParserInstalled->isEmpty())
-            sInfo() << QStringLiteral("parser interface registered: ") << metaObject.className();
-        qInfo() << QByteArrayLiteral("parser interface") + metaObject.className();
+            rInfo() << QStringLiteral("parser interface registered: ") << metaObject.className();
+        rInfo() << QByteArrayLiteral("parser interface") + metaObject.className();
 #endif
         (*staticParserInstalled) << &metaObject;
     }

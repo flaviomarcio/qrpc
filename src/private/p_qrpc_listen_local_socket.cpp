@@ -69,7 +69,7 @@ public:
             }
 
             __return = true;
-            sDebug() << QString("LocalSocketServer: Listening on port %1").arg(port);
+            rDebug() << QString("LocalSocketServer: Listening on port %1").arg(port);
             this->servers.insert(port, server);
         }
 

@@ -61,7 +61,7 @@ public:
 
             if (server->isListening()) {
                 __return = true;
-                sDebug() << QString("TcpsocketListener: Listening on port %i").arg(port);
+                rDebug() << QString("TcpsocketListener: Listening on port %i").arg(port);
                 this->servers.insert(port, server);
                 continue;
             }

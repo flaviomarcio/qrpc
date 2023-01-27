@@ -113,7 +113,7 @@ public:
             }
 
             __return = true;
-            sDebug() << QString("LocalServerListener: Listening on port %1").arg(port);
+            rDebug() << QString("LocalServerListener: Listening on port %1").arg(port);
             this->servers.insert(port, server);
         }
 
