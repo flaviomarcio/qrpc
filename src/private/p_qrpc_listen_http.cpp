@@ -58,10 +58,12 @@ public:
     explicit HttpServer3rdparty(QSettings *settings, ListenHTTP *listen = nullptr)
         : stefanfrings::HttpRequestHandler{listen}
     {
-        this->contextPath=settings->value("contextPath").toByteArray();
+        this->contextPath=settings->value("contextPath").toByteArray().trimmed();
+        if(this->contextPath.isEmpty())
+            this->contextPath="/";
         this->port=settings->value(QStringLiteral("port")).toInt();
         this->listen=listen;
-        rWarning()<<QString(" listen port %1 on %2").arg(this->port).arg(this->contextPath);
+        rWarning()<<QString(" listen: port %1, contextPath: %2").arg(this->port).arg(this->contextPath);
         this->listener=HttpListeners3drparty::make(this, settings);
         QObject::connect(listen, &Listen::rpcResponse, this, &HttpServer3rdparty::onRpcResponse);
     }
