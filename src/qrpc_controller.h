@@ -17,7 +17,7 @@ class ControllerPvt;
 //!
 //! \brief The Controller class
 //!
-class Q_RPC_EXPORT Controller : public QObject, public QRpcPrivate::NotationsExtended
+class Q_RPC_EXPORT Controller : public QObject, public QRpcPrivate::AnotationsExtended
 {
     Q_OBJECT
     friend class Server;
@@ -40,7 +40,7 @@ public:
         QByteArray fullPath;
         QStringList methods;
         QStringList rules;
-        QAnnotation::Collection notations;
+        QAnnotation::Collection annotations;
     };
 
     typedef QVector<MethodInfo> MethodInfoCollection;

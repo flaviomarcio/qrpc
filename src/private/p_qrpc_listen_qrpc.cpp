@@ -89,15 +89,16 @@ public:
         if (controllerMethods.contains(className))
             return {};
 
-        auto methodList = controllerMethods.value(className);
-        if (!methodList.isEmpty())
+        QVector<QMetaMethod> methodList;
+        auto methodCollection = controllerMethods.value(className);
+        if (!methodCollection.isEmpty())
             return {};
 
         auto controller = dynamic_cast<Controller *>(makeObject);
         if (controller == nullptr)
             return {};
 
-        auto controllerIsRedirect=controller->notation().contains(controller->apiRedirect);
+        auto controllerIsRedirect=controller->annotation().contains(controller->apiRedirect);
         if (controllerIsRedirect)
             controllerRedirect.insert(className, controller->basePath());
 
@@ -138,19 +139,31 @@ public:
             if (methodName.startsWith(QByteArrayLiteral("_"))) //ignore methods with [_] in start name
                 continue;
 
-            const auto &notations=controller->notation(method);
+            const auto &annotations=controller->annotation(method);
 
-            if(notations.contains(nottionExcludeMethod))
+            if(annotations.contains(nottionExcludeMethod))
                 continue;
 
-            for (auto &v : vBasePathList) {
-                auto path = basePathParser(v, methodName);
-                if (methodList.contains(path))
-                    continue;
-                methodList.insert(path, method);
+            methodList.append(method);
+        }
+
+        if(methodList.isEmpty()){
+            for (auto &path : vBasePathList)
+                rWarning()<<"   basePath: "<<path<<", no method found";
+            return {};
+        }
+
+        for (auto &path : vBasePathList) {
+            rWarning()<<"   basePath: "<<path;
+            for(auto&method:methodList){
+                auto methodName = method.name().toLower();
+                rWarning()<<"       method: "<<methodName;
+                auto methodPath = basePathParser(path, methodName);
+                methodCollection.insert(methodPath, method);
             }
         }
-        this->controllerMethods.insert(className, methodList);
+
+        this->controllerMethods.insert(className, methodCollection);
         return vBasePathList;
     }
 
@@ -179,8 +192,6 @@ public:
             if (controller == nullptr)
                 continue;
 
-            for(auto path: apiMakeBasePath(controller, mObj))
-                rWarning()<<"   path: "<<path;
             this->controller.insert(name, mObj);
         }
     }

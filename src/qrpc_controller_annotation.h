@@ -12,9 +12,9 @@ namespace QRpcPrivate
 {
 
 //!
-//! \brief The NotationsExtended class
+//! \brief The AnotationsExtended class
 //!
-class Q_RPC_EXPORT NotationsExtended:public QAnnotation::Extended
+class Q_RPC_EXPORT AnotationsExtended:public QAnnotation::Extended
 {
 public:
 
@@ -22,12 +22,11 @@ public:
         ApiOperation
     };
 
-
     //!
-    //! \brief NotationsExtended
+    //! \brief AnotationsExtended
     //! \param parent
     //!
-    explicit NotationsExtended(QObject *parent=nullptr);
+    explicit AnotationsExtended(QObject *parent=nullptr);
 
     //!
     //! \brief apiDoc

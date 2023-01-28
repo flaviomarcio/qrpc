@@ -11,7 +11,7 @@ class ListenRequestParserPvt;
 //!
 //! \brief The ListenRequestParser class
 //!
-class Q_RPC_EXPORT ListenRequestParser : public QObject, public QRpcPrivate::NotationsExtended
+class Q_RPC_EXPORT ListenRequestParser : public QObject, public QRpcPrivate::AnotationsExtended
 {
     Q_OBJECT
     friend class ListenQRPCSlotPvt;

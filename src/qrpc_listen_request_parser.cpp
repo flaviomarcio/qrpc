@@ -29,22 +29,21 @@ public:
     explicit ListenRequestParserPvt(QObject *parent = nullptr):QObject{parent} {}
 };
 
-ListenRequestParser::ListenRequestParser(QObject *parent) : QObject{parent}, QRpcPrivate::NotationsExtended{this}
+ListenRequestParser::ListenRequestParser(QObject *parent) : QObject{parent}, QRpcPrivate::AnotationsExtended{this}
 {
-    this->p = new ListenRequestParserPvt(parent);
+    this->p = new ListenRequestParserPvt{parent};
 }
 
 QStringList &ListenRequestParser::basePath() const
 {
-
     if(!p->basePathList.isEmpty())
         return p->basePathList;
 
-    auto &notations=this->notation();
-    const auto &notation = notations.find(apiBasePath());
+    auto &annotations=this->annotation();
+    const auto &annotation = annotations.find(apiBasePath());
     QVariantList vList;
-    if(notation.isValid()){
-        auto v = notation.value();
+    if(annotation.isValid()){
+        auto v = annotation.value();
         switch (v.typeId()) {
         case QMetaType::QStringList:
         case QMetaType::QVariantList:{
@@ -69,13 +68,11 @@ QStringList &ListenRequestParser::basePath() const
 
 Controller &ListenRequestParser::controller()
 {
-
     return *p->controller;
 }
 
 ListenRequest &ListenRequestParser::request()
 {
-
     if (p->controller == nullptr) {
         static ListenRequest req;
         req.clear();
@@ -184,7 +181,6 @@ bool ListenRequestParser::parse(const QMetaMethod &metaMethod)
 
 void ListenRequestParser::setController(Controller *value)
 {
-
     p->controller = value;
 }
 

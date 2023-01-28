@@ -2,7 +2,7 @@
 
 namespace QRpcPrivate{
 
-NotationsExtended::NotationsExtended(QObject *parent):QAnnotation::Extended{parent}
+AnotationsExtended::AnotationsExtended(QObject *parent):QAnnotation::Extended{parent}
 {
 
 }
