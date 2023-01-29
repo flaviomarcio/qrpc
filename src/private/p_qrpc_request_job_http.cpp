@@ -341,7 +341,7 @@ void RequestJobHttp::onReplyProgressDownload(qint64 bytesReceived, qint64 bytesT
         return;
 
     if(!this->fileTemp.isOpen()){
-        qWarning()<<tr("invalid fileTemp: %1").arg(this->fileTemp.fileName());
+        rWarning()<<tr("invalid fileTemp: %1").arg(this->fileTemp.fileName());
         return;
     }
     const auto bytes=this->reply->read(bytesReceived);

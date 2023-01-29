@@ -172,7 +172,7 @@ public:
         controllerMethods.clear();
         auto server = this->listenQRPC->server();
         if (server == nullptr) {
-            qWarning() << QStringLiteral("Invalid server");
+            rWarning() << QStringLiteral("Invalid server");
             return;
         }
 
@@ -201,7 +201,7 @@ public:
     {
         auto server = this->listenQRPC->server();
         if (server == nullptr) {
-            qWarning() << QStringLiteral("Invalid server");
+            rWarning() << QStringLiteral("Invalid server");
             return;
         }
         this->controllerParsers.clear();
