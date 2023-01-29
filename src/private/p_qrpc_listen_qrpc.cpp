@@ -192,6 +192,7 @@ public:
             if (controller == nullptr)
                 continue;
 
+            apiMakeBasePath(controller, mObj);
             this->controller.insert(name, mObj);
         }
     }

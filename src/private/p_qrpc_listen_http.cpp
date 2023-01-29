@@ -15,9 +15,12 @@
 #include <QCoreApplication>
 #include <QCryptographicHash>
 
+static const auto __contextPath="contextPath";
+static const auto __port="port";
 static const auto __set_crypt_mode="set-crypt-mode";
 static const auto __ENCRYPTED="ENCRYPTED";
 //static const auto __DECRYPTED="DECRYPTED";
+
 
 namespace QRpc {
 
@@ -58,10 +61,10 @@ public:
     explicit HttpServer3rdparty(QSettings *settings, ListenHTTP *listen = nullptr)
         : stefanfrings::HttpRequestHandler{listen}
     {
-        this->contextPath=settings->value("contextPath").toByteArray().trimmed();
+        this->contextPath=settings->value(__contextPath).toByteArray().trimmed();
         if(this->contextPath.isEmpty())
             this->contextPath="/";
-        this->port=settings->value(QStringLiteral("port")).toInt();
+        this->port=settings->value(__port).toInt();
         this->listen=listen;
         rWarning()<<QString(" listen: port %1, contextPath: %2").arg(this->port).arg(this->contextPath);
         this->listener=HttpListeners3drparty::make(this, settings);
@@ -244,7 +247,7 @@ public:
             HttpHeaders headers(rpc_url.headers());
             if (!headers.contentDisposition().isValid()) {
                 auto fileName = rpc_url.toLocalFile().split(QStringLiteral("/")).last();
-                rpc_url.headers().insert(QString(ContentDispositionName).toUtf8(),
+                rpc_url.headers().insert(ContentDispositionName,
                                          QStringLiteral("inline; filename=\"%1\"").arg(fileName).toUtf8());
                 if (!headers.contentType().isValid())
                     headers.setContentType(rpc_url.url());
@@ -317,7 +320,7 @@ public:
                 if (port <= 0)
                     continue;
                 auto settings = option.makeSettings();
-                settings->setValue(QStringLiteral("port"), port);
+                settings->setValue(__port, port);
                 auto listen = new HttpServer3rdparty{settings, this->parent};
                 listen->realMessageOnException = option.realMessageOnException();
                 listens.append(listen);

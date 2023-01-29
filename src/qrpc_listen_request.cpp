@@ -895,6 +895,11 @@ QByteArray &ListenRequest::requestPath() const
 void QRpc::ListenRequest::setRequestPath(const QVariant &value)
 {
     p->requestPath=value.toByteArray();
+    static const auto __path_separator="/";
+    if(!p->requestPath.startsWith(__path_separator))
+        p->requestPath=__path_separator+p->requestPath;
+    if(p->requestPath.endsWith(__path_separator))
+        p->requestPath=p->requestPath.mid(0,p->requestPath.length()-1);
 }
 
 QByteArray &ListenRequest::requestMethod() const

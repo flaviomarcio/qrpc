@@ -71,7 +71,7 @@ Controller::MethodInfoCollection Controller::invokableMethod() const
     if (ann.contains(controller->apiRedirect))
         return {};
 
-    static auto nottionExcludeMethod=QVariantList{controller->rqRedirect, controller->rqExcludePath};
+    static auto annotionExcludeMethod=QVariantList{controller->rqRedirect, controller->rqExcludePath};
     const auto &vBasePathList = controller->basePath();
     if (vBasePathList.isEmpty())
         return {};
@@ -102,7 +102,7 @@ Controller::MethodInfoCollection Controller::invokableMethod() const
                 continue;
 
             info.annotations=QAnnotation::Collection{controller->annotation(info.method)};
-            info.excluded=info.annotations.contains(nottionExcludeMethod);
+            info.excluded=info.annotations.contains(annotionExcludeMethod);
             if(info.excluded)
                 continue;
 
