@@ -196,4 +196,19 @@ bool ServerPvt::load(const QVariantHash &settings) const
     return true;
 }
 
+QList<const QMetaObject *> &ServerPvt::controllersSort()
+{
+    QHash<QString,const QMetaObject *> items;
+    for(auto&metaObject:this->controllers)
+        items.insert(metaObject->className(), metaObject);
+    QStringList keys=items.keys();
+    keys.sort();
+
+    QList<const QMetaObject *> sorted;
+    for(auto&key:keys)
+        sorted.append(items.value(key));
+    this->controllers=sorted;
+    return this->controllers;
+}
+
 }

@@ -83,6 +83,8 @@ public:
     QVariantHash settings;
     QList<const QMetaObject *> controllers;
     QList<const QMetaObject *> controllerParsers;
+
+    QList<const QMetaObject *> &controllersSort();
 };
 
 } // namespace QRpc

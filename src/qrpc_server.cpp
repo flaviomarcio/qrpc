@@ -69,7 +69,7 @@ bool Server::interfacesRunning()
 
 QList<const QMetaObject *> &Server::controllers()
 {
-    return p->controllers;
+    return p->controllersSort();
 }
 
 QList<const QMetaObject *> &Server::controllerParsers()
