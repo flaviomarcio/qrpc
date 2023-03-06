@@ -66,6 +66,7 @@ public:
 
     void setSettings(const QVariantHash &settings, const QVariantHash &defaultSettings)
     {
+        QStm::Envs envs;
         static auto exceptionProperty = QStringList{QStringLiteral("protocol"),
                 QStringLiteral("protocolname"),
                 QStringLiteral("optionname")};
@@ -82,6 +83,8 @@ public:
             auto value = this->settingsHash.value(propertyName);
             if (!value.isValid())
                 value = defaultSettings.value(propertyName);
+
+            value=envs.parser(value);
 
             if (property.write(this->parent(), value))
                 continue;

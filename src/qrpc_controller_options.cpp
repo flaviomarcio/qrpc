@@ -42,19 +42,16 @@ ControllerOptions::~ControllerOptions()
 
 void ControllerOptions::clear()
 {
-
     p->clear();
 }
 
 ControllerOptions &ControllerOptions::insert(ControllerSetting &value)
 {
-
     return p->insert(value.toHash());
 }
 
 ControllerOptions &ControllerOptions::insert(const QVariantHash &value)
 {
-
     return p->insert(value);
 }
 
@@ -65,37 +62,31 @@ ControllerSetting&ControllerOptions::setting()
 
 ControllerSetting&ControllerOptions::setting(const QString &value)
 {
-
     return p->settingGetCheck(value);
 }
 
 bool ControllerOptions::load(const QVariant &settings)
 {
-
     return p->v_load(settings);
 }
 
 bool ControllerOptions::load(const QVariantHash &settings)const
 {
-
     return p->v_load(settings);
 }
 
 bool ControllerOptions::load(const ControllerOptions&manager)const
 {
-
     return p->load(manager.toHash());
 }
 
 bool ControllerOptions::load(QObject *settingsObject)const
 {
-
     return p->load(settingsObject);
 }
 
 QVariant ControllerOptions::settingsFileName()const
 {
-
     return p->settingsFileName;
 }
 
@@ -106,31 +97,26 @@ ControllerOptions &ControllerOptions::operator<<(ControllerSetting &value)
 
 QVariantHash ControllerOptions::settingBody() const
 {
-
     return p->settingBody;
 }
 
 QVariantHash ControllerOptions::arguments() const
 {
-
     return p->arguments;
 }
 
 void ControllerOptions::setArguments(const QVariantHash &value)
 {
-
     p->arguments = value;
 }
 
 QVariantMap ControllerOptions::toMap() const
 {
-
     return QVariant(p->toHash()).toMap();
 }
 
 QVariantHash ControllerOptions::toHash() const
 {
-
     return p->toHash();
 }
 

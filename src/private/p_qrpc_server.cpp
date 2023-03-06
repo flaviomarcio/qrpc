@@ -168,8 +168,8 @@ bool ServerPvt::load(const QString &settingsFileName)
 #endif
         return false;
     }
-    const auto vMap = doc.object().toVariantHash();
-    return this->load(vMap);
+    const auto vHash = doc.object().toVariantHash();
+    return this->load(vHash);
 }
 
 bool ServerPvt::load(const QVariantHash &settings) const
