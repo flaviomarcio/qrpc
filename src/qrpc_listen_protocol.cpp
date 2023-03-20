@@ -172,10 +172,6 @@ ListenProtocol::ListenProtocol(int protocol, const QMetaObject &metaObject, QObj
     QObject::connect(this, &ListenProtocol::sslKeyFileChanged, this->p, &ListenProtocolPvt::changeMap);
     QObject::connect(this, &ListenProtocol::sslCertFileChanged, this->p, &ListenProtocolPvt::changeMap);
     QObject::connect(this, &ListenProtocol::enabledChanged, this->p, &ListenProtocolPvt::changeMap);
-    QObject::connect(this,
-                     &ListenProtocol::realMessageOnExceptionChanged,
-                     this->p,
-                     &ListenProtocolPvt::changeMap);
 
     p->protocol = protocol;
     p->optionName = p->protocolName();
