@@ -38,7 +38,6 @@ public:
     Q_PROPERTY(QByteArray sslKeyFile READ sslKeyFile WRITE setSslKeyFile NOTIFY sslKeyFileChanged)
     Q_PROPERTY(QByteArray sslCertFile READ sslCertFile WRITE setSslCertFile NOTIFY sslCertFileChanged)
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
-    Q_PROPERTY(bool realMessageOnException READ realMessageOnException WRITE setRealMessageOnException NOTIFY realMessageOnExceptionChanged)
 
     //!
     //! \brief ListenProtocol
@@ -343,18 +342,6 @@ public:
     //!
     virtual void setSslCertFile(const QByteArray &value);
 
-    //!
-    //! \brief realMessageOnException
-    //! \return
-    //!true on debug
-    virtual bool realMessageOnException() const;
-
-    //!
-    //! \brief setRealMessageOnException
-    //! \param value
-    //!
-    virtual void setRealMessageOnException(bool value);
-
 private:
     ListenProtocolPvt *p = nullptr;
 
@@ -378,7 +365,6 @@ signals:
     void sslKeyFileChanged();
     void sslCertFileChanged();
     void enabledChanged();
-    void realMessageOnExceptionChanged();
     void contextPathChanged();
 };
 

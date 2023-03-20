@@ -46,7 +46,6 @@ public:
     bool enabled = false;
     QByteArray sslKeyFile;
     QByteArray sslCertFile;
-    bool realMessageOnException = false;
 
     QStm::Envs env;
 
@@ -465,16 +464,6 @@ QByteArray ListenProtocol::sslCertFile() const
 void ListenProtocol::setSslCertFile(const QByteArray &value)
 {
     p->sslCertFile = value;
-}
-
-bool ListenProtocol::realMessageOnException() const
-{
-    return p->realMessageOnException;
-}
-
-void ListenProtocol::setRealMessageOnException(bool value)
-{
-    p->realMessageOnException = value;
 }
 
 const QByteArray &ListenProtocol::contextPath() const

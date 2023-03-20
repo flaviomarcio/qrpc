@@ -55,7 +55,6 @@ public:
     HttpListeners3drparty *listener=nullptr;
     int port=-1;
 
-    bool realMessageOnException = false;
     ListenHTTP *listen=nullptr;
 
     explicit HttpServer3rdparty(QSettings *settings, ListenHTTP *listen = nullptr)
@@ -262,11 +261,7 @@ public:
                 auto v = i.value().toByteArray();
                 ret.setHeader(k, v);
             }
-            if (this->realMessageOnException)
-                ret.setStatus(request.responseCode(),
-                              request.responsePhrase()); //mensagem do backend
-            else
-                ret.setStatus(request.responseCode(), request.responsePhrase(0)); //mensagem padrao
+            ret.setStatus(request.responseCode(), request.responsePhrase()); //mensagem padrao
             if(isENCRYPTED){
                 ret.setHeader(__set_crypt_mode, __ENCRYPTED);
                 QStm::CryptoUtil cu;
@@ -322,7 +317,7 @@ public:
                 auto settings = option.makeSettings();
                 settings->setValue(__port, port);
                 auto listen = new HttpServer3rdparty{settings, this->parent};
-                listen->realMessageOnException = option.realMessageOnException();
+
                 listens.append(listen);
             }
         }
