@@ -54,6 +54,16 @@ public:
     Q_ANNOTATION_DECLARE_FUNC(apiModule, Information)
 
     //!
+    //! \brief apiNameOrder
+    //!
+    Q_ANNOTATION_DECLARE_FUNC(apiNameOrder, Information)
+
+    //!
+    //! \brief apiOrder
+    //!
+    Q_ANNOTATION_DECLARE_FUNC(apiOrder, Information)
+
+    //!
     //! \brief apiRedirect
     //!
     Q_ANNOTATION_DECLARE(apiRedirect, Information)

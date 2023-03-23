@@ -14,6 +14,7 @@
 #include <QMetaMethod>
 #include <QMutex>
 #include <QVector>
+#include <QHash>
 
 namespace QRpc {
 
@@ -76,15 +77,13 @@ Controller::MethodInfoCollection Controller::invokableMethod() const
     if (vBasePathList.isEmpty())
         return {};
 
-    static QStm::Network network;
-    static ByteArrayVector methodBlackList=QRPC_METHOD_BACK_LIST;
-    for(auto basePath:vBasePathList){
-        basePath=QStringLiteral("/")+basePath+QStringLiteral("/");
-        while(basePath.contains(QStringLiteral("//")))
-            basePath=basePath.replace(QStringLiteral("//"),QStringLiteral("/"));
+    auto makeSortedMethods=[&controller, &metaObject]()
+    {
+        QHash<QString, QMetaMethod> hashItems;
+        QVector<QMetaMethod> __return;
+        static ByteArrayVector methodBlackList=QRPC_METHOD_BACK_LIST;
         for (auto i = 0; i < metaObject->methodCount(); ++i) {
             auto method = metaObject->method(i);
-            MethodInfo info;
 
             if (method.methodType() != method.Method)
                 continue;
@@ -92,14 +91,39 @@ Controller::MethodInfoCollection Controller::invokableMethod() const
             if (method.parameterCount() > 0)
                 continue;
 
+            if (method.name().startsWith(QByteArrayLiteral("_"))) //ignore methods with [_] in start name
+                continue;
+
+            if (methodBlackList.contains(method.name()))
+                continue;
+
+            const auto &ann = QAnnotation::Collection{controller->annotation(method)};
+            const auto displaName=ann.find(opName()).toValueString();
+            if(displaName.isEmpty())
+                continue;
+            hashItems.insert(displaName, method);
+        }
+        auto keys=hashItems.keys();
+        keys.sort();
+        for(auto &key:keys)
+            __return.append(hashItems.value(key));
+        return __return;
+    };
+
+
+    auto sortedMethods=makeSortedMethods();
+
+    static QStm::Network network;
+
+    for(auto basePath:vBasePathList){
+        basePath=QStringLiteral("/")+basePath+QStringLiteral("/");
+        while(basePath.contains(QStringLiteral("//")))
+            basePath=basePath.replace(QStringLiteral("//"),QStringLiteral("/"));
+        for(auto&method:sortedMethods){
+            MethodInfo info;
+
             info.method = method;
             info.name = method.name().toLower();
-
-            if (methodBlackList.contains(info.name))
-                continue;
-
-            if (info.name.startsWith(QByteArrayLiteral("_"))) //ignore methods with [_] in start name
-                continue;
 
             info.annotations=QAnnotation::Collection{controller->annotation(info.method)};
             info.excluded=info.annotations.contains(annotionExcludeMethod);
