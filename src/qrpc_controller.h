@@ -30,6 +30,7 @@ class Q_RPC_EXPORT Controller : public QObject, public QRpcPrivate::AnotationsEx
 public:
     struct MethodInfo{
     public:
+        int order=-1;
         QMetaMethod method;
         bool excluded=false;
         QByteArray name;

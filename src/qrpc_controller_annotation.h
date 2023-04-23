@@ -83,6 +83,10 @@ public:
     Q_ANNOTATION_DECLARE_FUNC(opName, Information)
 
     //!
+    //!
+    Q_ANNOTATION_DECLARE_FUNC(opOrder, Information)
+
+    //!
     //! \brief opDescription
     //!
     Q_ANNOTATION_DECLARE_FUNC(opDescription, Information)

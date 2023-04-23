@@ -165,6 +165,7 @@ Controller::MethodInfoCollection Controller::invokableMethod() const
             if(info.annotations.contains(opPatch))
                 info.methods.append(network.METHOD_PATCH);
 
+            info.order=info.annotations.find(opOrder()).toValueInt(-1);
             info.rules=info.annotations.find(opRules()).toVariant().toStringList();
             info.basePath=basePath.toUtf8();
             info.path=info.annotations.find(opPath()).toValueByteArray();
