@@ -3,9 +3,6 @@
 
 namespace QRpc {
 
-#define dPvt()\
-    auto &p =*reinterpret_cast<RequestExchangePvt*>(this->p)
-
 class RequestExchangePvt:public QObject{
 public:
     RequestExchange*parent=nullptr;

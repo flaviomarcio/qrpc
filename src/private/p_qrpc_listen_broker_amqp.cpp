@@ -2,8 +2,6 @@
 
 namespace QRpc {
 
-#define dPvt() auto &p = *reinterpret_cast<ListenBrokerAMQPPvt *>(this->p)
-
 class ListenBrokerAMQPPvt:public QObject
 {
 public:
