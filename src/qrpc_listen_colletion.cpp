@@ -11,7 +11,7 @@
 //#include "./private/p_qrpc_listen_udp->h"
 //#include "./private/p_qrpc_listen_wss.h"
 //#include "./private/p_qrpc_listen_broker_mqtt.h"
-//#include "./private/p_qrpc_listen_broker_amqp->h"
+//#include "./private/p_qrpc_listen_broker_amqp.h"
 //#include "./private/p_qrpc_listen_broker_kafka.h"
 //#include "./private/p_qrpc_listen_broker_database.h"
 //#include "./private/p_qrpc_listen_http->h"

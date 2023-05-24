@@ -1,6 +1,16 @@
 QT += core
 QT += network
 
+##declare to include CONFIG+=Q_RPC_AMQP
+CONFIG(Q_RPC_AMQP){
+DEFINES+=Q_RPC_AMQP
+HEADERS += \
+    $$PWD/private/p_qrpc_request_job_amqp.h \
+
+SOURCES += \
+    $$PWD/private/p_qrpc_request_job_amqp.cpp \
+}
+
 ##declare to include CONFIG+=Q_RPC_WEBSOCKET
 CONFIG(Q_RPC_WEBSOCKET){
 QT += websockets
@@ -24,8 +34,8 @@ SOURCES+= \
 }
 
 ##declare to include CONFIG+=Q_RPC_TCP
-CONFIG(Q_RPC_TCPSOCKET){
-DEFINES+=Q_RPC_TCPSOCKET
+CONFIG(Q_RPC_TCP){
+DEFINES+=Q_RPC_TCP
 HEADERS += \
     $$PWD/private/p_qrpc_request_job_tcp.h \
 
@@ -34,8 +44,8 @@ SOURCES += \
 }
 
 ##declare to include CONFIG+=Q_RPC_UDP
-CONFIG(Q_RPC_UDPSOCKET){
-DEFINES+=Q_RPC_UDPSOCKET
+CONFIG(Q_RPC_UDP){
+DEFINES+=Q_RPC_UDP
 HEADERS += \
     $$PWD/private/p_qrpc_request_job_udp.h \
 

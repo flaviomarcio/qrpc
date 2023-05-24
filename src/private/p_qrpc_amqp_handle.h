@@ -4,7 +4,7 @@
 #include <memory>
 #include <amqpcpp.h>
 #include <amqpcpp/message.h>
-#include "./p_qrpc_request_job_protocol.h"
+#include <QDateTime>
 
 namespace QRpc {
 class AMQPHandleImpl;

@@ -1,5 +1,6 @@
 #include "./p_qrpc_amqp_thread.h"
 #include <QMutex>
+#include <QTimer>
 
 namespace QRpc {
 

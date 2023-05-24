@@ -1,4 +1,6 @@
+#include "./p_qrpc_amqp_handle.h"
 #include "./p_qrpc_request_job_amqp.h"
+#include "./p_qrpc_request_job_protocol.h"
 #include <QObject>
 #include <vector>
 #include <thread>

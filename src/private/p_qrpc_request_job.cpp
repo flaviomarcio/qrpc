@@ -1,9 +1,10 @@
 #include "./p_qrpc_request_job.h"
+#include "../qrpc_request_exchange_setting.h"
 #ifdef Q_RPC_HTTP
 #include "./p_qrpc_request_job_http.h"
 #endif
 #ifdef Q_RPC_AMQP
-#include "./p_qrpc_request_job_amqp->h"
+#include "./p_qrpc_request_job_amqp.h"
 #endif
 #ifdef Q_RPC_KAFKA
 #include "./p_qrpc_request_job_broker_kafka.h"
@@ -78,7 +79,7 @@ public:
 #ifdef Q_RPC_WEBSOCKET
         _requestJobProtocolMap[QRpc::WebSocket]=&this->requestJobWSS;
 #endif
-#ifdef Q_RPC_TCPSOCKET
+#ifdef Q_RPC_TCP
         _requestJobProtocolMap[QRpc::TcpSocket]=&this->requestJobTcp;
 #endif
 #ifdef Q_RPC_LOCALSOCKET

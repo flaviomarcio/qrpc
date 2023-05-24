@@ -2,7 +2,6 @@
 
 #include <QSslCertificate>
 #include <QSslConfiguration>
-#include "../qrpc_request_exchange_setting.h"
 #include "./p_qrpc_request_job_response.h"
 
 
@@ -15,7 +14,6 @@ class RequestJob : public QThread
 {
     Q_OBJECT
 public:
-
 
     explicit RequestJob();
 
@@ -31,8 +29,6 @@ public:
     RequestJobResponse&response();
 
     void setResponse(RequestJobResponse &value);
-
-
 
 public slots:
 

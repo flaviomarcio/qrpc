@@ -1,10 +1,5 @@
 #pragma once
 
-#include "../qrpc_request.h"
-#include "./p_qrpc_util.h"
-#include "../qrpc_listen_request.h"
-#include "./p_qrpc_request_job.h"
-#include "./p_qrpc_http_response.h"
 #include <QList>
 #include <QMutex>
 #include <QNetworkReply>
@@ -23,6 +18,11 @@
 #include <QStringList>
 #include <QDir>
 #include <QtCore/QCoreApplication>
+#include "../qrpc_request.h"
+#include "./p_qrpc_util.h"
+#include "../qrpc_listen_request.h"
+#include "./p_qrpc_request_job.h"
+#include "./p_qrpc_http_response.h"
 
 namespace QRpc {
 

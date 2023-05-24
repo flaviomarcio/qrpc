@@ -14,7 +14,7 @@
 #include <amqpcpp.h>
 #include <amqpcpp/message.h>
 #endif
-#include "./p_qrpc_amqp_handle.h"
+//#include "./p_qrpc_amqp_handle.h"
 #include "./p_qrpc_thread_ping.h"
 
 namespace QRpc {
