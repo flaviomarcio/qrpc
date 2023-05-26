@@ -147,17 +147,22 @@ public:
             methodList.append(method);
         }
 
+#if Q_RPC_LOG_SUPER_VERBOSE
         if(methodList.isEmpty()){
             for (auto &path : vBasePathList)
                 rWarning()<<"   basePath: "<<path<<", no method found";
             return {};
         }
-
+#endif
         for (auto &path : vBasePathList) {
+#if Q_RPC_LOG_SUPER_VERBOSE
             rWarning()<<"   basePath: "<<path;
+#endif
             for(auto&method:methodList){
                 auto methodName = method.name().toLower();
+#if Q_RPC_LOG_SUPER_VERBOSE
                 rWarning()<<"       method: "<<methodName;
+#endif
                 auto methodPath = basePathParser(path, methodName);
                 methodCollection.insert(methodPath, method);
             }
