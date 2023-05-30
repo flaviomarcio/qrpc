@@ -129,6 +129,10 @@ bool RequestExchangeSetting::isValid() const
 {
     if(this->protocol()==QRpc::Amqp && !this->topic().isEmpty())
         return true;
+    if(this->protocol()==QRpc::Http && !this->hostName().isEmpty())
+        return true;
+    if(this->protocol()==QRpc::Https && !this->hostName().isEmpty())
+        return true;
     return false;
 
 }
@@ -142,6 +146,7 @@ RequestExchangeSetting &RequestExchangeSetting::print(const QString &output)
 
 QStringList RequestExchangeSetting::printOut(const QString &output)
 {
+    static const auto __password=QStringLiteral("password");
     Q_DECLARE_VU;
 
     auto space=output.trimmed().isEmpty()?"":QStringLiteral("    ");
@@ -154,9 +159,11 @@ QStringList RequestExchangeSetting::printOut(const QString &output)
     QHashIterator<QString, QVariant> i(vHash);
     while (i.hasNext()){
         i.next();
-        if(i.key().toLower()==QStringLiteral("password"))
+        auto key=i.key();
+        if(key.toLower()==__password)
             continue;
-        out<<QStringLiteral("%1%2     %2:%3").arg(space, output, i.key(), vu.toStr(i.value()));
+        auto value=vu.toStr(i.value());
+        out.append(QStringLiteral("%1%2     %3:%4").arg(space, output, key, value));
     }
     return out;
 }
