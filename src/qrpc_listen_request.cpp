@@ -1270,8 +1270,9 @@ void ListenRequest::setResponseHeader(const QVariantHash &value)
     Q_V_HASH_ITERATOR(value){
         i.next();
         auto &v=i.value();
-        auto typeId=v.typeId();
-        auto s=(typeId==QMetaType::QStringList || typeId==QMetaType::QVariantList)?v.toStringList().join(' '):v.toString();
+        auto s=(v.typeId()==QMetaType::QStringList || v.typeId()==QMetaType::QVariantList)
+                     ?v.toStringList().join(' ')
+                     :v.toString();
         p->responseHeader.insert(i.key(), s);
     }
 }
