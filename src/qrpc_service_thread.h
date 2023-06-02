@@ -43,7 +43,7 @@ public:
         QVariantHash toMap() const;
         QVariantHash toHash() const;
     private:
-        ServiceThread*service=nullptr;
+        ServiceThread *service=nullptr;
     };
 
     //!
@@ -52,8 +52,8 @@ public:
     //!
     Q_INVOKABLE explicit ServiceThread(QObject *parent = nullptr);
     explicit ServiceThread(const QString &serviceName, QObject *parent = nullptr);
-    explicit ServiceThread(const SettingManager&manager,QObject *parent = nullptr);
-    explicit ServiceThread(const SettingManager&manager, const QString &serviceName, QObject *parent = nullptr);
+    explicit ServiceThread(const SettingManager &manager,QObject *parent = nullptr);
+    explicit ServiceThread(const SettingManager &manager, const QString &serviceName, QObject *parent = nullptr);
 
     //!
     //! \brief setting
@@ -65,7 +65,7 @@ public:
     //! \brief manager
     //! \return
     //!
-    virtual QRpc::SettingManager&manager();
+    virtual QRpc::SettingManager &manager();
 
     //!
     //! \brief run
