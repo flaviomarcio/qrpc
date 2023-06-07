@@ -4,7 +4,7 @@
 #include "../../qstm/src/qstm_setting_base.h"
 
 namespace QRpc {
-
+class ServiceSettingPvt;
 //!
 //! \brief The ServiceSetting class
 //!
@@ -29,12 +29,22 @@ public:
     Q_PROPERTY(QVariant cacheInterval READ cacheInterval WRITE setCacheInterval NOTIFY cacheIntervalChanged)
     Q_PROPERTY(bool cacheCleanup READ cacheCleanup WRITE setCacheCleanup NOTIFY cacheCleanupChanged)
     Q_PROPERTY(QVariant cacheCleanupInterval READ cacheCleanupInterval WRITE setCacheCleanupInterval NOTIFY cacheCleanupIntervalChanged)
+    Q_PROPERTY(QVariantHash connection READ connection WRITE setConnection RESET resetConnection NOTIFY connectionChanged)
 public:
     //!
     //! \brief ServiceSetting
     //! \param parent
     //!
     Q_INVOKABLE explicit ServiceSetting(QObject *parent=nullptr);
+    QVariantHash connection() const;
+    void setConnection(const QVariantHash &newConnection);
+    void resetConnection();
+
+signals:
+    void connectionChanged();
+
+private:
+    ServiceSettingPvt *p=nullptr;
 };
 
 
