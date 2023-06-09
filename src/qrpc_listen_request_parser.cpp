@@ -39,7 +39,7 @@ QStringList &ListenRequestParser::basePath() const
     if(!p->basePathList.isEmpty())
         return p->basePathList;
 
-    auto &annotations=this->annotation();
+    auto annotations=this->annotation();
     const auto &annotation = annotations.find(apiBasePath());
     QVariantList vList;
     if(annotation.isValid()){

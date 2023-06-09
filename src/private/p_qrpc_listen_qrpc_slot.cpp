@@ -67,9 +67,9 @@ public:
     {
         auto redirectCheck=[controller]()
         {
-            auto &annotations=controller->annotation();
-            const auto &notation = annotations.find(controller->apiRedirect);
-            if(notation.isValid())
+            auto annotations=controller->annotation();
+            const auto &annotation = annotations.find(controller->apiRedirect);
+            if(annotation.isValid())
                 return true;
             return false;
         };
@@ -88,7 +88,7 @@ public:
             if(method.parameterCount()>0)
                 continue;
 
-            auto &annotations=controller->annotation(method);
+            auto annotations=controller->annotation(method);
 
             if(!annotations.contains(controller->rqRedirect))
                 continue;

@@ -139,7 +139,7 @@ public:
             if (methodName.startsWith(QByteArrayLiteral("_"))) //ignore methods with [_] in start name
                 continue;
 
-            const auto &annotations=controller->annotation(method);
+            const auto annotations=controller->annotation(method);
 
             if(annotations.contains(nottionExcludeMethod))
                 continue;
