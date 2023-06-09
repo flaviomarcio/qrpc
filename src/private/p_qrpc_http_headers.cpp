@@ -214,7 +214,6 @@ HttpHeaders &HttpHeaders::addRawHeader(const QString &header, const QVariant &va
 
 HttpHeaders &HttpHeaders::setContentType(const int contentType)
 {
-    QString header;
     auto content_type=ContentType(contentType);
 
     if(ContentTypeHeaderTypeToHeader.contains(content_type))

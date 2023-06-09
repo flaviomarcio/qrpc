@@ -274,12 +274,6 @@ public:
     virtual void setPort(const QVariant &ports);
 
     //!
-    //! \brief toMap
-    //! \return
-    //!
-    virtual QVariantMap toMap() const;
-
-    //!
     //! \brief toHash
     //! \return
     //!

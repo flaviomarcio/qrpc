@@ -40,7 +40,7 @@ public:
     explicit ListenColletionsPvt(Server *server,
                                  const QVariantHash &settings,
                                  ListenColletions *parent)
-        : QObject(parent)
+        : QObject{parent}
     {
         this->server = server;
         this->settings = settings;
@@ -91,32 +91,37 @@ public:
         return true;
     }
 
-    void listenClear()
+    void listenStop()
     {
         if (this->listensActive.isEmpty())
             return;
 
-        auto aux = this->listensActive.values();
-        this->listensActive.clear();
-        for (auto &listen : aux) {
-            if (!listen->isRunning())
-                continue;
-
+        QHashIterator<int, Listen *> i(this->listensActive);
+        while(i.hasNext()){
+            i.next();
+            auto listen=i.value();
             listen->quit();
             listen->wait();
-            listen->deleteLater();
         }
+        auto aux=this->listensActive.values();
+        this->listensActive.clear();
+        qDeleteAll(aux);
     }
 
     void listenStart()
     {
-        this->listenClear();
+        this->listenStop();
         QVector<Listen*> listenStartOrder;
+
         for (auto &protocol : listenProtocol) {
             if (!protocol->enabled())
                 continue;
 
-            auto listen = protocol->makeListen();
+            auto listen=this->listensActive.value(protocol->protocol());
+
+            if(listen==nullptr)
+                listen = protocol->makeListen();
+
             if (listen == nullptr)
                 continue;
 
@@ -146,7 +151,7 @@ public:
 
     void listenQuit()
     {
-        this->listenClear();
+        this->listenStop();
         this->lockRunning.tryLock(1);
         this->lockRunning.unlock();
     }
@@ -185,11 +190,10 @@ ListenProtocol &ListenColletions::protocol(const Protocol &protocol)
     if (___return != nullptr)
         return *___return;
 
-    if (protocol != Http && protocol != Https)
+    if (protocol != Http)
         return *___return;
 
-    auto __protocolType = (protocol == Http) ? Https : protocol;
-    ___return = listenProtocol.value(__protocolType);
+    ___return = listenProtocol.value(protocol);
     if (___return == nullptr)
         return staticDefaultProtocol;
 

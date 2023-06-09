@@ -85,11 +85,11 @@ ControllerOptions &ControllerOptionsPrv::insert(const QVariantHash &value)
     auto &p=*this;
     auto vValue=value;
     if(vValue.isEmpty())
-        return*this->parent;
+        return *this->parent;
 
     auto name=vValue.value(QStringLiteral("name")).toByteArray().trimmed();
     if(name.isEmpty())
-        return*this->parent;
+        return *this->parent;
     auto setting=p.settings.value(name);
     if(setting!=nullptr)
         setting->deleteLater();
@@ -110,7 +110,7 @@ ControllerOptions &ControllerOptionsPrv::insert(const QVariantHash &value)
     setting->fromHash(vValue);
     setting->setName(name);
     p.settings.insert(setting->name(), setting);
-    return*this->parent;
+    return *this->parent;
 }
 
 bool ControllerOptionsPrv::v_load(const QVariant &v)

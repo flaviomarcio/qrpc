@@ -21,16 +21,11 @@ public:
     Q_INVOKABLE explicit Server(QObject *parent = nullptr);
 
     //!
-    //! \brief Server
+    //! \brief load
     //! \param settings
-    //! \param parent
+    //! \return
     //!
-    Q_INVOKABLE explicit Server(const QVariant &settings, QObject *parent = nullptr);
-
-    //!
-    //! \brief ~Server
-    //!
-    ~Server();
+    bool load(const QVariantHash &settings);
 
     //!
     //! \brief controllerOptions
@@ -97,10 +92,9 @@ public:
     //!
     virtual void requestEnable();
 
-    /**
-     * @brief requestDisable
-     * @return
-     */
+    //!
+    //! \brief requestDisable
+    //!
     virtual void requestDisable();
 
     //!
@@ -108,26 +102,6 @@ public:
     //! \return
     //!
     virtual ListenColletions &colletions();
-
-    //!
-    //! \brief settingsFileName
-    //! \return
-    //!
-    Q_INVOKABLE virtual QVariant settingsFileName();
-
-    //!
-    //! \brief setSettingsFileName
-    //! \param fileName
-    //! \return
-    //!
-    virtual bool setSettingsFileName(const QString &fileName);
-
-    //!
-    //! \brief setSettings
-    //! \param settings
-    //! \return
-    //!
-    Q_INVOKABLE virtual bool setSettings(const QVariant &settings) const;
 
     //!
     //! \brief authorizationRequest

@@ -8,7 +8,7 @@
 using namespace stefanfrings;
 
 HttpRequestHandler::HttpRequestHandler(QObject* parent)
-    : QObject(parent)
+    : QObject{parent}
 {}
 
 HttpRequestHandler::~HttpRequestHandler()

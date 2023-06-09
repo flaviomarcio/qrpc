@@ -139,7 +139,7 @@ ListenProtocol::ListenProtocol(QObject *parent) : QObject{parent}
 }
 
 ListenProtocol::ListenProtocol(int protocol, const QMetaObject &metaObject, QObject *parent)
-    : QObject(parent)
+    : QObject{parent}
 {
     this->p = new ListenProtocolPvt{this};
 
@@ -348,7 +348,7 @@ QVariantList &ListenProtocol::queue()
 void ListenProtocol::setQueue(const QByteArray &value)
 {
     p->queue.clear();
-    p->queue << value;
+    p->queue.append(value);
 }
 
 void ListenProtocol::setQueue(const QVariantList &value)
@@ -382,7 +382,6 @@ QVariantList ListenProtocol::port() const
     case Protocol::WebSocket:
         return QVariantList{listen_web_port};
     case Protocol::Http:
-    case Protocol::Https:
         return QVariantList{listen_http_port};
     case Protocol::Amqp:
         return QVariantList{listen_amqp_port};
@@ -400,11 +399,6 @@ QVariantList ListenProtocol::port() const
 void ListenProtocol::setPort(const QVariant &ports)
 {
     p->port = ports;
-}
-
-QVariantMap ListenProtocol::toMap() const
-{
-    return QVariant(p->makeHash().settingsHash).toMap();
 }
 
 QVariantHash &ListenProtocol::toHash() const

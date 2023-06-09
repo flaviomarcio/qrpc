@@ -74,7 +74,6 @@ public:
         this->parent=parent;
 #ifdef Q_RPC_HTTP
         requestJobProtocolHash[QRpc::Http]=&this->requestJobHttp;
-        requestJobProtocolHash[QRpc::Https]=&this->requestJobHttp;
 #endif
 #ifdef Q_RPC_WEBSOCKET
         _requestJobProtocolMap[QRpc::WebSocket]=&this->requestJobWSS;

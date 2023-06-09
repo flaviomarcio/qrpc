@@ -39,7 +39,7 @@ enum ContentType {
 };
 
 //https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication#Authentication_schemes
-enum AuthorizationType { Basic, Bearer, Digest, HOBA, Mutual, AWS4_HMAC_SHA256, Service };
+enum AuthorizationType { Basic, Bearer, Digest, HOBA, Mutual, AWS4_HMAC_SHA256, Token, Service};
 
 enum RequestMethod {
     Head = 1,
@@ -64,10 +64,9 @@ enum Protocol {
     Mqtt = 8,
     Amqp = 16,
     Http = 32,
-    Https = 64,
-    DataBase = 128,
-    Kafka = 256,
-    LocalSocket = 612,
+    DataBase = 64,
+    Kafka = 128,
+    LocalSocket = 256,
     rpcProtocolMin = TcpSocket,
     rpcProtocolMax = LocalSocket
 };

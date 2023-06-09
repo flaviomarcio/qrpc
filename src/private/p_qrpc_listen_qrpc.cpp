@@ -158,7 +158,7 @@ public:
 #if Q_RPC_LOG_SUPER_VERBOSE
             rWarning()<<"   basePath: "<<path;
 #endif
-            for(auto&method:methodList){
+            for(auto &method:methodList){
                 auto methodName = method.name().toLower();
 #if Q_RPC_LOG_SUPER_VERBOSE
                 rWarning()<<"       method: "<<methodName;
@@ -288,13 +288,13 @@ void ListenQRPC::run()
 
     p->listenerFree();
 
-    for(auto&listen:p->listens){
+    for(auto &listen:p->listens){
         QObject::connect(listen, &Listen::rpcRequest, this->p, &ListenQRPCPvt::onRpcRequest);
     }
 
     Listen::run();
 
-    for(auto&listen:p->listens){
+    for(auto &listen:p->listens){
         QObject::disconnect(listen, &Listen::rpcRequest, this->p, &ListenQRPCPvt::onRpcRequest);
     }
 

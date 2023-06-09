@@ -131,8 +131,6 @@ bool RequestExchangeSetting::isValid() const
         return true;
     if(this->protocol()==QRpc::Http && !this->hostName().isEmpty())
         return true;
-    if(this->protocol()==QRpc::Https && !this->hostName().isEmpty())
-        return true;
     return false;
 
 }

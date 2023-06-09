@@ -67,7 +67,7 @@ Controller::MethodInfoCollection Controller::invokableMethod() const
         return __return;
 
     auto controller=this;
-    auto&ann=this->annotation();
+    auto &ann=this->annotation();
 
     if (ann.contains(controller->apiRedirect))
         return {};
@@ -119,7 +119,7 @@ Controller::MethodInfoCollection Controller::invokableMethod() const
         basePath=QStringLiteral("/")+basePath+QStringLiteral("/");
         while(basePath.contains(QStringLiteral("//")))
             basePath=basePath.replace(QStringLiteral("//"),QStringLiteral("/"));
-        for(auto&method:sortedMethods){
+        for(auto &method:sortedMethods){
             MethodInfo info;
 
             info.method = method;

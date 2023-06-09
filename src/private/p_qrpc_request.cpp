@@ -104,7 +104,6 @@ HttpResponse &RequestPvt::upload(const QString &route, const QString &fileName)
 
     switch (e.protocol()) {
     case QRpc::Http:
-    case QRpc::Https:
     {
         auto e_port=e.port()==80?"":QStringLiteral(":%1").arg(e.port());
         auto request_url = QStringLiteral("%1%2/%3").arg(e.hostName(), e_port, e.route()).replace(QStringLiteral("\""), "").replace(QStringLiteral("//"), QStringLiteral("/"));
@@ -175,7 +174,6 @@ HttpResponse &RequestPvt::download(const QString &route, const QString &fileName
 
     switch (e.protocol()) {
     case QRpc::Http:
-    case QRpc::Https:
     {
         auto e_port=e.port()==80?"":QStringLiteral(":%1").arg(e.port());
         auto request_url_str = QStringLiteral("%1%2/%3").arg(e.hostName(), e_port, e.route()).replace(QStringLiteral("\""), "").replace(QStringLiteral("//"), QStringLiteral("/"));
@@ -260,7 +258,6 @@ HttpResponse &RequestPvt::call(const RequestMethod &method, const QVariant &vRou
 
     switch (e.protocol()) {
     case QRpc::Http:
-    case QRpc::Https:
     {
         auto e_port=e.port()==80?"":QStringLiteral(":%1").arg(e.port());
         auto request_url_str = QStringLiteral("%1%2/%3").arg(e.hostName(), e_port, e.route()).replace(QStringLiteral("\""), "").replace(QStringLiteral("//"), QStringLiteral("/"));
@@ -307,7 +304,6 @@ HttpResponse &RequestPvt::call(const RequestMethod &method, const QVariant &vRou
 
     switch (e.protocol()) {
     case QRpc::Http:
-    case QRpc::Https:
     {
         switch (vBody.typeId()) {
         case QMetaType::QVariantHash:

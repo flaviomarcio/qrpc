@@ -70,11 +70,6 @@ bool ControllerOptions::load(const QVariant &settings)
     return p->v_load(settings);
 }
 
-bool ControllerOptions::load(const QVariantHash &settings)const
-{
-    return p->v_load(settings);
-}
-
 bool ControllerOptions::load(const ControllerOptions&manager)const
 {
     return p->load(manager.toHash());
