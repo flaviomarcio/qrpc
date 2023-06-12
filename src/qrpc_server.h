@@ -83,16 +83,6 @@ public:
     virtual QList<const QMetaObject *> &controllerParsers();
 
     //!
-    //! \brief requestEnable
-    //!
-    virtual void requestEnable();
-
-    //!
-    //! \brief requestDisable
-    //!
-    virtual void requestDisable();
-
-    //!
     //! \brief colletions
     //! \return
     //!
@@ -115,7 +105,7 @@ public:
     //! \brief setServerName
     //! \param value
     //!
-    Q_INVOKABLE virtual void setServerName(const QString &value);
+    Q_INVOKABLE virtual Server &setServerName(const QString &value);
 
 private:
     ServerPvt *p = nullptr;

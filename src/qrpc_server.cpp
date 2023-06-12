@@ -180,16 +180,6 @@ QList<const QMetaObject *> &Server::controllerParsers()
     return p->controllerParsers;
 }
 
-void Server::requestEnable()
-{
-    p->listenColletions->requestEnabled();
-}
-
-void Server::requestDisable()
-{
-    p->listenColletions->requestEnabled();
-}
-
 ListenColletions &Server::colletions()
 {
     return *p->listenColletions;
@@ -208,9 +198,10 @@ QString &Server::serverName() const
     return p->serverName;
 }
 
-void Server::setServerName(const QString &value)
+Server &Server::setServerName(const QString &value)
 {
     p->serverName = value;
+    return *this;
 }
 
 } // namespace QRpc

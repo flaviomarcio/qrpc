@@ -208,7 +208,6 @@ ListenProtocols &ListenColletions::protocols()
 
 void ListenColletions::run()
 {
-
     p->listenStart();
     this->exec();
     p->listenQuit();
@@ -216,31 +215,19 @@ void ListenColletions::run()
     p->lockWaitQuit.unlock();
 }
 
-void ListenColletions::requestEnabled()
-{
-    //criar mutex de controle nos listens
-}
-
-void ListenColletions::requestDisable()
-{
-    //criar mutex de controle nos listens
-}
-
 Server *ListenColletions::server()
 {
-
     return p->server;
 }
 
-void ListenColletions::setSettings(const QVariantHash &settings) const
+ListenColletions &ListenColletions::setSettings(const QVariantHash &settings)
 {
-
-    return p->setSettings(settings);
+    p->setSettings(settings);
+    return *this;
 }
 
 ListenQRPC *ListenColletions::listenPool()
 {
-
     QHashIterator<int, Listen *> i(p->listensActive);
     while (i.hasNext()) {
         i.next();

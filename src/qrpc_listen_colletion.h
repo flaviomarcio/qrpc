@@ -65,16 +65,6 @@ public:
     void run()override;
 
     //!
-    //! \brief requestEnabled
-    //!
-    virtual void requestEnabled();
-
-    //!
-    //! \brief requestDisable
-    //!
-    virtual void requestDisable();
-
-    //!
     //! \brief server
     //! \return
     //!
@@ -84,7 +74,7 @@ public:
     //! \brief setSettings
     //! \param settings
     //!
-    virtual void setSettings(const QVariantHash &settings) const;
+    virtual ListenColletions &setSettings(const QVariantHash &settings);
 
     //!
     //! \brief listenPool
