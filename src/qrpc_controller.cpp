@@ -67,9 +67,9 @@ Controller::MethodInfoCollection Controller::invokableMethod() const
         return __return;
 
     auto controller=this;
-    auto &ann=this->annotation();
+    const auto &annotations=this->annotation();
 
-    if (ann.contains(controller->apiRedirect))
+    if (annotations.contains(controller->apiRedirect))
         return {};
 
     static auto annotionExcludeMethod=QVariantList{controller->rqRedirect, controller->rqExcludePath};
@@ -196,31 +196,15 @@ Controller::MethodInfoCollection Controller::invokableMethod() const
 
 QStringList &Controller::basePath() const
 {
-
     if(!p->basePathList.isEmpty())
         return p->basePathList;
-
-    auto annotations=this->annotation();
-    const auto &annotation = annotations.find(apiBasePath());
-    QVariantList vList;
-    if(annotation.isValid()){
-        auto v = annotation.value();
-        switch (v.typeId()) {
-        case QMetaType::QStringList:
-        case QMetaType::QVariantList:{
-            vList=v.toList();
-            break;
-        }
-        default:
-            vList.append(v);
-        }
-
-        for (auto &row : vList) {
-            auto line = row.toString().trimmed().toLower();
-            if (line.isEmpty())
-                continue;
-            p->basePathList.append(line);
-        }
+    const auto &annotations=this->annotation();
+    const auto vList=annotations.find(apiBasePath()).toValueList();
+    for (auto &row : vList) {
+        auto line = row.toString().trimmed().toLower();
+        if (line.isEmpty())
+            continue;
+        p->basePathList.append(line);
     }
     if(p->basePathList.isEmpty())
         p->basePathList.append(QStringList{QStringLiteral("/")});
@@ -229,11 +213,8 @@ QStringList &Controller::basePath() const
 
 QString Controller::module() const
 {
-    auto annotations=this->annotation();
-    const auto &ann = annotations.find(apiModule());
-    if(ann.isValid())
-        return ann.value().toString();
-    return {};
+    const auto &annotations=this->annotation();
+    return annotations.find(apiModule()).toValueByteArray();
 }
 
 QUuid Controller::moduleUuid() const
@@ -244,12 +225,7 @@ QUuid Controller::moduleUuid() const
 QString Controller::description() const
 {
     const auto &annotations = this->annotation();
-    const auto &ann = annotations.find(apiDescription());
-
-    if(!ann.isValid())
-        return ann.value().toString();
-
-    return {};
+    return annotations.find(apiDescription()).toValueByteArray();
 }
 
 ControllerSetting &Controller::setting()

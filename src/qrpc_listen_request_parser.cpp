@@ -29,9 +29,8 @@ public:
     explicit ListenRequestParserPvt(QObject *parent = nullptr):QObject{parent} {}
 };
 
-ListenRequestParser::ListenRequestParser(QObject *parent) : QObject{parent}, QRpcPrivate::AnotationsExtended{this}
+ListenRequestParser::ListenRequestParser(QObject *parent) : QObject{parent}, QRpcPrivate::AnotationsExtended{this}, p{new ListenRequestParserPvt{parent}}
 {
-    this->p = new ListenRequestParserPvt{parent};
 }
 
 QStringList &ListenRequestParser::basePath() const
@@ -39,27 +38,13 @@ QStringList &ListenRequestParser::basePath() const
     if(!p->basePathList.isEmpty())
         return p->basePathList;
 
-    auto annotations=this->annotation();
-    const auto &annotation = annotations.find(apiBasePath());
-    QVariantList vList;
-    if(annotation.isValid()){
-        auto v = annotation.value();
-        switch (v.typeId()) {
-        case QMetaType::QStringList:
-        case QMetaType::QVariantList:{
-            vList=v.toList();
-            break;
-        }
-        default:
-            vList.append(v);
-        }
-
-        for (auto &row : vList) {
-            auto line = row.toString().trimmed().toLower();
-            if (line.isEmpty())
-                continue;
-            p->basePathList.append(line);
-        }
+    const auto &annotations=this->annotation();
+    auto vList = annotations.find(apiBasePath()).toValueList();
+    for (auto &row : vList) {
+        auto line = row.toString().trimmed().toLower();
+        if (line.isEmpty())
+            continue;
+        p->basePathList.append(line);
     }
     if(p->basePathList.isEmpty())
         p->basePathList.append(QStringList{QStringLiteral("/")});
