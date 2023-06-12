@@ -16,6 +16,8 @@
 
 namespace QRpc {
 
+static const auto __requestPath="requestPath";
+
 class ListenQRPCSlotPvt : public QObject
 {
 public:
@@ -447,10 +449,9 @@ private slots:
         if (this->listenQRPC == nullptr)
             qFatal("listen pool is nullptr");
 
-        auto requestPath = vRequestHash.value(QStringLiteral("requestPath")).toString();
-        const auto &controllerSetting = this->listenQRPC->server()->controllerOptions().setting(
-            requestPath);
-        ListenRequest request(vRequestHash, controllerSetting);
+        auto requestPath = vRequestHash.value(__requestPath).toString();
+        const auto setting=this->listenQRPC->server()->settings().settingBody(requestPath);
+        ListenRequest request(vRequestHash, setting);
         request.setUploadedFiles(uploadedFiles);
         if (!request.isValid())
             request.co().setBadRequest();

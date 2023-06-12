@@ -81,37 +81,36 @@ bool Request::canRequest() const
     return true;
 }
 
-Request &Request::setSettings(const ServiceSetting &setting)
+Request &Request::setSettings(const QStm::SettingBase &setting)
 {
-
     p->setSettings(setting);
     return *this;
 }
 
 Request &Request::setSettings(const QVariantHash &setting)
 {
-    ServiceSetting _setting;
-    _setting.fromHash(setting);
+    QStm::SettingBase settings;
+    settings.fromHash(setting);
     auto &request=*this;
-    request.header().addRawHeader(_setting.headers());//precisa ser add
-    request.setProtocol(_setting.protocol());
-    request.setPort(_setting.port());
-    request.setHostName(_setting.hostName());
-    request.setMethod(_setting.method());
-    request.setRoute(_setting.route());
+    request.header().addRawHeader(settings.headers());//precisa ser add
+    request.setProtocol(settings.protocol());
+    request.setPort(settings.port());
+    request.setHostName(settings.hostName());
+    request.setMethod(settings.method());
+    request.setRoute(settings.route());
 
     auto method=request.exchange().call().method();
 
     switch(method){
     case QRpc::Post:
     case QRpc::Put:
-        request.setBody(_setting.body());
+        request.setBody(settings.body());
         break;
     default:
-        if(!_setting.parameters().isEmpty())
-            request.setBody(_setting.parameters());
+        if(!settings.parameters().isEmpty())
+            request.setBody(settings.parameters());
         else
-            request.setBody(_setting.body());
+            request.setBody(settings.body());
     };
 
 
@@ -472,7 +471,7 @@ HttpResponse &Request::call(const RequestMethod &method, const QString &route, Q
     return p->call(e.method(), e.route(), body);
 }
 
-Request &Request::operator=(const QRpc::ServiceSetting &value)
+Request &Request::operator=(const QStm::SettingBase &value)
 {
     this->setSettings(value);
     return *this;
@@ -701,7 +700,7 @@ QVariantList Request::Body::toList() const
 Request &Request::Body::rq()
 {
 
-    return*p->parent;
+    return *p->parent;
 }
 
 }

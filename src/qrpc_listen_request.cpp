@@ -3,6 +3,7 @@
 #include "./qrpc_startup.h"
 #include "./qrpc_macro.h"
 #include <QVariantHash>
+#include "../../qstm/src/qstm_setting_base.h"
 //#include <QStm>
 
 //#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
@@ -251,18 +252,15 @@ ListenRequest::ListenRequest(QObject *parent):QObject{parent}
     this->p = new ListenRequestPvt{this};
 }
 
-ListenRequest::ListenRequest(const QVariant &requestBody, QObject *parent):QObject{parent}
+ListenRequest::ListenRequest(const QVariant &requestBody, QObject *parent):QObject{parent},p{new ListenRequestPvt{this}}
 {
-    this->p = new ListenRequestPvt{this};
     p->mergeMap(requestBody);
 }
 
-ListenRequest::ListenRequest(const QVariant &requestBody, const ControllerSetting &setting, QObject *parent):QObject{parent}
+ListenRequest::ListenRequest(const QVariant &requestBody, const QVariantHash &setting, QObject *parent):QObject{parent},p{new ListenRequestPvt{this}}
 {
     this->p = new ListenRequestPvt{this};
-    if(setting.isValid())
-        this->setControllerSetting(setting);
-
+    this->setControllerSetting(setting);
     p->mergeMap(requestBody);
 }
 
@@ -1437,9 +1435,12 @@ void ListenRequest::setRequestResponse(QObject *request)
     writeResponse(response);
 }
 
-void ListenRequest::setControllerSetting(const ControllerSetting&setting)
+void ListenRequest::setControllerSetting(const QVariantHash &vSetting)
 {
-    if(!setting.enabled())
+    QStm::SettingBase setting;
+    setting.fromHash(vSetting);
+
+    if(setting.isValid() && !setting.enabled())
         return;
 
     auto &set=setting;

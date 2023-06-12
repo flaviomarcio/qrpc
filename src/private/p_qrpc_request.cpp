@@ -25,7 +25,7 @@ RequestPvt::RequestPvt(Request *parent):
     this->fileLog=logFile(__json, __request);
 }
 
-void RequestPvt::setSettings(const ServiceSetting &setting)
+void RequestPvt::setSettings(const QStm::SettingBase &setting)
 {
     auto __header=setting.headers();
     parent->header().setRawHeader(__header);

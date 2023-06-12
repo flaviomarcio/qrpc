@@ -5,7 +5,6 @@
 #include <QMetaObject>
 #include "./qrpc_global.h"
 #include "./qrpc_controller_annotation.h"
-#include "./qrpc_controller_setting.h"
 #include "./qrpc_listen_request.h"
 
 namespace QRpc {
@@ -73,22 +72,10 @@ public:
     virtual QString module() const;
 
     //!
-    //! \brief moduleUuid
-    //! \return
-    //!
-    virtual QUuid moduleUuid() const;
-
-    //!
     //! \brief description
     //! \return
     //!
     virtual QString description() const;
-
-    //!
-    //! \brief controllerSetting
-    //! \return
-    //!
-    virtual ControllerSetting &setting();
 
     //!
     //! \brief enabled
@@ -100,7 +87,7 @@ public:
     //! \brief setEnabled
     //! \param enabled
     //!
-    virtual void setEnabled(bool enabled);
+    virtual Controller &setEnabled(bool enabled);
 
     //!
     //! \brief request

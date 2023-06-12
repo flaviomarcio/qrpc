@@ -5,7 +5,7 @@
 namespace QRpc {
 
 static const auto __protocol="protocol";
-static const auto __controller="controller";
+static const auto __services="services";
 
 //!
 //! \brief The ServerPvt class
@@ -14,7 +14,7 @@ class Q_RPC_EXPORT ServerPvt : public QObject
 {
 public:
     Server *parent = nullptr;
-    ControllerOptions controllerOptions;
+    QStm::SettingManager settings;
     QString serverName;
     QVariant settingsFileName;
     ListenColletions *listenColletions = nullptr;
@@ -46,7 +46,7 @@ public:
     {
         if (this->parent->objectName().isEmpty()) {
             static int countServerName = 0;
-            auto name = QStringLiteral("Server_%1").arg(++countServerName);
+            auto name = QStringLiteral("Srv_%1").arg(++countServerName);
             this->parent->setObjectName(name);
         }
 
@@ -79,7 +79,7 @@ public:
         }
 
         auto protocol = vSettings.value(__protocol).toHash();
-        auto controller = vSettings.value(__controller).toHash();
+        auto vServices = vSettings.value(__services).toHash();
 
         if (protocol.isEmpty()) {
             rWarning() << tr("Json property [protocol] is empty");
@@ -87,15 +87,14 @@ public:
         }
 
         this->listenColletions->setSettings(protocol);
-        this->controllerOptions.load(controller);
+        this->settings.load(vServices);
         return true;
     }
 
 public:
-    QVariantHash settings;
+
     QList<const QMetaObject *> controllers;
     QList<const QMetaObject *> controllerParsers;
-
     QList<const QMetaObject *> &controllersSort()
     {
         QHash<QString,const QMetaObject *> items;
@@ -112,9 +111,8 @@ public:
     }
 };
 
-Server::Server(QObject *parent) : QObject{parent}
+Server::Server(QObject *parent) : QObject{parent}, p{new ServerPvt{this}}
 {
-    this->p = new ServerPvt{this};
 }
 
 bool Server::load(const QVariantHash &settings)
@@ -122,14 +120,14 @@ bool Server::load(const QVariantHash &settings)
     return p->load(settings);
 }
 
-ControllerOptions &Server::controllerOptions()
+QStm::SettingManager &Server::settings()const
 {
-    return p->controllerOptions;
+    return p->settings;
 }
 
-bool Server::isFinished() const
+const QStm::SettingBase &Server::settings(const QString &settingName)
 {
-    return p->listenColletions->isFinished();
+    return p->settings.setting(settingName);
 }
 
 bool Server::isRunning() const

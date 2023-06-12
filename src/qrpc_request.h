@@ -3,7 +3,7 @@
 #include "./qrpc_last_error.h"
 #include "./qrpc_global.h"
 #include "./qrpc_types.h"
-#include "../../qrpc/src/qrpc_service_setting.h"
+#include "../../qstm/src/qstm_setting_base.h"
 #include "../../qrpc/src/qrpc_request_exchange.h"
 #include "./private/p_qrpc_http_headers.h"
 #include "./private/p_qrpc_http_response.h"
@@ -162,7 +162,7 @@ public:
     //! \param setting
     //! \return
     //!
-    virtual Request &setSettings(const ServiceSetting &setting);
+    virtual Request &setSettings(const QStm::SettingBase &setting);
     virtual Request &setSettings(const QVariantHash &setting);
 
     //!
@@ -391,7 +391,7 @@ public:
     //! \param value
     //! \return
     //!
-    Request &operator=(const ServiceSetting &value);
+    Request &operator=(const QStm::SettingBase &value);
 
     //!
     //! \brief upload

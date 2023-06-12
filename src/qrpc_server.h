@@ -1,6 +1,6 @@
 #pragma once
 
-#include "./qrpc_controller_options.h"
+#include "../../qstm/src/qstm_setting_manager.h"
 #include "./qrpc_global.h"
 #include "./qrpc_listen_colletion.h"
 #include "./qrpc_listen_request.h"
@@ -28,16 +28,11 @@ public:
     bool load(const QVariantHash &settings);
 
     //!
-    //! \brief controllerOptions
+    //! \brief settings
     //! \return
     //!
-    virtual ControllerOptions &controllerOptions();
-
-    //!
-    //! \brief isFinished
-    //! \return
-    //!
-    Q_INVOKABLE virtual bool isFinished() const;
+    virtual QStm::SettingManager &settings() const;
+    virtual const QStm::SettingBase &settings(const QString &settingName);
 
     //!
     //! \brief isRunning

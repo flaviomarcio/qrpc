@@ -51,7 +51,7 @@ public:
 
     explicit RequestPvt(Request*parent);
 
-    void setSettings(const ServiceSetting &setting);
+    void setSettings(const QStm::SettingBase &setting);
 
     QString parseFileName(const QString &fileName);
 

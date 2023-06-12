@@ -42,17 +42,14 @@ public:
     QStringList basePathList;
     Server *server = nullptr;
     ListenRequest *request = nullptr;
-    ControllerSetting setting;
+    QStm::SettingBase setting;
     bool enabled = true;
-
-    ListenRequest ____static_request;
-
+    ListenRequest staticRequest;
     explicit ControllerPvt(QObject *parent):QObject{parent} {}
 };
 
-Controller::Controller(QObject *parent) : QObject{parent}, QRpcPrivate::AnotationsExtended{this}
+Controller::Controller(QObject *parent) : QObject{parent}, QRpcPrivate::AnotationsExtended{this}, p{new ControllerPvt{this}}
 {
-    this->p = new ControllerPvt{this};
 }
 
 Controller::MethodInfoCollection Controller::invokableMethod() const
@@ -217,45 +214,31 @@ QString Controller::module() const
     return annotations.find(apiModule()).toValueByteArray();
 }
 
-QUuid Controller::moduleUuid() const
-{
-    return {};
-}
-
 QString Controller::description() const
 {
     const auto &annotations = this->annotation();
     return annotations.find(apiDescription()).toValueByteArray();
 }
 
-ControllerSetting &Controller::setting()
-{
-
-    return p->setting;
-}
-
 bool Controller::enabled() const
 {
-
     return p->enabled;
 }
 
-void Controller::setEnabled(bool enabled)
+Controller &Controller::setEnabled(bool enabled)
 {
-
     p->enabled = enabled;
+    return *this;
 }
 
 ListenRequest &Controller::request()
 {
-
     return *p->request;
 }
 
 ListenRequest &Controller::rq()
 {
-
-    return (p->request == nullptr) ? (p->____static_request) : (*p->request);
+    return (p->request == nullptr) ? (p->staticRequest) : (*p->request);
 }
 
 bool Controller::requestSettings()
@@ -353,7 +336,6 @@ bool Controller::requestSettings()
 
 bool Controller::canOperation(const QMetaMethod &method)
 {
-
     if (p->request == nullptr)
         return {};
 
@@ -497,14 +479,12 @@ QVector<const QMetaObject *> &Controller::staticApiParserList()
 
 Controller &Controller::setServer(Server *server)
 {
-
     p->server = server;
     return *this;
 }
 
 Controller &Controller::setRequest(ListenRequest &request)
 {
-
     p->request = &request;
     return *this;
 }

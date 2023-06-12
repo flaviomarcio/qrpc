@@ -3,7 +3,6 @@
 #include "./qrpc_global.h"
 #include "./private/p_qrpc_http_headers.h"
 #include "./private/p_qrpc_listen_request_code.h"
-#include "./qrpc_controller_setting.h"
 #include <QThread>
 #include <QTemporaryFile>
 #include <QVariantHash>
@@ -62,7 +61,7 @@ public:
     //! \param setting
     //! \param parent
     //!
-    explicit ListenRequest(const QVariant &requestBody, const ControllerSetting &setting, QObject *parent=nullptr);
+    explicit ListenRequest(const QVariant &requestBody, const QVariantHash &setting, QObject *parent=nullptr);
 
 public:
 
@@ -567,7 +566,7 @@ public:
     //! \brief setControllerSetting
     //! \param setting
     //!
-    void setControllerSetting(const ControllerSetting &setting);
+    void setControllerSetting(const QVariantHash &vSetting);
 
     //!
     //! \brief makeUuid
