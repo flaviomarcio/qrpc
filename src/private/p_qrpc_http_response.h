@@ -142,7 +142,7 @@ public:
     //! \param objectResponse
     //! \return
     //!
-    virtual HttpResponse&setResponse(QObject *objectResponse);
+    virtual HttpResponse &setResponse(QObject *objectResponse);
 
     //!
     //! \brief toString

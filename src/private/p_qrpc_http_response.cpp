@@ -290,7 +290,7 @@ HttpResponse::operator bool() const
     return false;
 }
 
-HttpResponse&HttpResponse::print(const QString &output)
+HttpResponse &HttpResponse::print(const QString &output)
 {
     for(auto &v:this->printOut(output))
         rInfo()<<v;

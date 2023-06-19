@@ -1,9 +1,12 @@
 #include "./p_qrpc_request.h"
 #include "../qrpc_const.h"
 #include "../qrpc_log.h"
+#include "./p_qrpc_request_job_response.h"
 #if Q_RPC_LOG
 #include "../qrpc_macro.h"
 #endif
+#include "./p_qrpc_util.h"
+#include "./p_qrpc_request_job.h"
 
 static const auto __json="json";
 static const auto __request="request";
@@ -49,7 +52,7 @@ QString RequestPvt::parseFileName(const QString &fileName)
     return _fileName;
 }
 
-void RequestPvt::writeLog(RequestJobResponse &response, const QVariant &request)
+void RequestPvt::writeLog(RequestJobResponse *response, const QVariant &request)
 {
     if(!logRegister())
         return;
@@ -59,8 +62,8 @@ void RequestPvt::writeLog(RequestJobResponse &response, const QVariant &request)
         return;
 
     QTextStream outText(&file);
-    auto &e=response.request_exchange.call();
-    outText << RequestMethodName.value(e.method())<<QStringLiteral(": ")<<response.request_url.toString()<<'\n';
+    auto &e=response->request_exchange.call();
+    outText << RequestMethodName.value(e.method())<<QStringLiteral(": ")<<response->request_url.toString()<<'\n';
     outText << QJsonDocument::fromVariant(request).toJson(QJsonDocument::Indented);
     outText << QStringLiteral("\n");
     outText << QStringLiteral("\n");
@@ -128,7 +131,7 @@ HttpResponse &RequestPvt::upload(const QString &route, const QString &fileName)
     job->wait();
     QObject::disconnect(this, &RequestPvt::runJob, job, &RequestJob::onRunJob);
     this->qrpcResponse.setResponse(&job->response());
-    this->writeLog(job->response(), job->response().toVariant());
+    this->writeLog(&job->response(), job->response().toVariant());
     job->release();
     return this->qrpcResponse;
 }
@@ -216,7 +219,7 @@ HttpResponse &RequestPvt::download(const QString &route, const QString &fileName
     job->wait();
     QObject::disconnect(this, &RequestPvt::runJob, job, &RequestJob::onRunJob);
     this->qrpcResponse.setResponse(&job->response());
-    this->writeLog(job->response(), job->response().toVariant());
+    this->writeLog(&job->response(), job->response().toVariant());
     job->release();
     return this->qrpcResponse;
 }
@@ -389,7 +392,7 @@ HttpResponse &RequestPvt::call(const RequestMethod &method, const QVariant &vRou
     }
     QObject::disconnect(this, &RequestPvt::runJob, job, &RequestJob::onRunJob);
     this->qrpcResponse.setResponse(&job->response());
-    this->writeLog(job->response(), job->response().toVariant());
+    this->writeLog(&job->response(), job->response().toVariant());
     job->release();
 
 #ifdef Q_RPC_LOG

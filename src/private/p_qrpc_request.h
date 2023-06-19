@@ -19,13 +19,11 @@
 #include <QDir>
 #include <QtCore/QCoreApplication>
 #include "../qrpc_request.h"
-#include "./p_qrpc_util.h"
 #include "../qrpc_listen_request.h"
-#include "./p_qrpc_request_job.h"
 #include "./p_qrpc_http_response.h"
 
 namespace QRpc {
-
+class RequestJobResponse;
 class RequestPvt:public QObject{
     Q_OBJECT
 public:
@@ -43,27 +41,27 @@ public:
 
     QNetworkReply::NetworkError response_qt_status_code=QNetworkReply::NoError;
     QString response_reason_phrase;
-    ListenRequest*request=nullptr;
+    ListenRequest *request=nullptr;
 
     QString fileLog;
 
     QSslConfiguration sslConfiguration;
 
-    explicit RequestPvt(Request*parent);
+    explicit RequestPvt(Request *parent);
 
     void setSettings(const QStm::SettingBase &setting);
 
     QString parseFileName(const QString &fileName);
 
-    void writeLog(RequestJobResponse&response, const QVariant &request);
+    void writeLog(RequestJobResponse *response, const QVariant &request);
 
     HttpResponse &upload(const QString &route, const QString &fileName);
 
     HttpResponse &download(const QString &route, const QString &fileName);
 
-    HttpResponse&call(const RequestMethod&method, const QVariant &vRoute, const QVariant &body);
+    HttpResponse &call(const RequestMethod &method, const QVariant &vRoute, const QVariant &body);
 signals:
-    void runJob(const QSslConfiguration*sslConfig, const QVariantHash &headers, const QVariant &url, const QString &fileName, QRpc::Request*request);
+    void runJob(const QSslConfiguration *sslConfig, const QVariantHash &headers, const QVariant &url, const QString &fileName, QRpc::Request *request);
 };
 
 }

@@ -82,7 +82,7 @@ private:
     QMutex mutex;
 
     /** The SSL configuration (certificate, key and other settings) */
-    QSslConfiguration* sslConfiguration;
+    QSslConfiguration * sslConfiguration;
 
     /** Load SSL configuration */
     void loadSslConfig();

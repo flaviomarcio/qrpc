@@ -52,7 +52,7 @@ Q_RPC_STARTUP_FUNCTION(init);
 
 class ListenRequestPvt:public QObject{
 public:
-    ListenRequest*parent=nullptr;
+    ListenRequest *parent=nullptr;
     QHash<QString, QFile *> uploadedFiles;
     QEventLoop eventLoop;
     QUuid listenUuid;
@@ -75,7 +75,7 @@ public:
     int responseCode=0;
     int requestTimeout=0;
 
-    explicit ListenRequestPvt(ListenRequest*parent):QObject{parent}, listenCode(parent)
+    explicit ListenRequestPvt(ListenRequest *parent):QObject{parent}, listenCode(parent)
     {
         this->parent=parent;
         QObject::connect(parent, &ListenRequest::finish, this, &ListenRequestPvt::onRequestFinish);

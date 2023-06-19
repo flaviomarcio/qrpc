@@ -19,20 +19,20 @@ public:
 
     void run()override;
 
-    static RequestJob*newJob(Request::Action action, const QString &action_fileName={});
-    static RequestJob*runJob(RequestJob *job);
+    static RequestJob *newJob(Request::Action action, const QString &action_fileName={});
+    static RequestJob *runJob(RequestJob *job);
 
     RequestJob &start();
 
     RequestJob &release();
 
-    RequestJobResponse&response();
+    RequestJobResponse &response();
 
     void setResponse(const RequestJobResponse &value);
 
 public slots:
 
-    void onRunJob(const QSslConfiguration*sslConfiguration, const QVariantHash &headers, const QVariant &vUrl, const QString &fileName, QRpc::Request*request);
+    void onRunJob(const QSslConfiguration *sslConfiguration, const QVariantHash &headers, const QVariant &vUrl, const QString &fileName, QRpc::Request *request);
 
     void onRunCallback(const QVariant &v);
 

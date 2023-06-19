@@ -251,7 +251,7 @@ bool ListenRequestCode::isOK()
 int ListenRequestCode::code()
 {
     auto parent=this->parent();
-    auto request=(parent==nullptr)?nullptr:dynamic_cast<ListenRequest*>(parent);
+    auto request=(parent==nullptr)?nullptr:dynamic_cast<ListenRequest *>(parent);
     if(request==nullptr)
         qFatal("invalid object");
     return request->responseCode();
@@ -260,7 +260,7 @@ int ListenRequestCode::code()
 int ListenRequestCode::code(const QVariant &code)
 {
     auto parent=this->parent();
-    auto request=(parent==nullptr)?nullptr:dynamic_cast<ListenRequest*>(parent);
+    auto request=(parent==nullptr)?nullptr:dynamic_cast<ListenRequest *>(parent);
     if(request==nullptr)
         qFatal("invalid object");
     return request->responseCode(code.toInt());
@@ -284,7 +284,7 @@ const QString ListenRequestCode::qt_network_error_phrase(const QNetworkReply::Ne
 ListenRequestCode &ListenRequestCode::setCode(QVariant code, const QString &phrase)
 {
     auto parent=this->parent();
-    auto request=(parent==nullptr)?nullptr:dynamic_cast<ListenRequest*>(parent);
+    auto request=(parent==nullptr)?nullptr:dynamic_cast<ListenRequest *>(parent);
     if(request==nullptr)
         qFatal("invalid object");
     request->setResponseCode(code.toInt());

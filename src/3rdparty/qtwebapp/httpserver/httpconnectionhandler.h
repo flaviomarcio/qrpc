@@ -59,7 +59,7 @@ public:
       @param sslConfiguration SSL (HTTPS) will be used if not NULL
     */
     HttpConnectionHandler(const QSettings* settings, HttpRequestHandler* requestHandler,
-                          const QSslConfiguration* sslConfiguration=nullptr);
+                          const QSslConfiguration * sslConfiguration=nullptr);
 
     /** Destructor */
     virtual ~HttpConnectionHandler();
@@ -94,7 +94,7 @@ private:
     bool busy;
 
     /** Configuration for SSL */
-    const QSslConfiguration* sslConfiguration;
+    const QSslConfiguration * sslConfiguration;
 
     /**  Create SSL or TCP socket */
     void createSocket();

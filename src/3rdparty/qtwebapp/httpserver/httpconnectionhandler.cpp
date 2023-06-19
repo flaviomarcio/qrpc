@@ -9,7 +9,7 @@
 using namespace stefanfrings;
 
 
-HttpConnectionHandler::HttpConnectionHandler(const QSettings *settings, HttpRequestHandler *requestHandler, const QSslConfiguration* sslConfiguration)
+HttpConnectionHandler::HttpConnectionHandler(const QSettings *settings, HttpRequestHandler *requestHandler, const QSslConfiguration * sslConfiguration)
     : QObject()
 {
     Q_ASSERT(settings!=nullptr);

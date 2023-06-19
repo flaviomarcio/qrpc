@@ -25,13 +25,11 @@
 namespace QRpc {
 
 Q_GLOBAL_STATIC(QMutex, requestJobMutex)
-Q_GLOBAL_STATIC(QVector<RequestJob*>, requestJobPool)
-
+Q_GLOBAL_STATIC(QVector<RequestJob *>, requestJobPool)
 
 class RequestJobPvt:public QObject{
 public:
     RequestJob *parent=nullptr;
-
 #ifdef Q_RPC_HTTP
     RequestJobHttp requestJobHttp;
 #endif
@@ -53,7 +51,7 @@ public:
     QHash<int,RequestJobProtocol*> requestJobProtocolHash;
     RequestJobResponse response;
 
-    explicit RequestJobPvt(RequestJob*parent):QObject{parent},
+    explicit RequestJobPvt(RequestJob *parent):QObject{parent},
 #ifdef Q_RPC_HTTP
         requestJobHttp(this),
 #endif
@@ -142,16 +140,14 @@ void RequestJob::run()
 
 RequestJob *RequestJob::newJob(Request::Action action, const QString &action_fileName)
 {
-    RequestJob*job=nullptr;
+    RequestJob *job=nullptr;
     if(!requestJobMutex->tryLock(10))
         job=new RequestJob();
     else{
-        if(requestJobPool->isEmpty()){
-            job=new RequestJob();
-        }
-        else{
+        if(requestJobPool->isEmpty())
+            job=new RequestJob{};
+        else
             job=requestJobPool->takeFirst();
-        }
         requestJobMutex->unlock();
     }
     auto &p_=*static_cast<RequestJobPvt*>(job->p);
@@ -160,7 +156,7 @@ RequestJob *RequestJob::newJob(Request::Action action, const QString &action_fil
     return job;
 }
 
-RequestJob *RequestJob::runJob(RequestJob*job)
+RequestJob *RequestJob::runJob(RequestJob *job)
 {
     if(job->isRunning()){
         job->quit();

@@ -61,7 +61,7 @@ public:
        @param response Used to get and set the new session cookie
        @return Empty string, if there is no valid session.
     */
-    QByteArray getSessionId(HttpRequest& request, HttpResponse& response);
+    QByteArray getSessionId(HttpRequest& request, HttpResponse & response);
 
     /**
        Get the session of a HTTP request, eventually create a new one.
@@ -73,7 +73,7 @@ public:
        @return If autoCreate is disabled, the function returns a null session if there is no session.
        @see HttpSession::isNull()
     */
-    HttpSession getSession(HttpRequest& request, HttpResponse& response, const bool allowCreate=true);
+    HttpSession getSession(HttpRequest& request, HttpResponse & response, const bool allowCreate=true);
 
     /**
        Get a HTTP session by it's ID number.

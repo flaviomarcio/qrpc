@@ -14,7 +14,7 @@ HttpRequestHandler::HttpRequestHandler(QObject * parent)
 HttpRequestHandler::~HttpRequestHandler()
 {}
 
-void HttpRequestHandler::service(HttpRequest& request, HttpResponse& response)
+void HttpRequestHandler::service(HttpRequest& request, HttpResponse & response)
 {
     Q_UNUSED(request)
     Q_UNUSED(response)
