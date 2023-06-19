@@ -186,7 +186,7 @@ public:
         for (auto &mObj : server->controllers()) {
             auto name = QString::fromUtf8(mObj->className()).toLower().toUtf8().toLower();
 
-            QScopedPointer<QObject> sObj(mObj->newInstance(Q_ARG(QObject*, nullptr )));
+            QScopedPointer<QObject> sObj(mObj->newInstance(Q_ARG(QObject *, nullptr )));
 
             auto object=sObj.data();
 
@@ -212,7 +212,7 @@ public:
         this->controllerParsers.clear();
         for (auto &mObj : server->controllerParsers()) {
             auto name = QString::fromUtf8(mObj->className()).toLower().toUtf8().toLower();
-            auto object = mObj->newInstance(Q_ARG(QObject*, nullptr));
+            auto object = mObj->newInstance(Q_ARG(QObject *, nullptr));
             if (object == nullptr)
                 continue;
 

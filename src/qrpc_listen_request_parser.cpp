@@ -104,7 +104,7 @@ bool ListenRequestParser::routeToMethod(const QMetaObject &metaObject,
 
 void ListenRequestParser::initializeInstalleds(const QMetaObject &metaObject)
 {
-    QScopedPointer<QObject> scopePointer(metaObject.newInstance(Q_ARG(QObject*, nullptr)));
+    QScopedPointer<QObject> scopePointer(metaObject.newInstance(Q_ARG(QObject *, nullptr)));
     auto object = scopePointer.data();
     if (object == nullptr)
         return;

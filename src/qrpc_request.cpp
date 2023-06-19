@@ -401,7 +401,6 @@ HttpResponse &Request::call(const RequestMethod &method, const QString &route, c
 
 HttpResponse &Request::call(const QVariant &route, QIODevice &ioDeviceBody)
 {
-
     auto body=ioDeviceBody.readAll();
     auto &e=p->exchange.call();
     e.setMethod(QRpc::Post);
@@ -411,7 +410,6 @@ HttpResponse &Request::call(const QVariant &route, QIODevice &ioDeviceBody)
 
 HttpResponse &Request::call(const RequestMethod &method, const QString &route)
 {
-
     auto &e=p->exchange.call();
     e.setRoute(route);
     e.setMethod(method);
@@ -420,7 +418,6 @@ HttpResponse &Request::call(const RequestMethod &method, const QString &route)
 
 HttpResponse &Request::call(const RequestMethod &method, const QString &route, QIODevice &ioDeviceBody)
 {
-
     auto body=ioDeviceBody.readAll();
     auto &e=p->exchange.call();
     e.setRoute(route);
@@ -436,7 +433,6 @@ Request &Request::operator=(const QStm::SettingBase &value)
 
 HttpResponse &Request::upload(QFile &file)
 {
-
     auto &e=p->exchange.call();
     e.setMethod(QRpc::Post);
     p->upload(e.route(), file.fileName());
@@ -446,7 +442,6 @@ HttpResponse &Request::upload(QFile &file)
 
 HttpResponse &Request::upload(const QVariant &route, const QByteArray &buffer)
 {
-
     auto &e=p->exchange.call();
     e.setRoute(route);
     e.setMethod(QRpc::Post);
@@ -461,10 +456,8 @@ HttpResponse &Request::upload(const QVariant &route, const QByteArray &buffer)
     return this->response();
 }
 
-
 HttpResponse &Request::upload(const QVariant &route, QFile &file)
 {
-
     auto &e=p->exchange.call();
     e.setRoute(route);
     e.setMethod(QRpc::Post);
@@ -475,7 +468,6 @@ HttpResponse &Request::upload(const QVariant &route, QFile &file)
 
 HttpResponse &Request::upload(const QVariant &route, QString &fileName, QFile &file)
 {
-
     auto &e=p->exchange.call();
     e.setRoute(route);
     e.setMethod(QRpc::Post);
@@ -484,10 +476,8 @@ HttpResponse &Request::upload(const QVariant &route, QString &fileName, QFile &f
     return this->response();
 }
 
-
 HttpResponse &Request::download(QString &fileName)
 {
-
     auto _fileName=p->parseFileName(fileName);
     auto &e=p->exchange.call();
     e.setMethod(QRpc::Get);
@@ -499,7 +489,6 @@ HttpResponse &Request::download(QString &fileName)
 
 HttpResponse &Request::download(const QVariant &route, QString &fileName)
 {
-
     auto _fileName=p->parseFileName(fileName);
     auto &e=p->exchange.call();
     e.setRoute(route);
@@ -512,7 +501,6 @@ HttpResponse &Request::download(const QVariant &route, QString &fileName)
 
 HttpResponse &Request::download(const QVariant &route, QString &fileName, const QVariant &parameter)
 {
-
     auto _fileName=p->parseFileName(fileName);
     auto &e=p->exchange.call();
     e.setRoute(route);

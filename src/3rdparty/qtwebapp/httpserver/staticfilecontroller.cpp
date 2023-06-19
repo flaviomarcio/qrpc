@@ -10,7 +10,7 @@
 
 using namespace stefanfrings;
 
-StaticFileController::StaticFileController(const QSettings *settings, QObject* parent)
+StaticFileController::StaticFileController(const QSettings *settings, QObject * parent)
     :HttpRequestHandler(parent)
 {
     maxAge=settings->value("maxAge","60000").toInt();

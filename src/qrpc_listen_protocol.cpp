@@ -186,7 +186,7 @@ bool ListenProtocol::isValid() const
 
 Listen *ListenProtocol::makeListen()
 {
-    auto object = p->protocolMetaObject.newInstance(Q_ARG(QObject*, this));
+    auto object = p->protocolMetaObject.newInstance(Q_ARG(QObject *, this));
     if (object == nullptr)
         return nullptr;
 

@@ -47,7 +47,7 @@ public:
       caller should destroy it during shutdown.
       @param parent Parent object
      */
-    HttpSessionStore(const QSettings* settings, QObject* parent=nullptr);
+    HttpSessionStore(const QSettings* settings, QObject * parent=nullptr);
 
     /** Destructor */
     virtual ~HttpSessionStore();

@@ -59,7 +59,7 @@ public:
       @param parent Parent object.
       @warning Ensure to close or delete the listener before deleting the request handler.
     */
-    HttpListener(const QSettings* settings, HttpRequestHandler* requestHandler, QObject* parent=nullptr);
+    HttpListener(const QSettings* settings, HttpRequestHandler* requestHandler, QObject * parent=nullptr);
 
     /** Destructor */
     virtual ~HttpListener();

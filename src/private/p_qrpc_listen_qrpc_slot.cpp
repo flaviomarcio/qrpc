@@ -154,7 +154,7 @@ public:
             if (!methodParse.isValid())
                 continue;
 
-            QScopedPointer<QObject> sObj(mObjParser->newInstance(Q_ARG(QObject*, controller)));
+            QScopedPointer<QObject> sObj(mObjParser->newInstance(Q_ARG(QObject *, controller)));
             auto object = sObj.data();
             if (object == nullptr) {
 #if Q_RPC_LOG
@@ -255,7 +255,7 @@ public:
             auto className = QByteArray(mObjController->className()).toLower();
             auto routeMethods = this->controllerMethods.value(className);
 
-            auto object = mObjController->newInstance(Q_ARG(QObject*, parentController));
+            auto object = mObjController->newInstance(Q_ARG(QObject *, parentController));
 
             if (object == nullptr)
                 continue;
@@ -381,7 +381,7 @@ public:
     {
         request.co().setMethodNotAllowed();
 
-        QScopedPointer<QObject> sObj(QObject::staticMetaObject.newInstance(Q_ARG(QObject*, this)));
+        QScopedPointer<QObject> sObj(QObject::staticMetaObject.newInstance(Q_ARG(QObject *, this)));
         QMetaMethod metaMethod;
         Controller *controller = nullptr;
 

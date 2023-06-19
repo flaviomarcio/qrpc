@@ -560,7 +560,7 @@ public:
     //! \brief setRequestResponse
     //! \param request
     //!
-    void setRequestResponse(QObject*request);
+    void setRequestResponse(QObject *request);
 
     //!
     //! \brief setControllerSetting

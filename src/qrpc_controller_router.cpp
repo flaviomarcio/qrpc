@@ -57,7 +57,7 @@ ControllerRouter *ControllerRouter::newRouter(QObject *parent)
     if (defaultRouters.isEmpty())
         return new ControllerRouter(parent);
 
-    auto object = defaultRouter->newInstance(Q_ARG(QObject*, parent));
+    auto object = defaultRouter->newInstance(Q_ARG(QObject *, parent));
     router = dynamic_cast<ControllerRouter *>(object);
     if (router != nullptr)
         return router;

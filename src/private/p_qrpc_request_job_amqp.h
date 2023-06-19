@@ -12,7 +12,7 @@ public:
 
     RequestJobResponse*response=nullptr;
 
-    Q_INVOKABLE explicit RequestJobAMQP(QObject*parent);
+    Q_INVOKABLE explicit RequestJobAMQP(QObject *parent);
 
 public slots:
 
