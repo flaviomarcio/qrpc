@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../qrpc_request.h"
-#include "./p_qrpc_util.h"
 #include <QStm>
 
 #include <QUuid>
@@ -45,15 +44,15 @@ public:
 
     explicit RequestJobResponse(QObject *parent);
 
-    explicit RequestJobResponse(const QVariantHash &request_header, const QVariant &vUrl, Request&request, QObject *parent);
+    explicit RequestJobResponse(const QVariantHash &request_header, const QVariant &vUrl, Request &request, QObject *parent);
 
-    RequestJobResponse &operator =(RequestJobResponse &e);
+    RequestJobResponse &operator =(const RequestJobResponse &e);
 
     void clear();
 
-    QVariantHash toMapResquest();
+    QVariantHash toHashResquest();
 
-    QVariantHash toMapResponse();
+    QVariantHash toHashResponse();
 
     QVariantHash toVariant();
 

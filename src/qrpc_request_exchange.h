@@ -25,7 +25,7 @@ public:
     //! \param e
     //! \return
     //!
-    RequestExchange &operator =(RequestExchange &e);
+    RequestExchange &operator =(const RequestExchange &e);
 
     //!
     //! \brief clear
@@ -37,19 +37,13 @@ public:
     //! \brief call
     //! \return
     //!
-    virtual RequestExchangeSetting &call();
+    virtual RequestExchangeSetting &call() const;
 
     //!
     //! \brief back
     //! \return
     //!
-    virtual RequestExchangeSetting &back();
-
-    //!
-    //! \brief toMap
-    //! \return
-    //!
-    virtual QVariantMap toMap() const;
+    virtual RequestExchangeSetting &back() const;
 
     //!
     //! \brief toHash

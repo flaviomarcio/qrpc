@@ -188,19 +188,16 @@ RequestJob &RequestJob::release()
 
 RequestJobResponse &RequestJob::response()
 {
-
     return p->response;
 }
 
-void RequestJob::setResponse(RequestJobResponse &value)
+void RequestJob::setResponse(const RequestJobResponse &value)
 {
-
     p->response = value;
 }
 
 void RequestJob::onRunJob(const QSslConfiguration *sslConfiguration, const QVariantHash &headers, const QVariant &vUrl, const QString &fileName, Request *request)
 {
-
     p->sslConfiguration=QSslConfiguration(*sslConfiguration);
     auto url=vUrl.toUrl();
     p->action_fileName=fileName;

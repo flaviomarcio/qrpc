@@ -28,7 +28,7 @@ public:
 
     RequestJobResponse&response();
 
-    void setResponse(RequestJobResponse &value);
+    void setResponse(const RequestJobResponse &value);
 
 public slots:
 

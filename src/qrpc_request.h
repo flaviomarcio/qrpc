@@ -90,7 +90,7 @@ public:
         //! \brief body
         //! \return
         //!
-        virtual QVariant &body() const;
+        virtual const QVariant &body() const;
 
         //!
         //! \brief setBody
@@ -103,12 +103,6 @@ public:
         //! \return
         //!
         virtual QString toString() const;
-
-        //!
-        //! \brief toMap
-        //! \return
-        //!
-        virtual QVariantMap toMap() const;
 
         //!
         //! \brief toHash
@@ -228,7 +222,7 @@ public:
     //! \brief body
     //! \return
     //!
-    virtual QVariant body() const;
+    virtual Request::Body &body() const;
     virtual Request &setBody(const QVariant &value);
 
     //!
@@ -249,31 +243,25 @@ public:
     //! \brief exchange
     //! \return
     //!
-    virtual RequestExchange &exchange();
+    virtual RequestExchange &exchange()const;
 
     //!
     //! \brief header
     //! \return
     //!
-    virtual HttpHeaders &header();
-
-    //!
-    //! \brief body
-    //! \return
-    //!
-    virtual Request::Body &body();
+    virtual HttpHeaders &header() const;
 
     //!
     //! \brief response
     //! \return
     //!
-    virtual HttpResponse &response();
+    virtual HttpResponse &response() const;
 
     //!
     //! \brief requestRecovery
     //! \return
     //! repeat call on return
-    virtual QHash<int,int> requestRecovery() const;
+    virtual const QHash<int, int> &requestRecovery() const;
 
     //!
     //! \brief setRequestRecovery
@@ -295,7 +283,7 @@ public:
     //! \brief lastError
     //! \return
     //!
-    virtual LastError &lastError();
+    virtual const LastError &lastError()const;
 
     //!
     //! \brief call

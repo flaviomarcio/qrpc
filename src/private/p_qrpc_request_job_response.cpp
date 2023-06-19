@@ -1,4 +1,5 @@
 #include "./p_qrpc_request_job_response.h"
+#include "./p_qrpc_util.h"
 
 namespace QRpc {
 
@@ -16,7 +17,7 @@ RequestJobResponse::RequestJobResponse(const QVariantHash &request_header, const
     this->request_exchange = request.exchange();
 }
 
-RequestJobResponse &RequestJobResponse::operator =(RequestJobResponse &e)
+RequestJobResponse &RequestJobResponse::operator =(const RequestJobResponse &e)
 {
     this->request_exchange=e.request_exchange;
     this->localRequest=e.localRequest;
@@ -52,30 +53,38 @@ void RequestJobResponse::clear()
     this->responseHeader.clear();
 }
 
-QVariantHash RequestJobResponse::toMapResquest()
-{
-    auto method=this->request_exchange.call().method();
-    return Util::toMapResquest(method,request_url,request_body,request_parameters,response_body,request_header,request_start,request_finish);
-}
-
-QVariantHash RequestJobResponse::toMapResponse()
-{
-    QVariantHash map;
-    Q_DECLARE_VU;
-    map.insert(QStringLiteral("finish"), QDateTime::currentDateTime());
-    map.insert(QStringLiteral("header"), this->responseHeader);
-    map.insert(QStringLiteral("status_code"), this->response_status_code);
-    map.insert(QStringLiteral("qt_status_code"), this->response_qt_status_code);
-    map.insert(QStringLiteral("status_reason_phrase"), this->response_status_reason_phrase);
-    map.insert(QStringLiteral("body"), vu.toVariant(this->response_body));
-    return map;
-}
-
 QVariantHash RequestJobResponse::toVariant()
 {
-    auto rpclog = QVariantList{QVariantHash{{QStringLiteral("resquest"), this->toMapResquest()}},QVariantHash{ {QStringLiteral("response"), this->toMapResponse()}}};
+    static const auto __rpclog="rpclog";
+    static const auto __finish="finish";
+    static const auto __header="header";
+    static const auto __status_code="status_code";
+    static const auto __qt_status_code="status_code";
+    static const auto __status_reason_phrase="status_reason_phrase";
+    static const auto __body="body";
+
+    Q_DECLARE_VU;
+    QVariantHash toHashResquest=Util::toHashResquest(this->request_exchange.call().method(),request_url,request_body,request_parameters,response_body,request_header,request_start,request_finish);
+
+
+    QVariantHash toHashResponse={
+            {__finish, QDateTime::currentDateTime()},
+            {__header, this->responseHeader},
+            {__status_code, this->response_status_code},
+            {__qt_status_code, this->response_qt_status_code},
+            {__status_reason_phrase, this->response_status_reason_phrase},
+            {__body, vu.toVariant(this->response_body)},
+        };
+    static const auto __resquest="response";
+    static const auto __response="resquest";
+
+    QVariantList rpclog =
+        {
+          QVariantHash{{__resquest, toHashResquest}},
+          QVariantHash{{__response, toHashResponse}},
+        };
     ///*{"openapi", this->toMapOpenAPI()}*,/
-    return qvh({{QStringLiteral("rpclog"), rpclog}});
+    return {{__rpclog, rpclog}};
 }
 
 

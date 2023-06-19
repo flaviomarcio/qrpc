@@ -113,7 +113,6 @@ Request &Request::setSettings(const QVariantHash &setting)
             request.setBody(settings.body());
     };
 
-
     return *this;
 }
 
@@ -139,131 +138,106 @@ QString Request::url(const QString &path) const
 
 Protocol Request::protocol() const
 {
-
     return p->exchange.call().protocol();
 }
 
 QString Request::protocolName() const
 {
-
     return p->exchange.call().protocolName();
 }
 
 Request &Request::setProtocol(const QVariant &value)
 {
-
     p->exchange.setProtocol(value);
     return *this;
 }
 
 RequestMethod Request::method() const
 {
-
     return RequestMethod(p->exchange.call().method());
 }
 
 Request &Request::setMethod(const QString &value)
 {
-
     p->exchange.setMethod(value);
     return *this;
 }
 
 Request &Request::setMethod(const QByteArray &value)
 {
-
     p->exchange.setMethod(value);
     return *this;
 }
 
 Request &Request::setMethod(const int &value)
 {
-
     p->exchange.setMethod(RequestMethod(value));
     return *this;
 }
 
 QString Request::driver() const
 {
-
     return p->exchange.call().driver();
 }
 
 Request &Request::setDriver(const QString &value)
 {
-
     p->exchange.call().setDriver(value);
     return *this;
 }
 
 QString Request::hostName() const
 {
-
     return p->exchange.call().hostName();
 }
 
 Request &Request::setHostName(const QString &value)
 {
-
     p->exchange.setHostName(value);
     return *this;
 }
 
 QString Request::userName() const
 {
-
     return p->exchange.call().userName();
 }
 
 Request &Request::setUserName(const QString &value)
 {
-
     p->exchange.call().setUserName(value);
     return *this;
 }
 
 QString Request::password() const
 {
-
     return p->exchange.call().passWord();
 }
 
 Request &Request::setPassword(const QString &value)
 {
-
     p->exchange.call().setPassWord(value);
     return *this;
 }
 
 QString &Request::route() const
 {
-
     return p->exchange.call().route();
 }
 
 Request &Request::setRoute(const QVariant &value)
 {
-
     p->exchange.call().setRoute(value);
     return *this;
 }
 
-QVariant Request::body() const
-{
-
-    return p->qrpcBody.body();
-}
-
 Request &Request::setBody(const QVariant &value)
 {
-
     p->qrpcBody.setBody(value);
     return *this;
 }
 
 QVariant Request::port() const
 {
-
     return p->exchange.call().port();
 }
 
@@ -295,84 +269,71 @@ Request &Request::setPort(const QVariant &value)
 
 qlonglong Request::activityLimit() const
 {
-
     return p->exchange.call().activityLimit();
 }
 
 Request &Request::setActivityLimit(const QVariant &value)
 {
-
     p->exchange.call().setActivityLimit(value);
     return *this;
 }
 
-RequestExchange &Request::exchange()
+RequestExchange &Request::exchange() const
 {
-
     return p->exchange;
 }
 
-QRpc::HttpHeaders &Request::header()
+QRpc::HttpHeaders &Request::header() const
 {
-
     return p->qrpcHeader;
 }
 
-Request::Body &Request::body()
+Request::Body &Request::body()const
 {
-
     return p->qrpcBody;
 }
 
-HttpResponse &Request::response()
+HttpResponse &Request::response() const
 {
-
     return p->qrpcResponse;
 }
 
-QHash<int, int> Request::requestRecovery()const
+const QHash<int, int> &Request::requestRecovery()const
 {
-
     return p->requestRecovery;
 }
 
 Request &Request::setRequestRecovery(int statusCode)
 {
-
-    p->requestRecovery[statusCode]=1;
+    p->requestRecovery.insert(statusCode,1);
     return *this;
 }
 
 Request &Request::setRequestRecovery(int statusCode, int repeatCount)
 {
-
-    p->requestRecovery[statusCode]=repeatCount;
+    p->requestRecovery.insert(statusCode, repeatCount);
     return *this;
 }
 
 Request &Request::setRequestRecoveryOnBadGateway(int repeatCount)
 {
-
     p->requestRecovery[ListenRequestCode::ssBadGateway]=repeatCount;
     return *this;
 }
 
-LastError &Request::lastError()
+const LastError &Request::lastError() const
 {
-
     return p->qrpcLastError;
 }
 
 HttpResponse &Request::call()
 {
-
     auto &e=p->exchange.call();
     return p->call(e.method(), e.route(), {});
 }
 
 HttpResponse &Request::call(const QVariant &route)
 {
-
     auto &e=p->exchange.call();
     e.setRoute(route);
     return p->call(e.method(), e.route(), this->body().body());
@@ -380,7 +341,6 @@ HttpResponse &Request::call(const QVariant &route)
 
 HttpResponse &Request::call(const QVariant &route, const QVariant &body)
 {
-
     auto &e=p->exchange.call();
     e.setRoute(route);
     return p->call(e.method(), e.route(), body);
@@ -388,7 +348,6 @@ HttpResponse &Request::call(const QVariant &route, const QVariant &body)
 
 HttpResponse &Request::call(const QVariant &route, const QVariant &body, const QString &method, const QVariantHash parameter)
 {
-
     auto &e=p->exchange.call();
     e.setMethod(method);
     e.setRoute(route);
@@ -398,7 +357,6 @@ HttpResponse &Request::call(const QVariant &route, const QVariant &body, const Q
 
 HttpResponse &Request::call(const RequestMethod &method, const QString &route, const QVariant &body)
 {
-
     auto &e=p->exchange.call();
     e.setRoute(route);
     e.setMethod(method);
@@ -407,7 +365,6 @@ HttpResponse &Request::call(const RequestMethod &method, const QString &route, c
 
 HttpResponse &Request::call(const RequestMethod &method)
 {
-
     auto &e=p->exchange.call();
     e.setMethod(method);
     auto &body=this->body().body();
@@ -596,19 +553,16 @@ QString Request::toString() const
 
 QVariantHash Request::toResponse()const
 {
-
     return p->qrpcResponse.toResponse();
 }
 
 QSslConfiguration &Request::sslConfiguration()
 {
-
     return p->sslConfiguration;
 }
 
 Request &Request::setSslConfiguration(const QSslConfiguration &value)
 {
-
     p->sslConfiguration = value;
     return *this;
 }
@@ -636,20 +590,18 @@ Request::Body::Body(QObject *parent):QObject{parent}
 {
 }
 
-QVariant &Request::Body::body() const
+const QVariant &Request::Body::body() const
 {
     return p->request_body;
 }
 
 void Request::Body::setBody(const QVariant &value)
 {
-
     p->request_body=value;
 }
 
 QString Request::Body::toString()const
 {
-
     auto type=p->request_body.typeId();
     switch (type) {
     case QMetaType::QVariantList:
@@ -662,14 +614,8 @@ QString Request::Body::toString()const
     }
 }
 
-QVariantMap Request::Body::toMap() const
-{
-    return QVariant{this->toHash()}.toMap();
-}
-
 QVariantHash Request::Body::toHash()const
 {
-
     auto type=p->request_body.typeId();
     switch (type) {
     case QMetaType::QVariantHash:
@@ -684,7 +630,6 @@ QVariantHash Request::Body::toHash()const
 
 QVariantList Request::Body::toList() const
 {
-
     auto type=p->request_body.typeId();
     switch (type) {
     case QMetaType::QVariantHash:
@@ -699,7 +644,6 @@ QVariantList Request::Body::toList() const
 
 Request &Request::Body::rq()
 {
-
     return *p->parent;
 }
 
