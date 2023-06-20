@@ -93,6 +93,9 @@ const QVariantHash RequestExchangeSetting::toHash() const
     auto &e=*this;
     for(int i = 0; i < e.metaObject()->propertyCount(); ++i) {
         auto property=e.metaObject()->property(i);
+        if(!property.isReadable())
+            continue;
+
         if(property.name() == __objectName)
             continue;
 
