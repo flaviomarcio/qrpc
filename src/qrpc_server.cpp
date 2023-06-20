@@ -23,10 +23,8 @@ public:
     //! \brief ServerPvt
     //! \param server
     //!
-    explicit ServerPvt(Server *parent = nullptr) : QObject{parent}//, settingFile{parent}
+    explicit ServerPvt(Server *parent = nullptr) : QObject{parent}, parent{parent}, listenColletions{new ListenColletions(parent)}
     {
-        this->parent = parent;
-        this->listenColletions = new ListenColletions(parent);
     }
 
     //!

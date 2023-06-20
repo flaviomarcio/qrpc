@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../qrpc_request.h"
-#include <QStm>
 
 #include <QUuid>
 #include <QDebug>

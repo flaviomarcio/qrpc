@@ -1,5 +1,6 @@
 #include "./p_qrpc_request_job_response.h"
 #include "./p_qrpc_util.h"
+#include "../../../qstm/src/qstm_util_variant.h"
 
 namespace QRpc {
 

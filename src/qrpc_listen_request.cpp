@@ -2,14 +2,11 @@
 #include "./qrpc_request.h"
 #include "./qrpc_startup.h"
 #include "./qrpc_macro.h"
-#include <QVariantHash>
 #include "../../qstm/src/qstm_setting_base.h"
-//#include <QStm>
-
-//#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
-//#define CBOR_INCLUDED
-//#endif
-
+#include "../../qstm/src/qstm_macro.h"
+#include "../../qstm/src/qstm_util_variant.h"
+#include "../../qstm/src/qstm_network_types.h"
+#include <QVariantHash>
 #include <QtCborCommon>
 #include <QCborStreamReader>
 #include <QCborStreamWriter>

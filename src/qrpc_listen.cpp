@@ -18,42 +18,25 @@ typedef QVector<ListenMetaObject> ListenMetaObjectList;
 
 Q_GLOBAL_STATIC(MetaObjectVectorHash, staticListenInstalledHash);
 Q_GLOBAL_STATIC(ListenMetaObjectList, staticListenInstalledList);
-Q_GLOBAL_STATIC(QByteArray, baseUuid)
-
-static void init()
-{
-    QProcess process;
-    auto bytes = process.environment().join(QStringLiteral(",")).toUtf8()
-                 + QDateTime::currentDateTime().toString().toUtf8();
-    *baseUuid = QCryptographicHash::hash(bytes, QCryptographicHash::Md5).toHex();
-}
-
-Q_RPC_STARTUP_FUNCTION(init);
 
 class ListenPvt : public QObject
 {
 public:
-    QUuid uuid;
+    Listen *listen = nullptr;
     Listen *listenPool = nullptr;
     ListenRequestCache cacheRequest;
     ListenColletions *collections = nullptr;
     Server *server = nullptr;
-    explicit ListenPvt(Listen *parent) : QObject{parent}, cacheRequest(parent)
+    QUuid uuid;
+    explicit ListenPvt(Listen *parent) : QObject{parent}, listen{parent}, cacheRequest(parent), uuid(QUuid::createUuid())
     {
-        this->uuid = QUuid::createUuidV5(QUuid::createUuid(), *baseUuid);
     }
 
-    Listen *listen()
-    {
-        auto listen = dynamic_cast<Listen *>(this->parent());
-        return listen;
-    }
 };
 
-Listen::Listen(QObject *parent) : QThread{nullptr}
+Listen::Listen(QObject *parent) : QThread{nullptr}, p{new ListenPvt{this}}
 {
     Q_UNUSED(parent)
-    this->p = new ListenPvt{this};
 }
 
 

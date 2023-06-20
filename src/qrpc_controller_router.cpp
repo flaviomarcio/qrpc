@@ -17,16 +17,14 @@ Q_GLOBAL_STATIC_WITH_ARGS(ConstsControllerRouter,
 class ControllerRouterPvt:public QObject
 {
 public:
-    QRpc::ControllerRouter *ControllerRouter = nullptr;
-    explicit ControllerRouterPvt(QRpc::ControllerRouter *parent):QObject{parent}
+    QRpc::ControllerRouter *parent = nullptr;
+    explicit ControllerRouterPvt(QRpc::ControllerRouter *parent):QObject{parent}, parent{parent}
     {
-        this->ControllerRouter = parent;
     }
 };
 
-ControllerRouter::ControllerRouter(QObject *parent) : QStm::Object{parent}
+ControllerRouter::ControllerRouter(QObject *parent) : QStm::Object{parent}, p{new ControllerRouterPvt{this}}
 {
-    this->p = new ControllerRouterPvt{this};
 }
 
 ResultValue &ControllerRouter::router(QRpc::ListenRequest *request, QMetaMethod &metaMethod)

@@ -7,6 +7,7 @@
 #endif
 #include "./p_qrpc_util.h"
 #include "./p_qrpc_request_job.h"
+#include "../../../qstm/src/qstm_util_variant.h"
 
 namespace QRpc {
 

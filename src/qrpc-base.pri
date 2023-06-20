@@ -21,6 +21,5 @@ SOURCES += \
     $$PWD/qrpc_controller_annotation.cpp \
     $$PWD/qrpc_log.cpp \
     $$PWD/qrpc_last_error.cpp \
-    $$PWD/qrpc_startup.cpp \
     $$PWD/qrpc_types.cpp
 

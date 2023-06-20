@@ -5,6 +5,7 @@
 #if Q_RPC_LOG
 #include "./qrpc_macro.h"
 #endif
+#include "../../../qstm/src/qstm_network_types.h"
 #include "./qrpc_server.h"
 #include "./qrpc_startup.h"
 #include <QCoreApplication>

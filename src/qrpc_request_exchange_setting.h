@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QStm>
 #include "./qrpc_global.h"
 #include "./qrpc_types.h"
 

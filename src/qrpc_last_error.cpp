@@ -11,11 +11,6 @@ LastError::LastError(QObject *parent) : QObject{parent}
 
 }
 
-LastError::~LastError()
-{
-
-}
-
 QString LastError::nativeErrorCode() const
 {
     return this->property(__nativeErrorCode).toString().trimmed();

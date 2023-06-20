@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QStm>
+#include "../../qstm/src/qstm_startup.h"
 #include "./qrpc_global.h"
 
 namespace QRpc {

@@ -18,8 +18,6 @@ public:
     //!
     Q_INVOKABLE explicit LastError(QObject *parent = nullptr);
 
-    ~LastError();
-
     //!
     //! \brief nativeErrorCode
     //! \return

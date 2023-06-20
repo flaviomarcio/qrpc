@@ -7,7 +7,6 @@
 #include "../../qrpc/src/qrpc_request_exchange.h"
 #include "./private/p_qrpc_http_headers.h"
 #include "./private/p_qrpc_http_response.h"
-#include <QStm>
 #include <QFile>
 #include <QSslConfiguration>
 

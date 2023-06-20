@@ -1,6 +1,8 @@
 #include "./qrpc_request_exchange_setting.h"
 #include "./qrpc_macro.h"
 #include <QMetaProperty>
+#include "../../../qstm/src/qstm_util_meta_object.h"
+#include "../../../qstm/src/qstm_util_variant.h"
 
 namespace QRpc {
 

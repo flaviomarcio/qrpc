@@ -2,7 +2,7 @@
 #include "./p_qrpc_listen_request_code.h"
 #include "./p_qrpc_request_job_response.h"
 #include "../qrpc_macro.h"
-//#include <QStm>
+#include "../../qstm/src/qstm_util_variant.h"
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
@@ -30,9 +30,8 @@ public:
 };
 
 
-HttpResponse::HttpResponse(QObject *parent):QObject{parent}
+HttpResponse::HttpResponse(QObject *parent):QObject{parent}, p{new HttpResponsePvt{this}}
 {
-    this->p = new HttpResponsePvt{this};
 }
 
 HttpHeaders &HttpResponse::header() const

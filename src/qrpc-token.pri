@@ -4,8 +4,6 @@ QT += websockets
 
 #INCLUDEPATH+=$$PWD
 
-HEADERS += \
-    $$PWD/qrpc_token_pool.h
+HEADERS +=
 
-SOURCES += \
-    $$PWD/qrpc_token_pool.cpp
+SOURCES +=

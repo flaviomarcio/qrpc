@@ -6,9 +6,11 @@
 
 namespace QRpc {
 
+static const auto __underline="_";
+
 RequestJobHttp::RequestJobHttp(QObject *parent):RequestJobProtocol(parent)
 {
-    this->tempLocation=QStringLiteral("%1/%2.%3.tmp").arg(QStandardPaths::writableLocation(QStandardPaths::TempLocation), qAppName().replace(QStringLiteral(" "), qsl_underline),QStringLiteral("%1"));
+    this->tempLocation=QStringLiteral("%1/%2.%3.tmp").arg(QStandardPaths::writableLocation(QStandardPaths::TempLocation), qAppName().replace(QStringLiteral(" "), __underline),QStringLiteral("%1"));
 }
 
 RequestJobHttp::~RequestJobHttp()

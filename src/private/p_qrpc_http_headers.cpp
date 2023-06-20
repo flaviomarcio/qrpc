@@ -1,8 +1,8 @@
 #include "./p_qrpc_http_headers.h"
 #include "./p_qrpc_util.h"
 #include "../qrpc_macro.h"
+#include "../../../qstm/src/qstm_util_variant.h"
 #include <QJsonDocument>
-#include <QStm>
 
 namespace QRpc {
 
@@ -14,11 +14,9 @@ public:
     QObject *parent=nullptr;
     QVariantHash header;
 
-    explicit HttpHeadersPvt(HttpHeaders*parent):QObject{parent}
+    explicit HttpHeadersPvt(HttpHeaders*parent):QObject{parent}, parent{parent}
     {
-        this->parent=parent;
     }
-
 
     QVariant header_v(const QString &key)const
     {
@@ -52,17 +50,12 @@ public:
     }
 };
 
-HttpHeaders::HttpHeaders(QObject *parent):QObject{parent}
+HttpHeaders::HttpHeaders(QObject *parent):QObject{parent},p{new HttpHeadersPvt{this}}
 {
-    this->p = new HttpHeadersPvt{this};
-    p->parent=parent;
 }
 
-HttpHeaders::HttpHeaders(const QVariant &v, QObject *parent):QObject{parent}
+HttpHeaders::HttpHeaders(const QVariant &v, QObject *parent):QObject{parent}, p{new HttpHeadersPvt{this}}
 {
-    this->p = new HttpHeadersPvt{this};
-
-    p->parent=parent;
     Q_DECLARE_VU;
     p->header=vu.toHash(v);
 }
@@ -70,20 +63,17 @@ HttpHeaders::HttpHeaders(const QVariant &v, QObject *parent):QObject{parent}
 
 HttpHeaders &HttpHeaders::clear()
 {
-
     p->header.clear();
     return *this;
 }
 
 QVariantHash &HttpHeaders::rawHeader()const
 {
-
     return p->header;
 }
 
 QVariant HttpHeaders::rawHeader(const QString &headername)const
 {
-
     QStringList returnList;
     QHashIterator<QString, QVariant> i(p->header);
     while (i.hasNext()) {
@@ -111,7 +101,6 @@ QVariant HttpHeaders::rawHeader(const QString &headername)const
 
 HttpHeaders &HttpHeaders::setRawHeader(const QVariantHash &rawHeader)
 {
-
     auto &header=p->header;
     header.clear();
     QHashIterator<QString, QVariant> i(rawHeader);
@@ -224,7 +213,6 @@ HttpHeaders &HttpHeaders::setContentType(const int contentType)
 
 HttpHeaders &HttpHeaders::setContentType(const QVariant &v)
 {
-
     p->header.remove(ContentTypeName);
     p->header.remove(QString(ContentTypeName).toLower());
     QVariant value=v;
@@ -246,7 +234,6 @@ HttpHeaders &HttpHeaders::setContentType(const QVariant &v)
 
 bool HttpHeaders::isContentType(int contentType) const
 {
-
     const auto contenttype=p->header_v(ContentTypeName).toStringList();
     for(auto &ct:contenttype){
         int cType=-1;
@@ -262,9 +249,7 @@ bool HttpHeaders::isContentType(int contentType) const
 
 QVariant HttpHeaders::contentType() const
 {
-
-    auto v=p->header_v(ContentTypeName);
-    return v;
+    return p->header_v(ContentTypeName);
 }
 
 ContentType HttpHeaders::defaultContentType()
@@ -274,9 +259,7 @@ ContentType HttpHeaders::defaultContentType()
 
 QVariant HttpHeaders::contentDisposition() const
 {
-
-    auto v=p->header_v(ContentDispositionName);
-    return v;
+    return p->header_v(ContentDispositionName);
 }
 
 HttpHeaders &HttpHeaders::setAuthorization(const QString &authorization, const QString &type, const QVariant &credentials)
@@ -389,7 +372,6 @@ HttpHeaders &HttpHeaders::setCookies(const QVariant &cookie)
 
 QVariant HttpHeaders::authorization(const QString &authorization, const QString &type)
 {
-
     QVariantList returnList;
     QHashIterator<QString, QVariant> i(p->header);
     while (i.hasNext()) {
@@ -507,7 +489,6 @@ QStringList HttpHeaders::printOut(const QString &output)
 
 HttpHeaders &HttpHeaders::operator=(const QVariant &v)
 {
-
     p->header.clear();
     QVariantHash vHash;
     switch (v.typeId()) {
