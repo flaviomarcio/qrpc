@@ -20,24 +20,15 @@ class ListenColletionsPvt : public QObject
 {
 public:
     bool lockWaitRun=false;
+    ListenColletions *collections=nullptr;
     QHash<int, Listen *> listensActive;
     ListenProtocols listenProtocol;
     Server *server = nullptr;
     QVariantHash settings;
 
-    ListenColletions *collections()
+    explicit ListenColletionsPvt(Server *server, const QVariantHash &settings, ListenColletions *parent)
+        :QObject{parent}, collections{parent}, server{server}, settings{settings}
     {
-        auto collections = dynamic_cast<ListenColletions *>(this->parent());
-        return collections;
-    }
-
-    explicit ListenColletionsPvt(Server *server,
-                                 const QVariantHash &settings,
-                                 ListenColletions *parent)
-        : QObject{parent}
-    {
-        this->server = server;
-        this->settings = settings;
         this->makeListens();
     }
 
@@ -119,12 +110,12 @@ public:
                 continue;
 
             listen->setServer(this->server);
-            listen->setColletions(this->collections());
+            listen->setColletions(this->collections);
             this->listensActive.insert(protocol->protocol(), listen);
             listenStartOrder.append(listen);
         }
 
-        auto listenPool = this->collections()->listenPool();
+        auto listenPool = this->collections->listenPool();
         if (listenPool == nullptr) {
             qFatal("invalid pool");
         }
@@ -132,7 +123,7 @@ public:
         for (auto &listen : this->listensActive) {
             listenPool->registerListen(listen);
             listen->setServer(this->server);
-            listen->setColletions(this->collections());
+            listen->setColletions(this->collections);
         }
 
         for (auto &listen : listenStartOrder)
