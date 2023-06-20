@@ -163,17 +163,18 @@ RequestMethod RequestExchangeSetting::method()const
     return p->method;
 }
 
-RequestExchangeSetting &RequestExchangeSetting::setMethod(const int &value)
+RequestExchangeSetting &RequestExchangeSetting::setMethod(const QVariant &value)
 {
-    auto method=RequestMethod(value);
-    method=(method<Head || method>MaxMethod)?Post:method;
-    p->method=method;
-    return *this;
-}
+    bool ok;
+    auto methodType=value.toInt(&ok);
+    if(ok){
+        auto method=RequestMethod(methodType);
+        method=(method<Head || method>MaxMethod)?Post:method;
+        p->method=method;
+        return *this;
+    }
 
-RequestExchangeSetting &RequestExchangeSetting::setMethod(const QString &value)
-{
-    const auto vv=value.trimmed().toLower();
+    const auto vv=value.toString().trimmed().toLower();
     for (const auto &v : RequestMethodNameList){
         if(v.trimmed().toLower()!=vv)
             return *this;

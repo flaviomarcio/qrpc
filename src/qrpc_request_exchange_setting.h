@@ -89,8 +89,7 @@ public:
     //! \return
     //!
     RequestMethod method() const;
-    RequestExchangeSetting &setMethod(const int &value);
-    RequestExchangeSetting &setMethod(const QString &value);
+    RequestExchangeSetting &setMethod(const QVariant &value);
     RequestExchangeSetting &resetMethod(){ return this->setMethod({});}
     RequestExchangeSetting &method(const int &value){ return this->setMethod(value);}
     RequestExchangeSetting &method(const QString &value){ return this->setMethod(value);}
