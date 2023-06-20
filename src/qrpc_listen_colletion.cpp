@@ -139,8 +139,6 @@ public:
             listen->start();
 
         this->lockWaitRun=true;
-//        this->lockWaitRun.tryLock(10);
-//        this->lockWaitRun.unlock();
     }
 };
 
