@@ -3,9 +3,6 @@
 #include "./qrpc_listen_protocol.h"
 #include "./private/p_qrpc_listen_qrpc.h"
 #include "./qrpc_server.h"
-#include <QDir>
-#include <QMutex>
-#include <QSettings>
 
 //#include "./private/p_qrpc_listen_tcp->h"
 //#include "./private/p_qrpc_listen_udp->h"
@@ -22,7 +19,7 @@ namespace QRpc {
 class ListenColletionsPvt : public QObject
 {
 public:
-    QMutex lockWaitRun;
+    bool lockWaitRun=false;
     QHash<int, Listen *> listensActive;
     ListenProtocols listenProtocol;
     Server *server = nullptr;
@@ -141,8 +138,9 @@ public:
         for (auto &listen : listenStartOrder)
             listen->start();
 
-        this->lockWaitRun.tryLock(10);
-        this->lockWaitRun.unlock();
+        this->lockWaitRun=true;
+//        this->lockWaitRun.tryLock(10);
+//        this->lockWaitRun.unlock();
     }
 };
 
@@ -236,9 +234,11 @@ bool ListenColletions::start()
         QThread::quit();
         QThread::wait();
     }
-    p->lockWaitRun.lock();
     QThread::start();
-    QMutexLocker<QMutex> locker(&p->lockWaitRun);
+    while(this->eventDispatcher()!=nullptr)
+        this->msleep(1);
+    while(!p->lockWaitRun)
+        this->msleep(1);
     if(this->isRunning())
         return true;
     return false;
