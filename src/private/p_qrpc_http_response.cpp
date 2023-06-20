@@ -18,7 +18,7 @@ namespace QRpc {
 
 class HttpResponsePvt:public QObject{
 public:
-    HttpResponse*parent=nullptr;
+    HttpResponse *parent=nullptr;
     QRpc::HttpHeaders response_header;
     int response_status_code=0;
     QNetworkReply::NetworkError response_qt_status_code=QNetworkReply::NoError;
@@ -28,7 +28,6 @@ public:
     {
     }
 };
-
 
 HttpResponse::HttpResponse(QObject *parent):QObject{parent}, p{new HttpResponsePvt{this}}
 {
@@ -41,7 +40,6 @@ HttpHeaders &HttpResponse::header() const
 
 void HttpResponse::setBody(const QVariant &vBody)
 {
-
     auto typeId=vBody.typeId();
     switch (typeId) {
     case QMetaType::QVariantMap:
@@ -90,14 +88,11 @@ void HttpResponse::setBody(const QVariant &vBody)
 
 QByteArray &HttpResponse::body() const
 {
-
     return p->response_body;
 }
 
 QVariant HttpResponse::bodyVariant() const
 {
-
-    //    QVariant v;
     QJsonParseError*error=nullptr;
     auto body=p->response_body.trimmed();
     if(body.isEmpty()){
@@ -172,91 +167,69 @@ QVariantList HttpResponse::bodyToList() const
 
 int &HttpResponse::statusCode() const
 {
-
     return p->response_status_code;
 }
 
 QString &HttpResponse::reasonPhrase() const
 {
-
     return p->response_reason_phrase;
 }
 
 QNetworkReply::NetworkError &HttpResponse::qtStatusCode() const
 {
-
     return p->response_qt_status_code;
-}
-
-QVariantHash HttpResponse::toMap() const
-{
-
-    return QJsonDocument::fromJson(p->response_body).object().toVariantHash();
 }
 
 QVariantHash HttpResponse::toHash() const
 {
-
     return QJsonDocument::fromJson(p->response_body).object().toVariantHash();
 }
 
 QVariantHash HttpResponse::toResponse() const
 {
-
     auto response_body=QJsonDocument::fromJson(p->response_body).object().toVariantHash();
-    QVariantHash vBody;
-    vBody[QStringLiteral("response_body")]=response_body;
-    vBody[QStringLiteral("qt_status_code")]=p->response_qt_status_code;
-    vBody[QStringLiteral("status_code")]=p->response_status_code;
-    vBody[QStringLiteral("reason_phrase")]=p->response_reason_phrase;
-    return vBody;
+    return {
+        {QStringLiteral("response_body"), response_body},
+        {QStringLiteral("qt_status_code"), p->response_qt_status_code},
+        {QStringLiteral("status_code"), p->response_status_code},
+        {QStringLiteral("reason_phrase"), p->response_reason_phrase},
+    };
 }
 
 bool HttpResponse::isOk() const
 {
-
     if(p->response_status_code==200)
         return true;
-
     if(p->response_qt_status_code==QNetworkReply::NoError)
         return true;
-
     return false;
 }
 
 bool HttpResponse::isCreated() const
 {
-
     if(p->response_qt_status_code!=QNetworkReply::NoError)
         return false;
-
     if(p->response_status_code!=0 && p->response_status_code!=201)
         return false;
-
     return true;
 }
 
 bool HttpResponse::isNotFound() const
 {
-
     if(p->response_status_code==404)
         return true;
-
     return false;
 }
 
 bool HttpResponse::isUnAuthorized() const
 {
-
     if(p->response_status_code==401)
         return true;
-
     return false;
 }
 
 HttpResponse &HttpResponse::setResponse(QObject *objectResponse)
 {
-
     if(objectResponse!=nullptr && QRpc::RequestJobResponse::staticMetaObject.cast(objectResponse)){
         auto &response=*dynamic_cast<QRpc::RequestJobResponse*>(objectResponse);
         p->response_header.setRawHeader(response.responseHeader);
@@ -270,7 +243,6 @@ HttpResponse &HttpResponse::setResponse(QObject *objectResponse)
 
 QString HttpResponse::toString() const
 {
-
     auto &response=*this;
     auto qt_text=ListenRequestCode::qt_network_error_phrase(p->response_qt_status_code);
     auto msg=QStringLiteral("QtStatus: Status:%1, %2, %3").arg(QString::number(response.qtStatusCode()), response.reasonPhrase(),qt_text);
@@ -279,7 +251,6 @@ QString HttpResponse::toString() const
 
 HttpResponse::operator bool() const
 {
-
     if(p->response_qt_status_code==QNetworkReply::NoError)
         return true;
 

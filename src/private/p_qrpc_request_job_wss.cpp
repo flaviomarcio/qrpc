@@ -1,12 +1,12 @@
 #include "./p_qrpc_request_job_wss.h"
+#include "../qrpc_macro.h"
+#include "../qrpc_listen_request.h"
+#include <QSslCertificate>
+#include <QSslKey>
 
 namespace QRpc {
 
 RequestJobWSS::RequestJobWSS(QObject *parent):RequestJobProtocol(parent)
-{
-}
-
-RequestJobWSS::~RequestJobWSS()
 {
 }
 

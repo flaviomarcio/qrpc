@@ -21,128 +21,122 @@ public:
     //! \brief header
     //! \return
     //!
-    virtual QRpc::HttpHeaders&header() const;
+    QRpc::HttpHeaders &header() const;
 
     //!
     //! \brief setBody
     //! \param vBody
     //!
-    virtual void setBody(const QVariant &vBody);
+    void setBody(const QVariant &vBody);
 
     //!
     //! \brief body
     //! \return
     //!
-    virtual QByteArray &body() const;
+    QByteArray &body() const;
 
     //!
     //! \brief bodyVariant
     //! \return
     //!
-    virtual QVariant bodyVariant() const;
+    QVariant bodyVariant() const;
 
     //!
     //! \brief bodyMap
     //! \return
     //!
-    virtual QVariantMap bodyMap() const;
+    QVariantMap bodyMap() const;
 
     //!
     //! \brief bodyHash
     //! \return
     //!
-    virtual QVariantHash bodyHash() const;
+    QVariantHash bodyHash() const;
 
     //!
     //! \brief bodyObject
     //! \return
     //!
-    virtual QVariantHash bodyObject() const;
+    QVariantHash bodyObject() const;
 
     //!
     //! \brief bodyList
     //! \return
     //!
-    virtual QVariantList bodyList() const;
+    QVariantList bodyList() const;
 
     //!
     //! \brief bodyArray
     //! \return
     //!
-    virtual QVariantList bodyArray() const;
+    QVariantList bodyArray() const;
 
     //!
     //! \brief bodyToList
     //! \return
     //!
-    virtual QVariantList bodyToList() const;
+    QVariantList bodyToList() const;
 
     //!
     //! \brief statusCode
     //! \return
     //!
-    virtual int&statusCode() const;
+    int&statusCode() const;
 
     //!
     //! \brief reasonPhrase
     //! \return
     //!
-    virtual QString &reasonPhrase() const;
+    QString &reasonPhrase() const;
 
     //!
     //! \brief qtStatusCode
     //! \return
     //!
-    virtual QNetworkReply::NetworkError &qtStatusCode() const;
-
-    //!
-    //! \brief toMap
-    //! \return
-    //!
-    virtual QVariantHash toMap() const;
+    QNetworkReply::NetworkError &qtStatusCode() const;
 
     //!
     //! \brief toHash
     //! \return
     //!
-    virtual QVariantHash toHash() const;
+    QVariantHash toHash() const;
 
     //!
     //! \brief toResponse
     //! \return
     //!
-    virtual QVariantHash toResponse() const;
+    QVariantHash toResponse() const;
 
     //!
     //! \brief isOk
     //! \return
     //!
-    virtual bool isOk() const;
+    bool isOk() const;
 
     //!
     //! \brief isCreated
     //! \return
     //!
-    virtual bool isCreated() const;
+    bool isCreated() const;
 
     //!
     //! \brief isNotFound
     //! \return
     //!
-    virtual bool isNotFound() const;
+    bool isNotFound() const;
 
     //!
     //! \brief isUnAuthorized
     //! \return
     //!
-    virtual bool isUnAuthorized() const;
+    bool isUnAuthorized() const;
 
     //!
     //! \brief setResponse
     //! \param objectResponse
     //! \return
     //!
-    virtual HttpResponse &setResponse(QObject *objectResponse);
+    HttpResponse &setResponse(QObject *objectResponse);
 
     //!
     //! \brief toString
@@ -160,14 +154,14 @@ public:
     //! \param output
     //! \return
     //!
-    virtual HttpResponse &print(const QString &output={});
+    HttpResponse &print(const QString &output={});
 
     //!
     //! \brief printOut
     //! \param output
     //! \return
     //!
-    virtual QStringList printOut(const QString &output={});
+    QStringList printOut(const QString &output={});
 
 private:
     HttpResponsePvt *p = nullptr;
