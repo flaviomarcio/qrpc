@@ -77,7 +77,7 @@ public:
             for (auto &t : *slot) {
                 t->quit();
                 t->wait();
-                t->start();
+                t->deleteLater();
             }
         }
     }
@@ -267,7 +267,6 @@ public slots:
 
         ListenQRPCSlot *thread = nullptr;
         while (!requestInvoke(thread)) {
-
             auto thread = new ListenQRPCSlot(this->listenQRPC);
             thread->start();
             listenSlotList->append(thread);

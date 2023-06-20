@@ -22,10 +22,7 @@ namespace QRpc {
 class ListenColletionsPvt : public QObject
 {
 public:
-    QMutex lockMake;
     QMutex lockWaitRun;
-    QMutex lockWaitQuit;
-    QMutex lockRunning;
     QHash<int, Listen *> listensActive;
     ListenProtocols listenProtocol;
     Server *server = nullptr;
@@ -81,7 +78,6 @@ public:
 
     bool makeOption(int protocol, const QMetaObject &metaObject)
     {
-        QMutexLocker<QMutex> locker(&this->lockMake);
         if (this->listenProtocol.contains(protocol))
             return true;
 
@@ -96,16 +92,16 @@ public:
         if (this->listensActive.isEmpty())
             return;
 
-        QHashIterator<int, Listen *> i(this->listensActive);
+        auto aux=this->listensActive;
+        this->listensActive.clear();
+        QHashIterator<int, Listen *> i(aux);
         while(i.hasNext()){
             i.next();
             auto listen=i.value();
             listen->quit();
             listen->wait();
+            listen->deleteLater();
         }
-        auto aux=this->listensActive.values();
-        this->listensActive.clear();
-        qDeleteAll(aux);
     }
 
     void listenStart()
@@ -148,24 +144,15 @@ public:
         this->lockWaitRun.tryLock(10);
         this->lockWaitRun.unlock();
     }
-
-    void listenQuit()
-    {
-        this->listenStop();
-        this->lockRunning.tryLock(1);
-        this->lockRunning.unlock();
-    }
 };
 
-ListenColletions::ListenColletions(Server *server) : QThread{nullptr}
+ListenColletions::ListenColletions(Server *server) : QThread{nullptr}, p{new ListenColletionsPvt(server, {}, this)}
 {
-    this->p = new ListenColletionsPvt(server, {}, this);
     this->moveToThread(this);
 }
 
-ListenColletions::ListenColletions(const QVariantHash &settings, Server *server)
+ListenColletions::ListenColletions(const QVariantHash &settings, Server *server):QThread{nullptr}, p{new ListenColletionsPvt(server, settings, this)}
 {
-    this->p = new ListenColletionsPvt(server, settings, this);
     this->moveToThread(this);
 }
 
@@ -209,9 +196,7 @@ void ListenColletions::run()
 {
     p->listenStart();
     this->exec();
-    p->listenQuit();
-    p->lockWaitQuit.tryLock(1);
-    p->lockWaitQuit.unlock();
+    p->listenStop();
 }
 
 Server *ListenColletions::server()
@@ -247,13 +232,15 @@ ListenQRPC *ListenColletions::listenPool()
 
 bool ListenColletions::start()
 {
-    if (p->lockRunning.tryLock(1000)) {
-        p->lockWaitRun.lock();
-        QThread::start();
-        QMutexLocker<QMutex> locker(&p->lockWaitRun);
-        if(this->isRunning())
-            return true;
+    if(this->isRunning()){
+        QThread::quit();
+        QThread::wait();
     }
+    p->lockWaitRun.lock();
+    QThread::start();
+    QMutexLocker<QMutex> locker(&p->lockWaitRun);
+    if(this->isRunning())
+        return true;
     return false;
 }
 
@@ -264,12 +251,8 @@ bool ListenColletions::stop()
 
 bool ListenColletions::quit()
 {
-    p->lockWaitQuit.lock();
-    QMutexLocker<QMutex> lockerRun(
-        &p->lockWaitRun); //evitar crash antes da inicializacao de todos os listainers
-    p->listenQuit();
+    p->listenStop();
     QThread::quit();
-    QMutexLocker<QMutex> lockerQuit(&p->lockWaitQuit);
     QThread::wait();
     return true;
 }

@@ -35,7 +35,8 @@ public:
     virtual ~ServerPvt()
     {
         this->serverStop();
-        delete this->listenColletions;
+        if(this->listenColletions)
+            this->listenColletions->deleteLater();
     }
 
     //!
