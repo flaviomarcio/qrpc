@@ -129,7 +129,7 @@ bool RequestJobDataBase::connectionMake(QSqlDatabase &outConnection)
     auto hostName=exchange_call.hostName().trimmed();
     auto userName=exchange_call.userName();
     auto password=exchange_call.passWord();
-    auto port=exchange_call.port();
+    auto port=exchange_call.port().toInt();
     auto connectOptions=settings[QStringLiteral("connectionoptions")].toString().trimmed();
 
     static int seq=0;

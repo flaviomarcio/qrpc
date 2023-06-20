@@ -202,7 +202,6 @@ ListenProtocol &ListenColletions::protocol(const Protocol &protocol)
 
 ListenProtocols &ListenColletions::protocols()
 {
-
     return p->listenProtocol;
 }
 
@@ -220,7 +219,12 @@ Server *ListenColletions::server()
     return p->server;
 }
 
-ListenColletions &ListenColletions::setSettings(const QVariantHash &settings)
+QVariantHash &ListenColletions::settings()
+{
+    return p->settings;
+}
+
+ListenColletions &ListenColletions::settings(const QVariantHash &settings)
 {
     p->setSettings(settings);
     return *this;
@@ -243,15 +247,14 @@ ListenQRPC *ListenColletions::listenPool()
 
 bool ListenColletions::start()
 {
-
-    bool __return = false;
     if (p->lockRunning.tryLock(1000)) {
         p->lockWaitRun.lock();
         QThread::start();
         QMutexLocker<QMutex> locker(&p->lockWaitRun);
-        __return = this->isRunning();
+        if(this->isRunning())
+            return true;
     }
-    return __return;
+    return false;
 }
 
 bool ListenColletions::stop()
@@ -261,7 +264,6 @@ bool ListenColletions::stop()
 
 bool ListenColletions::quit()
 {
-
     p->lockWaitQuit.lock();
     QMutexLocker<QMutex> lockerRun(
         &p->lockWaitRun); //evitar crash antes da inicializacao de todos os listainers

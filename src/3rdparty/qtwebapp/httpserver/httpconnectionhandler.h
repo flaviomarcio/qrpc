@@ -85,7 +85,7 @@ private:
     QTimer readTimer;
 
     /** Storage for the current incoming HTTP request */
-    HttpRequest* currentRequest;
+    HttpRequest * currentRequest;
 
     /** Dispatches received requests to services */
     HttpRequestHandler* requestHandler;

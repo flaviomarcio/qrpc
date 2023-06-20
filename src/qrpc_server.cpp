@@ -85,8 +85,8 @@ public:
             rWarning() << tr("Json property [protocol] is empty");
             return false;
         }
-
-        this->listenColletions->setSettings(protocol);
+        
+        this->listenColletions->settings(protocol);
         this->settings.load(vServices);
         return true;
     }

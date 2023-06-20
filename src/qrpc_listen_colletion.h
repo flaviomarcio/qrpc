@@ -74,7 +74,8 @@ public:
     //! \brief setSettings
     //! \param settings
     //!
-    virtual ListenColletions &setSettings(const QVariantHash &settings);
+    virtual QVariantHash &settings();
+    virtual ListenColletions &settings(const QVariantHash &settings);
 
     //!
     //! \brief listenPool

@@ -13,31 +13,31 @@ class Q_RPC_EXPORT RequestExchangeSetting: public QObject
 {
     Q_OBJECT
 public:
-    Q_PROPERTY(QString protocol READ protocolName WRITE setProtocol NOTIFY protocolChanged)
-    Q_PROPERTY(int method READ ___method WRITE setMethod NOTIFY methodChanged )
-    Q_PROPERTY(QString vHost READ vHost WRITE setVHost NOTIFY vHostChanged )
-    Q_PROPERTY(QString driver READ driver WRITE setDriver NOTIFY driverChanged )
-    Q_PROPERTY(QString hostName READ hostName WRITE setHostName NOTIFY hostNameChanged )
-    Q_PROPERTY(QString userName READ userName WRITE setUserName NOTIFY userNameChanged )
-    Q_PROPERTY(QString passWord READ passWord WRITE setPassWord NOTIFY passWordChanged )
-    Q_PROPERTY(QVariantHash parameter READ parameter WRITE setParameter NOTIFY parameterChanged )
-    Q_PROPERTY(int port READ port WRITE setPort NOTIFY portChanged )
-    Q_PROPERTY(QString route READ route WRITE setRoute NOTIFY routeChanged )
-    Q_PROPERTY(QString topic READ topic WRITE setTopic NOTIFY topicChanged )
-    Q_PROPERTY(QVariant activityLimit READ activityLimit WRITE setActivityLimit NOTIFY activityLimitChanged )
+    Q_PROPERTY(QString protocol READ protocolName WRITE setProtocol RESET resetProtocol NOTIFY protocolChanged)
+    Q_PROPERTY(int method READ ___method WRITE setMethod RESET resetMethod NOTIFY methodChanged )
+    Q_PROPERTY(QString vHost READ vHost WRITE setVHost RESET resetVHost NOTIFY vHostChanged )
+    Q_PROPERTY(QString driver READ driver WRITE setDriver RESET resetDriver NOTIFY driverChanged )
+    Q_PROPERTY(QString hostName READ hostName WRITE setHostName RESET resetHostName NOTIFY hostNameChanged )
+    Q_PROPERTY(QString userName READ userName WRITE setUserName RESET resetUserName NOTIFY userNameChanged )
+    Q_PROPERTY(QString passWord READ passWord WRITE setPassWord RESET resetPassWord NOTIFY passWordChanged )
+    Q_PROPERTY(QVariantHash parameter READ parameter WRITE setParameter RESET resetParameter NOTIFY parameterChanged )
+    Q_PROPERTY(QVariant port READ port WRITE setPort RESET resetPort NOTIFY portChanged )
+    Q_PROPERTY(QString route READ route WRITE setRoute RESET resetRoute NOTIFY routeChanged )
+    Q_PROPERTY(QString topic READ topic WRITE setTopic RESET resetTopic NOTIFY topicChanged )
+    Q_PROPERTY(QVariant activityLimit READ activityLimit WRITE setActivityLimit RESET resetActivityLimit NOTIFY activityLimitChanged )
 
     //!
     //! \brief RequestExchangeSetting
     //! \param parent
     //!
-    Q_INVOKABLE explicit RequestExchangeSetting(QObject *parent=nullptr);
+    explicit RequestExchangeSetting(QObject *parent=nullptr);
 
     //!
     //! \brief RequestExchangeSetting
     //! \param e
     //! \param parent
     //!
-    explicit RequestExchangeSetting(RequestExchangeSetting &e, QObject *parent=nullptr);
+    explicit RequestExchangeSetting(const RequestExchangeSetting &e, QObject *parent=nullptr);
 
     //!
     //! \brief operator =
@@ -51,139 +51,155 @@ public:
     //! \brief clear
     //! \return
     //!
-    virtual RequestExchangeSetting &clear();
+    RequestExchangeSetting &clear();
 
     //!
-    //! \brief toMap
+    //! \brief toHash
     //! \return
     //!
-    virtual QVariantMap toMap() const;
-
-    /**
-     * @brief toMap
-     * @return
-     */
-    virtual QVariantHash toHash() const;
+    const QVariantHash &toHash() const;
 
     //!
     //! \brief url
     //! \return
     //!
-    virtual QString url() const;
+    const QString &url() const;
 
     //!
     //! \brief isValid
     //! \return
     //!
-    virtual bool isValid() const;
+    bool isValid() const;
 
     //!
     //! \brief print
     //! \param output
     //! \return
     //!
-    virtual RequestExchangeSetting &print(const QString &output={});
+    RequestExchangeSetting &print(const QString &output={});
 
     //!
     //! \brief printOut
     //! \param output
     //! \return
     //!
-    virtual QStringList printOut(const QString &output={});
+    QStringList printOut(const QString &output={});
 
     //!
     //! \brief method
     //! \return
     //!
-    virtual RequestMethod method() const;
-    virtual void setMethod(const int &value);
-    virtual void setMethod(const QString &value);
-
-    //!
-    //! \brief methodName
-    //! \return
-    //!
-    virtual QString methodName() const;
+    RequestMethod method() const;
+    RequestExchangeSetting &setMethod(const int &value);
+    RequestExchangeSetting &setMethod(const QString &value);
+    RequestExchangeSetting &resetMethod(){ return this->setMethod({});}
+    RequestExchangeSetting &method(const int &value){ return this->setMethod(value);}
+    RequestExchangeSetting &method(const QString &value){ return this->setMethod(value);}
+    const QString &methodName() const;
 
     //!
     //! \brief protocol
     //! \return
     //!
-    virtual Protocol protocol() const;
-    virtual QString protocolName() const;
-    virtual QString protocolUrlName() const;
-    virtual void setProtocol(const Protocol &value);
-    virtual void setProtocol(const QVariant &value);
+    Protocol protocol() const;
+    RequestExchangeSetting &setProtocol(const Protocol &value);
+    RequestExchangeSetting &setProtocol(const QVariant &value);
+    RequestExchangeSetting &resetProtocol(){ return this->setProtocol({});}
+    RequestExchangeSetting &protocol(const Protocol &value){ return this->setProtocol(value);}
+    RequestExchangeSetting &protocol(const QVariant &value){ return this->setProtocol(value);}
+    const QString &protocolName() const;
+    const QString &protocolUrlName() const;
 
     //!
     //! \brief driver
     //! \return
     //!
-    virtual QString &driver() const;
-    virtual void setDriver(const QString &value);
+    const
+        QString &driver() const;
+    RequestExchangeSetting &setDriver(const QString &value);
+    RequestExchangeSetting &resetDriver(){ return this->setDriver({});}
+    RequestExchangeSetting &driver(const QString &value){ return this->setDriver(value);}
 
     //!
     //! \brief hostName
     //! \return
     //!
-    virtual QString &hostName() const;
-    virtual void setHostName(const QString &value);
+    const QString &hostName() const;
+    RequestExchangeSetting &setHostName(const QString &value);
+    RequestExchangeSetting &resetHostName(){ return this->setHostName({});}
+    RequestExchangeSetting &hostName(const QString &value){ return this->setHostName(value);}
 
     //!
     //! \brief vHost
     //! \return
     //!
-    virtual QString &vHost() const;
-    virtual void setVHost(const QString &value);
+    const QString &vHost() const;
+    RequestExchangeSetting &setVHost(const QString &value);
+    RequestExchangeSetting &resetVHost(){ return this->setVHost({});}
+    RequestExchangeSetting &vHost(const QString &value){ return this->setVHost(value);}
 
     //!
     //! \brief userName
     //! \return
     //!
-    virtual QString &userName() const;
-    virtual void setUserName(const QString &value);
+    const QString &userName() const;
+    RequestExchangeSetting &setUserName(const QString &value);
+    RequestExchangeSetting &resetUserName(){ return this->setUserName({});}
+    RequestExchangeSetting &userName(const QString &value){ return this->setUserName(value);}
 
     //!
     //! \brief passWord
     //! \return
     //!
-    virtual QString &passWord() const;
-    virtual void setPassWord(const QString &value);
+    const QString &passWord() const;
+    RequestExchangeSetting &setPassWord(const QString &value);
+    RequestExchangeSetting &resetPassWord(){ return this->setPassWord({});}
+    RequestExchangeSetting &passWord(const QString &value){ return this->setPassWord(value);}
 
     //!
     //! \brief route
     //! \return
     //!
-    virtual QString &route() const;
-    virtual void setRoute(const QVariant &value);
+    const QString &route() const;
+    RequestExchangeSetting &setRoute(const QVariant &value);
+    RequestExchangeSetting &resetRoute(){ return this->setRoute({});}
+    RequestExchangeSetting &route(const QString &value){ return this->setRoute(value);}
 
     //!
     //! \brief topic
     //! \return
     //!
-    virtual QString &topic() const;
-    virtual void setTopic(const QString &value);
+    const QString &topic() const;
+    RequestExchangeSetting &setTopic(const QString &value);
+    RequestExchangeSetting &resetTopic(){ return this->setTopic({});}
+    RequestExchangeSetting &topic(const QString &value){ return this->setTopic(value);}
 
     //!
     //! \brief port
     //! \return
     //!
-    virtual int port() const;
-    virtual void setPort(int port);
+    const QVariant &port() const;
+    RequestExchangeSetting &setPort(const QVariant &value);
+    RequestExchangeSetting &resetPort(){ return this->setPort({});}
+    RequestExchangeSetting &port(const QVariant &value){ return this->setPort(value);}
 
     //!
     //! \brief activityLimit
     //! \return
     //!
-    virtual qlonglong activityLimit() const;
-    virtual void setActivityLimit(const QVariant &value);
+    qlonglong activityLimit() const;
+    RequestExchangeSetting &setActivityLimit(const QVariant &value);
+    RequestExchangeSetting &resetActivityLimit(){ return this->setActivityLimit({});}
+    RequestExchangeSetting &activityLimit(const QVariant &value){ return this->setActivityLimit(value);}
 
     //!
     //! \brief parameter
     //! \return
     //!
-    virtual QVariantHash &parameter() const;
-    virtual void setParameter(const QVariantHash &parameter);
+    const QVariantHash &parameter() const;
+    RequestExchangeSetting &setParameter(const QVariantHash &value);
+    RequestExchangeSetting &resetParameter(){ return this->setParameter({});}
+    RequestExchangeSetting &parameter(const QVariantHash &value){ return this->setParameter(value);}
 
 signals:
     void protocolChanged();

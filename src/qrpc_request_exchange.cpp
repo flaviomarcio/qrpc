@@ -80,39 +80,46 @@ QStringList RequestExchange::printOut(const QString &output)
     return out;
 }
 
-void RequestExchange::setProtocol(const QVariant &value)
+RequestExchange &RequestExchange::setProtocol(const QVariant &value)
 {
     this->call().setProtocol(value);
+    return *this;
 }
 
-void RequestExchange::setProtocol(const Protocol &value)
+RequestExchange &RequestExchange::setProtocol(const Protocol &value)
 {
     this->call().setProtocol(value);
+    return *this;
 }
 
-void RequestExchange::setMethod(const QString &value)
-{
-    return this->call().setMethod(value);
-}
-
-void RequestExchange::setMethod(const RequestMethod &value)
+RequestExchange &RequestExchange::setMethod(const QString &value)
 {
     this->call().setMethod(value);
+    return *this;
 }
 
-void RequestExchange::setHostName(const QString &value)
+RequestExchange &RequestExchange::setMethod(const RequestMethod &value)
+{
+    this->call().setMethod(value);
+    return *this;
+}
+
+RequestExchange &RequestExchange::setHostName(const QString &value)
 {
     this->call().setHostName(value);
+    return *this;
 }
 
-void RequestExchange::setRoute(const QVariant &value)
+RequestExchange &RequestExchange::setRoute(const QVariant &value)
 {
     this->call().setRoute(value);
+    return *this;
 }
 
-void RequestExchange::setPort(const int &value)
+RequestExchange &RequestExchange::setPort(int value)
 {
     this->call().setPort(value);
+    return *this;
 }
 
 }

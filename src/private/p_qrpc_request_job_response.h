@@ -26,7 +26,7 @@ class RequestJobResponse:public QObject{
 public:
 
     RequestExchange request_exchange;
-    Request*localRequest=nullptr;
+    Request *localRequest=nullptr;
 
     QUuid request_uuid=QUuid::createUuidV3(QUuid::createUuid(), QUuid::createUuid().toString().toUtf8());
     QVariant request_url;

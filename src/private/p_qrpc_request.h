@@ -27,7 +27,7 @@ class RequestJobResponse;
 class RequestPvt:public QObject{
     Q_OBJECT
 public:
-    Request*parent=nullptr;
+    Request *parent=nullptr;
     QHash<int,int> requestRecovery;
 
     RequestExchange exchange;
@@ -43,11 +43,12 @@ public:
     QString response_reason_phrase;
     ListenRequest *request=nullptr;
 
+    QSslConfiguration sslConfiguration;
     QString fileLog;
 
-    QSslConfiguration sslConfiguration;
-
     explicit RequestPvt(Request *parent);
+    
+    QString urlMaker(const QString &path);
 
     void setSettings(const QStm::SettingBase &setting);
 

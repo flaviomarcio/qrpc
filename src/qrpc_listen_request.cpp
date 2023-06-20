@@ -1429,7 +1429,7 @@ void ListenRequest::setRequestResponse(QObject *request)
 
     HttpResponse*response=nullptr;
     if(request->metaObject()->className()==Request::staticMetaObject.className())
-        response=&dynamic_cast<Request*>(request)->response();
+        response=&dynamic_cast<Request *>(request)->response();
     else
         response=dynamic_cast<HttpResponse*>(request);
     writeResponse(response);

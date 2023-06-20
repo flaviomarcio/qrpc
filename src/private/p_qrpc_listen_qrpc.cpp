@@ -19,7 +19,7 @@ class ListenQRPCPvt : public QObject
 {
 public:
     QMutex mutexLockerRunning;
-    QMutex mutexLockerHash;
+
     QHash<QByteArray, const QMetaObject *> controller;
     QHash<QByteArray, const QMetaObject *> controllerParsers;
     ListenSlotCache listenSlotCache;
@@ -245,7 +245,7 @@ public slots:
         auto vHash = request.toHash();
         ListenSlotList *listenSlotList = nullptr;
         { //locker
-            QMutexLocker<QMutex> locker(&mutexLockerHash);
+
             auto md5 = request.hash();
             listenSlotList = this->listenSlotCache.value(md5);
             if (listenSlotList == nullptr) {
@@ -267,7 +267,7 @@ public slots:
 
         ListenQRPCSlot *thread = nullptr;
         while (!requestInvoke(thread)) {
-            QMutexLocker<QMutex> locker(&mutexLockerHash);
+
             auto thread = new ListenQRPCSlot(this->listenQRPC);
             thread->start();
             listenSlotList->append(thread);
@@ -283,20 +283,19 @@ ListenQRPC::ListenQRPC(QObject *parent) : Listen(nullptr)
 
 void ListenQRPC::run()
 {
-
     p->mutexLockerRunning.lock();
 
     p->listenerFree();
 
-    for(auto &listen:p->listens){
+    for(auto &listen:p->listens)
         QObject::connect(listen, &Listen::rpcRequest, this->p, &ListenQRPCPvt::onRpcRequest);
-    }
+
 
     Listen::run();
 
-    for(auto &listen:p->listens){
+    for(auto &listen:p->listens)
         QObject::disconnect(listen, &Listen::rpcRequest, this->p, &ListenQRPCPvt::onRpcRequest);
-    }
+
 
     p->listenerFree();
 

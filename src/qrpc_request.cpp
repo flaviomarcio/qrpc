@@ -5,9 +5,8 @@
 
 namespace QRpc {
 
-Request::Request(QObject *parent):QObject{parent}
+Request::Request(QObject *parent):QObject{parent}, p{new RequestPvt{this}}
 {
-    this->p = new RequestPvt{this};
 }
 
 bool Request::startsWith(const QString &requestPath, const QVariant &requestPathBase)
@@ -116,24 +115,9 @@ Request &Request::setSettings(const QVariantHash &setting)
     return *this;
 }
 
-QString Request::url() const
-{
-    return this->url({});
-}
-
 QString Request::url(const QString &path) const
 {
-    auto &rq=*this;
-
-    auto spath=path.trimmed().isEmpty()?this->route().trimmed():path.trimmed();
-    spath=QStringLiteral("/%1").arg(spath);
-    while(spath.contains(QStringLiteral("//")))
-        spath=spath.replace(QStringLiteral("//"),"/");
-
-    if(path.isEmpty())
-        return QStringLiteral("%1://%2:%3").arg(rq.protocolName(),rq.hostName(),rq.port().toString());
-
-    return QStringLiteral("%1://%2:%3%4").arg(rq.protocolName(),rq.hostName(),rq.port().toString(),spath);
+    return p->urlMaker(path);
 }
 
 Protocol Request::protocol() const
@@ -141,15 +125,15 @@ Protocol Request::protocol() const
     return p->exchange.call().protocol();
 }
 
-QString Request::protocolName() const
-{
-    return p->exchange.call().protocolName();
-}
-
 Request &Request::setProtocol(const QVariant &value)
 {
     p->exchange.setProtocol(value);
     return *this;
+}
+
+const QString &Request::protocolName() const
+{
+    return p->exchange.call().protocolName();
 }
 
 RequestMethod Request::method() const
@@ -175,7 +159,7 @@ Request &Request::setMethod(const int &value)
     return *this;
 }
 
-QString Request::driver() const
+const QString &Request::driver() const
 {
     return p->exchange.call().driver();
 }
@@ -186,7 +170,7 @@ Request &Request::setDriver(const QString &value)
     return *this;
 }
 
-QString Request::hostName() const
+const QString &Request::hostName() const
 {
     return p->exchange.call().hostName();
 }
@@ -197,7 +181,7 @@ Request &Request::setHostName(const QString &value)
     return *this;
 }
 
-QString Request::userName() const
+const QString &Request::userName() const
 {
     return p->exchange.call().userName();
 }
@@ -208,7 +192,7 @@ Request &Request::setUserName(const QString &value)
     return *this;
 }
 
-QString Request::password() const
+const QString &Request::password() const
 {
     return p->exchange.call().passWord();
 }
@@ -219,7 +203,7 @@ Request &Request::setPassword(const QString &value)
     return *this;
 }
 
-QString &Request::route() const
+const QString &Request::route() const
 {
     return p->exchange.call().route();
 }

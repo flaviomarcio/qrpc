@@ -23,6 +23,7 @@ class ListenQRPCSlotPvt : public QObject
 public:
     bool locked = false;
     QMutex lockedMutex;
+    ListenQRPCSlot *parent=nullptr;
     ControllerRouter *controllerRouter = nullptr;
     ListenQRPC *listenQRPC = nullptr;
     QList<const QMetaObject *> listenControllers;
@@ -31,13 +32,9 @@ public:
     MultStringList controllerRedirect;
     QVector<const QMetaObject *> invokeControllersList;
 
-    explicit ListenQRPCSlotPvt(ListenQRPCSlot *slot, ListenQRPC *listenQRPC) : QObject(slot)
+    explicit ListenQRPCSlotPvt(ListenQRPCSlot *parent, ListenQRPC *listenQRPC) : QObject{parent}, parent{parent}, listenQRPC{listenQRPC}
     {
-        QObject::connect(slot,
-                         &ListenQRPCSlot::requestInvoke,
-                         this,
-                         &ListenQRPCSlotPvt::onRequestInvoke);
-        this->listenQRPC = listenQRPC;
+        QObject::connect(parent,&ListenQRPCSlot::requestInvoke,this,&ListenQRPCSlotPvt::onRequestInvoke);
         this->listenControllers = listenQRPC->controllers().values();
         this->listenQRPCParserRequest = listenQRPC->controllerParsers().values();
         this->controllerMethods=listenQRPC->controllerMethods();
@@ -213,7 +210,10 @@ public:
                 continue;
             }
 
-            auto routeMethods = this->controllerMethods.value(className);
+            if(!this->controllerMethods.contains(className))
+                continue;
+
+            const auto &routeMethods = this->controllerMethods[className];
             if (routeMethods.contains(requestPath)){
                 __return.append(mObjController);
                 continue;
@@ -303,9 +303,9 @@ public:
 
     bool invokeControllerRoutines(Controller *controller, QMetaMethod &metaMethod)
     {
-        if (controller == nullptr) {
+        if (controller == nullptr)
             return {};
-        }
+
 
         if (!controller->canOperation(metaMethod)) {
 #if Q_RPC_LOG_VERBOSE
@@ -472,9 +472,8 @@ private slots:
     }
 };
 
-ListenQRPCSlot::ListenQRPCSlot(ListenQRPC *listenQRPC) : QThread{nullptr}
+ListenQRPCSlot::ListenQRPCSlot(ListenQRPC *listenQRPC) : QThread{nullptr}, p{new ListenQRPCSlotPvt(this, listenQRPC)}
 {
-    this->p = new ListenQRPCSlotPvt(this, listenQRPC);
     this->moveToThread(this);
 }
 

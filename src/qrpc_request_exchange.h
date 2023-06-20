@@ -17,7 +17,7 @@ public:
     //! \brief RequestExchange
     //! \param parent
     //!
-    Q_INVOKABLE explicit RequestExchange(QObject *parent=nullptr);
+    explicit RequestExchange(QObject *parent=nullptr);
     explicit RequestExchange(RequestExchange &exchange, QObject *parent);
 
     //!
@@ -31,71 +31,78 @@ public:
     //! \brief clear
     //! \return
     //!
-    virtual RequestExchange &clear();
+    RequestExchange &clear();
 
     //!
     //! \brief call
     //! \return
     //!
-    virtual RequestExchangeSetting &call() const;
+    RequestExchangeSetting &call() const;
 
     //!
     //! \brief back
     //! \return
     //!
-    virtual RequestExchangeSetting &back() const;
+    RequestExchangeSetting &back() const;
 
     //!
     //! \brief toHash
     //! \return
     //!
-    virtual QVariantHash toHash() const;
+    QVariantHash toHash() const;
 
     //!
     //! \brief print
     //! \param output
     //! \return
     //!
-    virtual RequestExchange &print(const QString &output={});
+    RequestExchange &print(const QString &output={});
 
     //!
     //! \brief printOut
     //! \param output
     //! \return
     //!
-    virtual QStringList printOut(const QString &output={});
+    QStringList printOut(const QString &output={});
 
     //!
     //! \brief setProtocol
     //! \param value
     //!
-    virtual void setProtocol(const QVariant &value);
-    virtual void setProtocol(const Protocol &value);
+    RequestExchange &setProtocol(const QVariant &value);
+    RequestExchange &setProtocol(const Protocol &value);
+    RequestExchange &protocol(const QVariant &value){return this->setProtocol(value);}
+    RequestExchange &protocol(const Protocol &value){return this->setProtocol(value);}
 
     //!
     //! \brief setMethod
     //! \param value
     //!
-    virtual void setMethod(const QString &value);
-    virtual void setMethod(const RequestMethod &value);
+    RequestExchange &setMethod(const QString &value);
+    RequestExchange &setMethod(const RequestMethod &value);
+    RequestExchange &method(const QString &value){ return this->setMethod(value);}
+    RequestExchange &method(const RequestMethod &value){ return this->setMethod(value);}
 
     //!
     //! \brief setHostName
     //! \param value
     //!
-    virtual void setHostName(const QString &value);
+    RequestExchange &setHostName(const QString &value);
+    RequestExchange &hostName(const QString &value){ return this->setHostName(value);}
 
     //!
     //! \brief setRoute
     //! \param value
     //!
-    virtual void setRoute(const QVariant &value);
+    RequestExchange &setRoute(const QVariant &value);
+    RequestExchange &route(const QVariant &value){ return this->setRoute(value);}
 
     //!
     //! \brief setPort
     //! \param value
     //!
-    virtual void setPort(const int &value);
+    RequestExchange &setPort(int value);
+    RequestExchange &port(int value){ return this->setPort(value);}
 
 private:
     RequestExchangePvt *p = nullptr;
