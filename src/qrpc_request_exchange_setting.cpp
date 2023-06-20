@@ -10,7 +10,6 @@ const static auto staticDefaultLimit=60000;
 
 class RequestExchangeSettingPvt:public QObject{
 public:
-    QVariantHash toHash;
     QString url;
     RequestMethod method=RequestMethod::Post;
     QString methodName;
@@ -87,7 +86,7 @@ RequestExchangeSetting &RequestExchangeSetting::operator=(const QVariantHash &e)
     return *this;
 }
 
-const QVariantHash &RequestExchangeSetting::toHash() const
+const QVariantHash RequestExchangeSetting::toHash() const
 {
     static const auto __objectName=QByteArrayLiteral("objectName");
     QVariantHash vHash;
@@ -101,7 +100,7 @@ const QVariantHash &RequestExchangeSetting::toHash() const
         if(v.isValid())
             vHash.insert(property.name(), v);
     }
-    return p->toHash=vHash;
+    return vHash;
 }
 
 const QString &RequestExchangeSetting::url() const
@@ -226,7 +225,7 @@ RequestExchangeSetting &RequestExchangeSetting::setProtocol(const QVariant &valu
     return *this;
 }
 
-const QString &RequestExchangeSetting::driver() const
+const QString RequestExchangeSetting::driver() const
 {
     return p->driver;
 }
@@ -237,7 +236,7 @@ RequestExchangeSetting &RequestExchangeSetting::setDriver(const QString &value)
     return *this;
 }
 
-const QString &RequestExchangeSetting::hostName() const
+const QString RequestExchangeSetting::hostName() const
 {
     return p->hostName;
 }
@@ -248,7 +247,7 @@ RequestExchangeSetting &RequestExchangeSetting::setHostName(const QString &value
     return *this;
 }
 
-const QString &RequestExchangeSetting::vHost() const
+const QString RequestExchangeSetting::vHost() const
 {
     return p->vHost;
 }
@@ -259,7 +258,7 @@ RequestExchangeSetting &RequestExchangeSetting::setVHost(const QString &value)
     return *this;
 }
 
-const QString &RequestExchangeSetting::userName() const
+const QString RequestExchangeSetting::userName() const
 {
     return p->userName;
 }
@@ -270,7 +269,7 @@ RequestExchangeSetting &RequestExchangeSetting::setUserName(const QString &value
     return *this;
 }
 
-const QString &RequestExchangeSetting::passWord() const
+const QString RequestExchangeSetting::passWord() const
 {
     return p->passWord;
 }
@@ -281,7 +280,7 @@ RequestExchangeSetting &RequestExchangeSetting::setPassWord(const QString &value
     return *this;
 }
 
-const QString &RequestExchangeSetting::route() const
+const QString RequestExchangeSetting::route() const
 {
     return p->route;
 }
@@ -302,7 +301,7 @@ RequestExchangeSetting &RequestExchangeSetting::setRoute(const QVariant &value)
     return *this;
 }
 
-const QString &RequestExchangeSetting::topic() const
+const QString RequestExchangeSetting::topic() const
 {
     return p->topic;
 }
@@ -313,7 +312,7 @@ RequestExchangeSetting &RequestExchangeSetting::setTopic(const QString &value)
     return *this;
 }
 
-const QVariant &RequestExchangeSetting::port() const
+const QVariant RequestExchangeSetting::port() const
 {
     return p->port;
 }
@@ -337,7 +336,7 @@ RequestExchangeSetting &RequestExchangeSetting::setActivityLimit(const QVariant 
     return *this;
 }
 
-const QVariantHash &RequestExchangeSetting::parameter() const
+const QVariantHash RequestExchangeSetting::parameter() const
 {
     return p->parameter;
 }

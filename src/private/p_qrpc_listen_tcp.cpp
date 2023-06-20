@@ -9,9 +9,6 @@
 #include "../qrpc_macro.h"
 #endif
 #include <QFile>
-#include <QSslCertificate>
-#include <QSslConfiguration>
-#include <QSslKey>
 #include <QTcpServer>
 
 namespace QRpc {

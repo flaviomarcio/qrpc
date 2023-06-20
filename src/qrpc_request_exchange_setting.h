@@ -56,7 +56,7 @@ public:
     //! \brief toHash
     //! \return
     //!
-    const QVariantHash &toHash() const;
+    const QVariantHash toHash() const;
 
     //!
     //! \brief url
@@ -113,8 +113,7 @@ public:
     //! \brief driver
     //! \return
     //!
-    const
-        QString &driver() const;
+    const QString driver() const;
     RequestExchangeSetting &setDriver(const QString &value);
     RequestExchangeSetting &resetDriver(){ return this->setDriver({});}
     RequestExchangeSetting &driver(const QString &value){ return this->setDriver(value);}
@@ -123,7 +122,7 @@ public:
     //! \brief hostName
     //! \return
     //!
-    const QString &hostName() const;
+    const QString hostName() const;
     RequestExchangeSetting &setHostName(const QString &value);
     RequestExchangeSetting &resetHostName(){ return this->setHostName({});}
     RequestExchangeSetting &hostName(const QString &value){ return this->setHostName(value);}
@@ -132,7 +131,7 @@ public:
     //! \brief vHost
     //! \return
     //!
-    const QString &vHost() const;
+    const QString vHost() const;
     RequestExchangeSetting &setVHost(const QString &value);
     RequestExchangeSetting &resetVHost(){ return this->setVHost({});}
     RequestExchangeSetting &vHost(const QString &value){ return this->setVHost(value);}
@@ -141,7 +140,7 @@ public:
     //! \brief userName
     //! \return
     //!
-    const QString &userName() const;
+    const QString userName() const;
     RequestExchangeSetting &setUserName(const QString &value);
     RequestExchangeSetting &resetUserName(){ return this->setUserName({});}
     RequestExchangeSetting &userName(const QString &value){ return this->setUserName(value);}
@@ -150,7 +149,7 @@ public:
     //! \brief passWord
     //! \return
     //!
-    const QString &passWord() const;
+    const QString passWord() const;
     RequestExchangeSetting &setPassWord(const QString &value);
     RequestExchangeSetting &resetPassWord(){ return this->setPassWord({});}
     RequestExchangeSetting &passWord(const QString &value){ return this->setPassWord(value);}
@@ -159,7 +158,7 @@ public:
     //! \brief route
     //! \return
     //!
-    const QString &route() const;
+    const QString route() const;
     RequestExchangeSetting &setRoute(const QVariant &value);
     RequestExchangeSetting &resetRoute(){ return this->setRoute({});}
     RequestExchangeSetting &route(const QString &value){ return this->setRoute(value);}
@@ -168,7 +167,7 @@ public:
     //! \brief topic
     //! \return
     //!
-    const QString &topic() const;
+    const QString topic() const;
     RequestExchangeSetting &setTopic(const QString &value);
     RequestExchangeSetting &resetTopic(){ return this->setTopic({});}
     RequestExchangeSetting &topic(const QString &value){ return this->setTopic(value);}
@@ -177,7 +176,7 @@ public:
     //! \brief port
     //! \return
     //!
-    const QVariant &port() const;
+    const QVariant port() const;
     RequestExchangeSetting &setPort(const QVariant &value);
     RequestExchangeSetting &resetPort(){ return this->setPort({});}
     RequestExchangeSetting &port(const QVariant &value){ return this->setPort(value);}
@@ -195,7 +194,7 @@ public:
     //! \brief parameter
     //! \return
     //!
-    const QVariantHash &parameter() const;
+    const QVariantHash parameter() const;
     RequestExchangeSetting &setParameter(const QVariantHash &value);
     RequestExchangeSetting &resetParameter(){ return this->setParameter({});}
     RequestExchangeSetting &parameter(const QVariantHash &value){ return this->setParameter(value);}

@@ -2,13 +2,9 @@
 
 namespace QRpc {
 
-RequestJobProtocol::RequestJobProtocol(QObject *parent):QObject{parent}, sslConfiguration(QSslConfiguration::defaultConfiguration())
+RequestJobProtocol::RequestJobProtocol(QObject *parent):QObject{parent}/*, sslConfiguration(QSslConfiguration::defaultConfiguration())*/
 {
-    QObject::connect(this, &RequestJobProtocol::____verify, this, &RequestJobProtocol::____onVerify);
-}
 
-RequestJobProtocol::~RequestJobProtocol()
-{
 }
 
 RequestJobProtocol &RequestJobProtocol::clear()
@@ -20,13 +16,8 @@ bool RequestJobProtocol::call(RequestJobResponse *response)
 {
     response->response_status_code=QNetworkReply::UnknownServerError;
     response->response_body.clear();
-    emit this->callback(QVariant());
+    emit this->callback({});
     return false;
-}
-
-void RequestJobProtocol::____onVerify(const QVariant &v)
-{
-    Q_UNUSED(v)
 }
 
 }

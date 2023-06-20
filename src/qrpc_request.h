@@ -8,7 +8,6 @@
 #include "./private/p_qrpc_http_headers.h"
 #include "./private/p_qrpc_http_response.h"
 #include <QFile>
-#include <QSslConfiguration>
 
 namespace QRpc {
 
@@ -182,7 +181,7 @@ public:
     //! \brief driver
     //! \return
     //!
-    const QString &driver() const;
+    const QString driver() const;
     Request &setDriver(const QString &value);
     Request &driver(const QString &value){ return this->setDriver(value);}
 
@@ -190,7 +189,7 @@ public:
     //! \brief hostName
     //! \return
     //!
-    const QString &hostName() const;
+    const QString hostName() const;
     Request &setHostName(const QString &value);
     Request &hostName(const QString &value){ return this->setHostName(value);}
 
@@ -198,7 +197,7 @@ public:
     //! \brief userName
     //! \return
     //!
-    const QString &userName() const;
+    const QString userName() const;
     Request &setUserName(const QString &value);
     Request &userName(const QString &value){ return this->setUserName(value);}
 
@@ -206,7 +205,7 @@ public:
     //! \brief password
     //! \return
     //!
-    const QString &password() const;
+    const QString password() const;
     Request &setPassword(const QString &value);
     Request &password(const QString &value){ return this->setPassword(value);}
 
@@ -214,7 +213,7 @@ public:
     //! \brief route
     //! \return
     //!
-    const QString &route() const;
+    const QString route() const;
     Request &setRoute(const QVariant &value);
     Request &route(const QVariant &value){ return this->setRoute(value);}
 
@@ -458,12 +457,12 @@ public:
     //!
     QVariantHash toResponse() const;
 
-    //!
-    //! \brief sslConfiguration
-    //! \return
-    //!
-    QSslConfiguration &sslConfiguration();
-    Request &setSslConfiguration(const QSslConfiguration &value);
+//    //!
+//    //! \brief sslConfiguration
+//    //! \return
+//    //!
+//    QSslConfiguration &sslConfiguration();
+//    Request &setSslConfiguration(const QSslConfiguration &value);
 
     //!
     //! \brief print

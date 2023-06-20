@@ -1,9 +1,6 @@
 #pragma once
 
-#include <QSslCertificate>
-#include <QSslConfiguration>
 #include "./p_qrpc_request_job_response.h"
-
 
 namespace QRpc {
 class RequestJobPvt;
@@ -32,7 +29,7 @@ public:
 
 public slots:
 
-    void onRunJob(const QSslConfiguration *sslConfiguration, const QVariantHash &headers, const QVariant &vUrl, const QString &fileName, QRpc::Request *request);
+    void onRunJob(/*const QSslConfiguration *sslConfiguration, */const QVariantHash &headers, const QVariant &vUrl, const QString &fileName, QRpc::Request *request);
 
     void onRunCallback(const QVariant &v);
 

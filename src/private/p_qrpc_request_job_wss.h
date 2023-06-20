@@ -5,9 +5,6 @@
 #include "../qrpc_listen_request.h"
 #include <QtWebSockets/QWebSocket>
 #include <QFile>
-#include <QSslConfiguration>
-#include <QSslKey>
-#include <QSslKey>
 
 namespace QRpc {
 

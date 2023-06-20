@@ -47,7 +47,7 @@ public:
 #endif
     Request::Action action=Request::acRequest;
     QString action_fileName;
-    QSslConfiguration sslConfiguration;
+//    QSslConfiguration sslConfiguration;
     QHash<int,RequestJobProtocol*> requestJobProtocolHash;
     RequestJobResponse response;
 
@@ -121,7 +121,7 @@ public:
         this->response.clear();
         this->action=Request::acRequest;
         this->action_fileName.clear();
-        this->sslConfiguration=QSslConfiguration();
+        //this->sslConfiguration=QSslConfiguration();
     }
 };
 
@@ -192,9 +192,9 @@ void RequestJob::setResponse(const RequestJobResponse &value)
     p->response = value;
 }
 
-void RequestJob::onRunJob(const QSslConfiguration *sslConfiguration, const QVariantHash &headers, const QVariant &vUrl, const QString &fileName, Request *request)
+void RequestJob::onRunJob(/*const QSslConfiguration *sslConfiguration, */const QVariantHash &headers, const QVariant &vUrl, const QString &fileName, Request *request)
 {
-    p->sslConfiguration=QSslConfiguration(*sslConfiguration);
+//    p->sslConfiguration=QSslConfiguration(*sslConfiguration);
     auto url=vUrl.toUrl();
     p->action_fileName=fileName;
     RequestJobResponse response(headers, url, *request, this);
@@ -222,7 +222,7 @@ void RequestJob::onRun()
         return;
     }
 
-    protocol->sslConfiguration=p->sslConfiguration;
+    //protocol->sslConfiguration=p->sslConfiguration;
     protocol->action=p->action;
     protocol->action_fileName=p->action_fileName;
     protocol->call(&this->response());

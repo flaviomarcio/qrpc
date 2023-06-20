@@ -159,7 +159,7 @@ Request &Request::setMethod(const int &value)
     return *this;
 }
 
-const QString &Request::driver() const
+const QString Request::driver() const
 {
     return p->exchange.call().driver();
 }
@@ -170,7 +170,7 @@ Request &Request::setDriver(const QString &value)
     return *this;
 }
 
-const QString &Request::hostName() const
+const QString Request::hostName() const
 {
     return p->exchange.call().hostName();
 }
@@ -181,7 +181,7 @@ Request &Request::setHostName(const QString &value)
     return *this;
 }
 
-const QString &Request::userName() const
+const QString Request::userName() const
 {
     return p->exchange.call().userName();
 }
@@ -192,7 +192,7 @@ Request &Request::setUserName(const QString &value)
     return *this;
 }
 
-const QString &Request::password() const
+const QString Request::password() const
 {
     return p->exchange.call().passWord();
 }
@@ -203,7 +203,7 @@ Request &Request::setPassword(const QString &value)
     return *this;
 }
 
-const QString &Request::route() const
+const QString Request::route() const
 {
     return p->exchange.call().route();
 }
@@ -228,8 +228,7 @@ QVariant Request::port() const
 Request &Request::setPort(const QVariant &value)
 {
     QVariant v;
-    auto type=value.typeId();
-    switch (type) {
+    switch (value.typeId()) {
     case QMetaType::QVariantList:
     case QMetaType::QStringList:
     {
@@ -528,16 +527,16 @@ QVariantHash Request::toResponse()const
     return p->qrpcResponse.toResponse();
 }
 
-QSslConfiguration &Request::sslConfiguration()
-{
-    return p->sslConfiguration;
-}
+//QSslConfiguration &Request::sslConfiguration()
+//{
+//    return p->sslConfiguration;
+//}
 
-Request &Request::setSslConfiguration(const QSslConfiguration &value)
-{
-    p->sslConfiguration = value;
-    return *this;
-}
+//Request &Request::setSslConfiguration(const QSslConfiguration &value)
+//{
+//    p->sslConfiguration = value;
+//    return *this;
+//}
 
 Request &Request::print()
 {

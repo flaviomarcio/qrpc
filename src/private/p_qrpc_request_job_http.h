@@ -5,8 +5,6 @@
 #include <QTemporaryFile>
 #include <QCoreApplication>
 #include <QMutex>
-#include <QSslConfiguration>
-#include <QStandardPaths>
 
 namespace QRpc {
 

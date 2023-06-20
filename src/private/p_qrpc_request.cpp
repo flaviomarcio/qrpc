@@ -22,7 +22,7 @@ RequestPvt::RequestPvt(Request *parent):
     qrpcBody{parent},
     qrpcResponse{parent},
     qrpcLastError{parent},
-    sslConfiguration(QSslConfiguration::defaultConfiguration()),
+//    sslConfiguration(QSslConfiguration::defaultConfiguration()),
     fileLog{logFile(__json, __request)}
 {
     this->qrpcBody.p=this;
@@ -145,7 +145,7 @@ HttpResponse &RequestPvt::upload(const QString &route, const QString &fileName)
     auto job = RequestJob::newJob(Request::acUpload);
     QObject::connect(this, &RequestPvt::runJob, job, &RequestJob::onRunJob);
     job->start();
-    emit runJob(&this->sslConfiguration, this->qrpcHeader.rawHeader(), this->request_url, fileName, this->parent);
+    emit runJob(/*&this->sslConfiguration, */this->qrpcHeader.rawHeader(), this->request_url, fileName, this->parent);
     job->wait();
     QObject::disconnect(this, &RequestPvt::runJob, job, &RequestJob::onRunJob);
     this->qrpcResponse.setResponse(&job->response());
@@ -233,7 +233,7 @@ HttpResponse &RequestPvt::download(const QString &route, const QString &fileName
     auto job = RequestJob::newJob(Request::acDownload, fileName);
     QObject::connect(this, &RequestPvt::runJob, job, &RequestJob::onRunJob);
     job->start();
-    emit runJob(&this->sslConfiguration, this->qrpcHeader.rawHeader(), this->request_url, fileName, this->parent);
+    emit runJob(/*&this->sslConfiguration, */this->qrpcHeader.rawHeader(), this->request_url, fileName, this->parent);
     job->wait();
     QObject::disconnect(this, &RequestPvt::runJob, job, &RequestJob::onRunJob);
     this->qrpcResponse.setResponse(&job->response());
@@ -328,9 +328,10 @@ HttpResponse &RequestPvt::call(const RequestMethod &method, const QVariant &vRou
     {
         switch (vBody.typeId()) {
         case QMetaType::QVariantHash:
+        case QMetaType::QVariantMap:
+        case QMetaType::QVariantPair:
         case QMetaType::QVariantList:
         case QMetaType::QStringList:
-        case QMetaType::QVariantMap:
             this->request_body = QJsonDocument::fromVariant(vBody).toJson(QJsonDocument::Compact);
             break;
         default:
@@ -377,7 +378,7 @@ HttpResponse &RequestPvt::call(const RequestMethod &method, const QVariant &vRou
     forever{
         job=RequestJob::runJob(job);
         ++executeCount;
-        emit runJob(&this->sslConfiguration, this->qrpcHeader.rawHeader(), this->request_url, {}, this->parent);
+        emit runJob(/*&this->sslConfiguration, */this->qrpcHeader.rawHeader(), this->request_url, {}, this->parent);
         job->wait();
 
         if(job->response().response_qt_status_code==QNetworkReply::NoError)//if succes then break

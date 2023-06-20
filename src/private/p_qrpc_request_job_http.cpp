@@ -3,6 +3,7 @@
 #if Q_RPC_LOG
 #include "../qrpc_macro.h"
 #endif
+#include <QStandardPaths>
 
 namespace QRpc {
 
@@ -56,7 +57,7 @@ bool RequestJobHttp::call(RequestJobResponse *response)
 
     const auto &requestBody = response->request_body;
     this->request=QNetworkRequest(QUrl(request_url));
-    this->request.setSslConfiguration(sslConfiguration);
+    //this->request.setSslConfiguration(sslConfiguration);
     QHash<QByteArray,QByteArray> request_header_ignored;
     QHash<QByteArray,QByteArray> request_header;
 
@@ -68,45 +69,43 @@ bool RequestJobHttp::call(RequestJobResponse *response)
                 i.next();
                 if(removeHeaders.contains(i.key().toLower()))
                     continue;
-                else{
-                    auto v=i.value();
-                    QStringList headerValues;
-                    switch (v.typeId()) {
-                    case QMetaType::QVariantList:
-                    case QMetaType::QStringList:
-                    {
-                        auto vList=v.toList();
-                        for(auto &r:vList){
-                            headerValues<<r.toString().replace(QStringLiteral("\n"), QStringLiteral(";"));
-                        }
-                        break;
-                    }
-                    case QMetaType::QVariantHash:
-                    case QMetaType::QVariantMap:
-                    {
-                        auto vMap=v.toHash();
-                        QHashIterator<QString, QVariant> i(vMap);
-                        while (i.hasNext()) {
-                            i.next();
-                            auto r=QStringLiteral("%1=%2").arg(i.value().toString(), v.toString()).replace(QStringLiteral("\n"), QStringLiteral(";"));
-                            headerValues<<r;
-                        }
-                        break;
-                    }
-                    default:
-                        headerValues<<v.toString();
-                    }
 
-                    v=headerValues.join(QStringLiteral("; "));
-                    auto k=i.key().toUtf8().trimmed();
-                    if(!ignoreHeaders.contains(k.toLower()))
-                        request_header.insert(k, v.toByteArray());
-                    else
-                        request_header_ignored.insert(k, v.toByteArray());
-#if Q_RPC_LOG_SUPER_VERBOSE
-                    rInfo()<<":request.setRawHeader("<<i.key()<<", "<<i.value()<<")";
-#endif
+                auto v=i.value();
+                QStringList headerValues;
+                switch (v.typeId()) {
+                case QMetaType::QVariantList:
+                case QMetaType::QStringList:
+                {
+                    auto vList=v.toList();
+                    for(auto &r:vList)
+                        headerValues.append(r.toString().replace(QStringLiteral("\n"), QStringLiteral(";")));
+                    break;
                 }
+                case QMetaType::QVariantHash:
+                case QMetaType::QVariantMap:
+                {
+                    auto vMap=v.toHash();
+                    QHashIterator<QString, QVariant> i(vMap);
+                    while (i.hasNext()) {
+                        i.next();
+                        auto r=QStringLiteral("%1=%2").arg(i.value().toString(), v.toString()).replace(QStringLiteral("\n"), QStringLiteral(";"));
+                        headerValues.append(r);
+                    }
+                    break;
+                }
+                default:
+                    headerValues.append(v.toString());
+                }
+
+                v=headerValues.join(QStringLiteral("; "));
+                auto k=i.key().toUtf8().trimmed();
+                if(!ignoreHeaders.contains(k.toLower()))
+                    request_header.insert(k, v.toByteArray());
+                else
+                    request_header_ignored.insert(k, v.toByteArray());
+#if Q_RPC_LOG_SUPER_VERBOSE
+                rInfo()<<":request.setRawHeader("<<i.key()<<", "<<i.value()<<")";
+#endif
             }
         }
 
