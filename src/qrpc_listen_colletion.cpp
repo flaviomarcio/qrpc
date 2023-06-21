@@ -228,9 +228,7 @@ bool ListenColletions::start()
         this->msleep(1);
     while(!p->lockWaitRun)
         this->msleep(1);
-    if(this->isRunning())
-        return true;
-    return false;
+    return this->isRunning();
 }
 
 bool ListenColletions::stop()

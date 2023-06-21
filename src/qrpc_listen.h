@@ -47,18 +47,7 @@ public:
     //! \brief uuid
     //! \return
     //!
-    virtual QUuid &uuid() const;
-
-    //!
-    //! \brief parent
-    //! \return
-    //!
-    QObject *parent();
-    //!
-    //! \brief setParent
-    //! \param parent
-    //!
-    void setParent(QObject *parent);
+    virtual QUuid uuid() const;
 
     //!
     //! \brief run
@@ -106,6 +95,7 @@ public:
     //! \return
     //!
     virtual Listen &listenPool();
+
 signals:
 
     //!

@@ -1,7 +1,6 @@
 #include "./qrpc_listen.h"
 #include "./qrpc_listen_colletion.h"
 #include "./qrpc_listen_request_cache.h"
-#include "./qrpc_startup.h"
 #include "./qrpc_const.h"
 #if Q_RPC_LOG
 #include "./qrpc_macro.h"
@@ -61,20 +60,9 @@ ListenMetaObjectList &Listen::listenList()
     return *staticListenInstalledList;
 }
 
-QUuid &Listen::uuid() const
+QUuid Listen::uuid() const
 {
-
     return p->uuid;
-}
-
-QObject *Listen::parent()
-{
-    return QThread::parent();
-}
-
-void Listen::setParent(QObject *parent)
-{
-    QThread::setParent(parent);
 }
 
 void Listen::run()
@@ -85,7 +73,7 @@ void Listen::run()
 bool Listen::start()
 {
     QThread::start();
-    while (this->eventDispatcher() == nullptr)
+    while (!this->eventDispatcher())
         QThread::msleep(1);
     return true;
 }
@@ -95,7 +83,7 @@ bool Listen::stop()
     if (!this->isRunning())
         return true;
     QThread::quit();
-    while (this->eventDispatcher() == nullptr)
+    while (!this->eventDispatcher())
         QThread::msleep(1);
     if (this->wait(1000))
         return true;
