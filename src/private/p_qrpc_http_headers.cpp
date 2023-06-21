@@ -466,7 +466,7 @@ QVariant HttpHeaders::wwwAuthenticate(const QString &type)
 HttpHeaders &HttpHeaders::print(const QString &output)
 {
     for(auto &v:this->printOut(output))
-        rInfo()<<v;
+        rWarning()<<v;
     return *this;
 }
 

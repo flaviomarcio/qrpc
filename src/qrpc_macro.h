@@ -201,19 +201,15 @@ public: \
         return {}; \
     }
 
-#define ___r_party_1 QString::number(qlonglong(QThread::currentThreadId()))+QStringLiteral(":")
+#define ___r_party_1 QString::number(qlonglong(QThread::currentThreadId()))+QStringLiteral(" ")
 
-#define ___r_party_2 QString(__PRETTY_FUNCTION__).replace(QStringLiteral("virtual"),QLatin1String("")).split(QStringLiteral("(")).first().trimmed()+QStringLiteral(":")
+#define ___r_party_2 QString(__PRETTY_FUNCTION__).replace(QStringLiteral("virtual"),QLatin1String("")).split(QStringLiteral("(")).first().trimmed()+QStringLiteral(" ")
 
-#define rDebug()qDebug()<<___r_party_1<<___r_party_2
+#define rDebug()qDebug()<<___r_party_1 + ___r_party_2
 
-#define rCritical()qCritical()<<___r_party_1<<___r_party_2
+#define rCritical()qCritical()<<___r_party_1 + ___r_party_2
 
-#define rInfo()qInfo()<<___r_party_1<<___r_party_2
+#define rInfo()qInfo()<<___r_party_1 + ___r_party_2
 
-#define rWarning()qWarning()<<___r_party_1<<___r_party_2
-
-#define rDebugMethodStart() qDebug()<<___r_party_1<<___r_party_2<<QStringLiteral(":start")
-
-#define rDebugMethodFinish()qDebug()<<___r_party_1<<___r_party_2<<QStringLiteral(":finish")
+#define rWarning()qWarning()<<___r_party_1 + ___r_party_2
 
