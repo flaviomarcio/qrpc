@@ -25,13 +25,10 @@ public:
     ListenSlotCache listenSlotCache;
     ListenQRPC *listenQRPC = nullptr;
     QMap<QUuid, Listen *> listens;
-
     MultStringList controllerRedirect;
     ControllerMethodCollection controllerMethods;
-
-    explicit ListenQRPCPvt(ListenQRPC *parent) : QObject{parent}
+    explicit ListenQRPCPvt(ListenQRPC *parent) : QObject{parent}, listenQRPC{parent}
     {
-        this->listenQRPC = dynamic_cast<ListenQRPC *>(this->parent());
     }
 
     virtual ~ListenQRPCPvt()
@@ -250,7 +247,7 @@ public slots:
             listenSlotList = this->listenSlotCache.value(md5);
             if (listenSlotList == nullptr) {
                 listenSlotList = new ListenSlotList{};
-                this->listenSlotCache[md5] = listenSlotList;
+                this->listenSlotCache.insert(md5, listenSlotList);
             }
         }
 
@@ -267,17 +264,19 @@ public slots:
 
         ListenQRPCSlot *thread = nullptr;
         while (!requestInvoke(thread)) {
+            static int slotNum=0;
+            static const auto __format=QStringLiteral("QRPCSlot_%1");
             auto thread = new ListenQRPCSlot(this->listenQRPC);
+            thread->setObjectName(__format.arg(QString::number(slotNum++).rightJustified(3,'0')));
             thread->start();
             listenSlotList->append(thread);
         }
     }
 };
 
-ListenQRPC::ListenQRPC(QObject *parent) : Listen(nullptr)
+ListenQRPC::ListenQRPC(QObject *parent) : Listen(nullptr), p{new ListenQRPCPvt{this}}
 {
     Q_UNUSED(parent)
-    this->p = new ListenQRPCPvt{this};
 }
 
 void ListenQRPC::run()
