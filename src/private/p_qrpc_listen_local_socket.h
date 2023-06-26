@@ -33,6 +33,6 @@ private:
     ListenLocalSocketPvt *p = nullptr;
 };
 
-//QRPC_LISTTEN_AUTO_REGISTER(LocalSocket, ListenLocalSocket)
+//QRPC_LISTTEN_AUTO_REGISTER(QRpc::Types::LocalSocket, ListenLocalSocket)
 
 } // namespace QRpc

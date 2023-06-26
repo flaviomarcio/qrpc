@@ -33,6 +33,6 @@ private:
     ListenWebSocketPvt *p = nullptr;
 };
 
-//QRPC_LISTTEN_AUTO_REGISTER(WebSocket, ListenWebSocket)
+//QRPC_LISTTEN_AUTO_REGISTER(QRpc::Types::WebSocket, ListenWebSocket)
 
 } // namespace QRpc

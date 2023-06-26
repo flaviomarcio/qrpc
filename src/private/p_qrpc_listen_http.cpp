@@ -129,7 +129,7 @@ public:
             requestBody=cu.CryptoUtil::decrypt(requestBody);
         }
 
-        request.setRequestProtocol(QRpc::Http);
+        request.setRequestProtocol(QRpc::Types::Http);
         request.setRequestPort(requestPort);
         request.setRequestPath(requestPath.toUtf8());
         request.setRequestHeader(requestHeaders);
@@ -309,16 +309,18 @@ public:
                 return {};
 
             auto colletions = this->parent->colletions();
-            auto &option = colletions->protocol(Protocol::Http);
-            for (auto &v : option.port()) {
-                auto port = v.toInt();
-                if (port <= 0)
-                    continue;
-                auto settings = option.makeSettings();
-                settings->setValue(__port, port);
-                auto listen = new HttpServer3rdparty{settings, this->parent};
+            auto option = colletions->protocol(QRpc::Types::Protocol::Http);
+            if(option){
+                for (auto &v : option->port()) {
+                    auto port = v.toInt();
+                    if (port <= 0)
+                        continue;
+                    auto settings = option->makeSettings();
+                    settings->setValue(__port, port);
+                    auto listen = new HttpServer3rdparty{settings, this->parent};
 
-                listens.append(listen);
+                    listens.append(listen);
+                }
             }
         }
 

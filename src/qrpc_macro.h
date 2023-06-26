@@ -170,8 +170,8 @@
     static auto ClassName##ApiParserInstalled = QRpc::Controller::installParser( \
         ParserObject::staticMetaObject);
 
-#define QRPC_LISTTEN_AUTO_REGISTER(Type, Listen) \
-    static const auto &Listen##Type##_MetaObject = QRpc::Listen::install(Type, Listen::staticMetaObject);
+#define QRPC_LISTTEN_AUTO_REGISTER(TYPE, LISTEN) \
+    static const auto &Listen##Type##_MetaObject = QRpc::Listen::install(TYPE, LISTEN::staticMetaObject);
 
 #define Q_RPC_DECLARE_INTERFACE_METHOD_CHECK() \
 public: \

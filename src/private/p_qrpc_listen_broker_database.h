@@ -44,6 +44,6 @@ signals:
                            const QVariantHash &responseBody);
 };
 
-//QRPC_LISTTEN_AUTO_REGISTER(Database, ListenBrokerDataBase)
+//QRPC_LISTTEN_AUTO_REGISTER(QRpc::Types::Database, ListenBrokerDataBase)
 
 } // namespace QRpc

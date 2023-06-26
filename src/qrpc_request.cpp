@@ -101,8 +101,8 @@ Request &Request::setSettings(const QVariantHash &setting)
     auto method=request.exchange().call().method();
 
     switch(method){
-    case QRpc::Post:
-    case QRpc::Put:
+    case QRpc::Types::Post:
+    case QRpc::Types::Put:
         request.setBody(settings.body());
         break;
     default:
@@ -120,7 +120,7 @@ QString Request::url(const QString &path) const
     return p->urlMaker(path);
 }
 
-Protocol Request::protocol() const
+Types::Protocol Request::protocol() const
 {
     return p->exchange.call().protocol();
 }
@@ -131,31 +131,14 @@ Request &Request::setProtocol(const QVariant &value)
     return *this;
 }
 
-const QString &Request::protocolName() const
+Types::Method Request::method() const
 {
-    return p->exchange.call().protocolName();
+    return p->exchange.call().method();
 }
 
-RequestMethod Request::method() const
-{
-    return RequestMethod(p->exchange.call().method());
-}
-
-Request &Request::setMethod(const QString &value)
+Request &Request::setMethod(const QVariant &value)
 {
     p->exchange.setMethod(value);
-    return *this;
-}
-
-Request &Request::setMethod(const QByteArray &value)
-{
-    p->exchange.setMethod(value);
-    return *this;
-}
-
-Request &Request::setMethod(const int &value)
-{
-    p->exchange.setMethod(RequestMethod(value));
     return *this;
 }
 
@@ -315,7 +298,7 @@ HttpResponse &Request::call()
     return p->call(e.method(), e.route(), {});
 }
 
-HttpResponse &Request::call(const QVariant &route)
+HttpResponse &Request::call(const QString &route)
 {
     auto &e=p->exchange.call();
     e.setRoute(route);
@@ -338,7 +321,7 @@ HttpResponse &Request::call(const QVariant &route, const QVariant &body, const Q
     return p->call(e.method(), e.route(), body);
 }
 
-HttpResponse &Request::call(const RequestMethod &method, const QString &route, const QVariant &body)
+HttpResponse &Request::call(QRpc::Types::Method method, const QString &route, const QVariant &body)
 {
     auto &e=p->exchange.call();
     e.setRoute(route);
@@ -346,7 +329,7 @@ HttpResponse &Request::call(const RequestMethod &method, const QString &route, c
     return p->call(e.method(), e.route(), body);
 }
 
-HttpResponse &Request::call(const RequestMethod &method)
+HttpResponse &Request::call(QRpc::Types::Method method)
 {
     auto &e=p->exchange.call();
     e.setMethod(method);
@@ -363,12 +346,12 @@ HttpResponse &Request::call(const QVariant &route, const QObject &objectBody)
     }
 
     auto &e=p->exchange.call();
-    e.setMethod(QRpc::Post);
+    e.setMethod(QRpc::Types::Post);
     e.setRoute(route);
     return p->call(e.method(), route, QJsonDocument::fromVariant(mapObject).toJson());
 }
 
-HttpResponse &Request::call(const RequestMethod &method, const QString &route, const QObject &objectBody)
+HttpResponse &Request::call(QRpc::Types::Method method, const QString &route, const QObject &objectBody)
 {
     QVariantHash mapObject;
     for(int i = 0; i < objectBody.metaObject()->propertyCount(); ++i) {
@@ -386,12 +369,12 @@ HttpResponse &Request::call(const QVariant &route, QIODevice &ioDeviceBody)
 {
     auto body=ioDeviceBody.readAll();
     auto &e=p->exchange.call();
-    e.setMethod(QRpc::Post);
+    e.setMethod(QRpc::Types::Post);
     e.setRoute(route);
     return p->call(e.method(), e.route(), body);
 }
 
-HttpResponse &Request::call(const RequestMethod &method, const QString &route)
+HttpResponse &Request::call(QRpc::Types::Method method, const QString &route)
 {
     auto &e=p->exchange.call();
     e.setRoute(route);
@@ -399,7 +382,7 @@ HttpResponse &Request::call(const RequestMethod &method, const QString &route)
     return p->call(e.method(), e.route(), this->body().body());
 }
 
-HttpResponse &Request::call(const RequestMethod &method, const QString &route, QIODevice &ioDeviceBody)
+HttpResponse &Request::call(QRpc::Types::Method method, const QString &route, QIODevice &ioDeviceBody)
 {
     auto body=ioDeviceBody.readAll();
     auto &e=p->exchange.call();
@@ -417,7 +400,7 @@ Request &Request::operator=(const QStm::SettingBase &value)
 HttpResponse &Request::upload(QFile &file)
 {
     auto &e=p->exchange.call();
-    e.setMethod(QRpc::Post);
+    e.setMethod(QRpc::Types::Post);
     p->upload(e.route(), file.fileName());
     file.close();
     return this->response();
@@ -427,7 +410,7 @@ HttpResponse &Request::upload(const QVariant &route, const QByteArray &buffer)
 {
     auto &e=p->exchange.call();
     e.setRoute(route);
-    e.setMethod(QRpc::Post);
+    e.setMethod(QRpc::Types::Post);
     QTemporaryFile file;
 
     if(!file.open())
@@ -443,7 +426,7 @@ HttpResponse &Request::upload(const QVariant &route, QFile &file)
 {
     auto &e=p->exchange.call();
     e.setRoute(route);
-    e.setMethod(QRpc::Post);
+    e.setMethod(QRpc::Types::Post);
     p->upload(e.route(), file.fileName());
     file.close();
     return this->response();
@@ -453,7 +436,7 @@ HttpResponse &Request::upload(const QVariant &route, QString &fileName, QFile &f
 {
     auto &e=p->exchange.call();
     e.setRoute(route);
-    e.setMethod(QRpc::Post);
+    e.setMethod(QRpc::Types::Post);
     p->upload(e.route(), fileName);
     file.close();
     return this->response();
@@ -463,7 +446,7 @@ HttpResponse &Request::download(QString &fileName)
 {
     auto _fileName=p->parseFileName(fileName);
     auto &e=p->exchange.call();
-    e.setMethod(QRpc::Get);
+    e.setMethod(QRpc::Types::Get);
     auto &response=p->download(e.route(), _fileName);
     if(response)
         fileName=_fileName;
@@ -475,7 +458,7 @@ HttpResponse &Request::download(const QVariant &route, QString &fileName)
     auto _fileName=p->parseFileName(fileName);
     auto &e=p->exchange.call();
     e.setRoute(route);
-    e.setMethod(QRpc::Get);
+    e.setMethod(QRpc::Types::Get);
     auto &response=p->download(e.route(), _fileName);
     if(response)
         fileName=_fileName;
@@ -487,7 +470,7 @@ HttpResponse &Request::download(const QVariant &route, QString &fileName, const 
     auto _fileName=p->parseFileName(fileName);
     auto &e=p->exchange.call();
     e.setRoute(route);
-    e.setMethod(QRpc::Get);
+    e.setMethod(QRpc::Types::Get);
     this->setBody(parameter);
     auto &response=p->download(e.route(), _fileName);
     if(response)
@@ -510,7 +493,7 @@ Request &Request::autoSetCookie()
                 cookies.append(cookie);
         }
     }
-    this->header().setCookies(cookies);
+    this->header().cookies(cookies);
     return *this;
 }
 

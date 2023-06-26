@@ -21,6 +21,6 @@ private:
     ListenBrokerAMQPPvt *p = nullptr;
 };
 
-//QRPC_LISTTEN_AUTO_REGISTER(Amqp, ListenBrokerAMQP)
+//QRPC_LISTTEN_AUTO_REGISTER(QRpc::Types::Amqp, ListenBrokerAMQP)
 
 } // namespace QRpc

@@ -3,6 +3,8 @@
 #include "./qrpc_listen_protocol.h"
 #include "./private/p_qrpc_listen_qrpc.h"
 #include "./qrpc_server.h"
+#include "./qrpc_types.h"
+#include "../../qstm/src/qstm_meta_enum.h"
 
 //#include "./private/p_qrpc_listen_tcp->h"
 //#include "./private/p_qrpc_listen_udp->h"
@@ -15,6 +17,8 @@
 //#include "./private/p_qrpc_listen_qrpc.h"
 
 namespace QRpc {
+
+static const auto __default="default";
 
 class ListenColletionsPvt : public QObject
 {
@@ -43,7 +47,7 @@ public:
         if(this->listenProtocol.isEmpty())
             return;
 
-        auto settingsDefault = this->settings.value(QStringLiteral("default")).toHash();
+        auto settingsDefault = this->settings.value(__default).toHash();
         for (auto &v : this->listenProtocol) {
             auto optionName = v->optionName();
             auto settings = this->settings.value(optionName).toHash();
@@ -51,26 +55,29 @@ public:
                 v->setSettings(settings, settingsDefault);
         }
 
-        auto list = this->listenProtocol.value(0);
-        if (list != nullptr)
-            list->setEnabled(true);
+        auto list = this->listenProtocol.value(QRpc::Types::Rpc);
+        if (list==nullptr)
+            qFatal("QRpc::ListenQRPC no initialized");
+        list->setEnabled(true);
     }
 
     void makeListens()
     {
         auto &vList = Listen::listenList();
-        for (auto &item : vList)
-            this->makeOption(item.first, *item.second);
+        for (auto &item : vList){
+            auto protocol=QRpc::Types::Protocol(item.first);
+            this->makeOption(protocol, *item.second);
+        }
         this->loadSettings();
     }
 
-    bool makeOption(int protocol, const QMetaObject &metaObject)
+    bool makeOption(QRpc::Types::Protocol protocol, const QMetaObject &metaObject)
     {
         if (this->listenProtocol.contains(protocol))
             return true;
 
         auto option = new ListenProtocol(protocol, metaObject, this->parent());
-        option->setObjectName(QStringLiteral("set_%1").arg(QString::fromUtf8(option->protocolName())));
+        option->setObjectName(QStringLiteral("set_%1").arg(option->optionName()));
         this->listenProtocol.insert(option->protocol(), option);
         return true;
     }
@@ -115,7 +122,7 @@ public:
             listenStartOrder.append(listen);
         }
 
-        auto listenPool = this->collections->listenPool();
+        auto listenPool = this->collections->listenQRPC();
         if (listenPool == nullptr) {
             qFatal("invalid pool");
         }
@@ -143,35 +150,19 @@ ListenColletions::ListenColletions(const QVariantHash &settings, Server *server)
     this->moveToThread(this);
 }
 
-ListenProtocol &ListenColletions::protocol()
+ListenProtocol *ListenColletions::protocol()
 {
-    return this->protocol(Protocol::Http);
+    return this->protocol(QRpc::Types::Protocol::Http);
 }
 
-ListenProtocol &ListenColletions::protocol(const Protocol &protocol)
+ListenProtocol *ListenColletions::protocol(const QVariant &protocol)
 {
-    static ListenProtocol staticDefaultProtocol;
-
-    if (protocol < rpcProtocolMin)
-        return staticDefaultProtocol;
-
-    if(protocol > rpcProtocolMax)
-        return staticDefaultProtocol;
-
-
+    QStm::MetaEnum<QRpc::Types::Protocol> eProtocol=protocol;
     auto &listenProtocol = p->listenProtocol;
-    auto ___return = listenProtocol.value(protocol);
-    if (___return != nullptr)
-        return *___return;
-
-    if (protocol != Http)
-        return *___return;
-
-    ___return = listenProtocol.value(protocol);
-    if (___return == nullptr)
-        return staticDefaultProtocol;
-
-    return *___return;
+    auto ___return = listenProtocol.value(eProtocol.type());
+    if (___return)
+        return ___return;
+    return nullptr;
 }
 
 ListenProtocols &ListenColletions::protocols()
@@ -202,19 +193,11 @@ ListenColletions &ListenColletions::settings(const QVariantHash &settings)
     return *this;
 }
 
-ListenQRPC *ListenColletions::listenPool()
+ListenQRPC *ListenColletions::listenQRPC()
 {
-    QHashIterator<int, Listen *> i(p->listensActive);
-    while (i.hasNext()) {
-        i.next();
-        if (i.value() == nullptr)
-            continue;
+    auto listen = p->listensActive.value(QRpc::Types::Rpc);
+    return dynamic_cast<ListenQRPC*>(listen);
 
-        auto listen = dynamic_cast<ListenQRPC *>(i.value());
-        if (listen != nullptr)
-            return listen;
-    }
-    return nullptr;
 }
 
 bool ListenColletions::start()

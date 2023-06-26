@@ -51,7 +51,10 @@ public:
     QHash<int,RequestJobProtocol*> requestJobProtocolHash;
     RequestJobResponse response;
 
-    explicit RequestJobPvt(RequestJob *parent):QObject{parent},
+    explicit RequestJobPvt(RequestJob *parent)
+        :
+        QObject{parent},
+        parent{parent},
 #ifdef Q_RPC_HTTP
         requestJobHttp(this),
 #endif
@@ -67,24 +70,26 @@ public:
 #ifdef Q_RPC_DATABASE
         requestJobDataBase(this)
 #endif
-        response(parent)
+            response(parent)
     {
-        this->parent=parent;
+        requestJobProtocolHash={
 #ifdef Q_RPC_HTTP
-        requestJobProtocolHash[QRpc::Http]=&this->requestJobHttp;
+            {QRpc::Types::Http, &this->requestJobHttp},
 #endif
 #ifdef Q_RPC_WEBSOCKET
-        _requestJobProtocolMap[QRpc::WebSocket]=&this->requestJobWSS;
+        {QRpc::Types::WebSocket, &this->requestJobWSS},
 #endif
 #ifdef Q_RPC_TCP
-        _requestJobProtocolMap[QRpc::TcpSocket]=&this->requestJobTcp;
+        {QRpc::Types::TcpSocket, &this->requestJobTcp},
 #endif
 #ifdef Q_RPC_LOCALSOCKET
-        _requestJobProtocolMap[QRpc::LocalSocket]=&this->requestJobLocalSocket;
+        {QRpc::Types::LocalSocket, &this->requestJobLocalSocket},
 #endif
 #ifdef Q_RPC_DATABASE
-        _requestJobProtocolMap[QRpc::DataBase]=&this->requestJobDataBase;
+            {QRpc::Types::DataBase, &this->requestJobDataBase},
 #endif
+        };
+
         QHashIterator<int, RequestJobProtocol*> i(requestJobProtocolHash);
         while (i.hasNext()){
             i.next();

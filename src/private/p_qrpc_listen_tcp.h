@@ -33,6 +33,6 @@ private:
     ListenTCPPvt *p = nullptr;
 };
 
-//QRPC_LISTTEN_AUTO_REGISTER(TcpSocket, ListenTCP)
+//QRPC_LISTTEN_AUTO_REGISTER(QRpc::Types::TcpSocket, ListenTCP)
 
 } // namespace QRpc

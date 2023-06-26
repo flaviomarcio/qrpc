@@ -1,6 +1,7 @@
 #include "./qrpc_request_exchange_setting.h"
 #include "./qrpc_macro.h"
 #include <QMetaProperty>
+#include "../../../qstm/src/qstm_meta_enum.h"
 #include "../../../qstm/src/qstm_util_meta_object.h"
 #include "../../../qstm/src/qstm_util_variant.h"
 
@@ -11,9 +12,9 @@ const static auto staticDefaultLimit=60000;
 class RequestExchangeSettingPvt:public QObject{
 public:
     QString url;
-    RequestMethod method=RequestMethod::Post;
+    QStm::MetaEnum<QRpc::Types::Method> method=QRpc::Types::Method::Post;
     QString methodName;
-    Protocol protocol=Protocol::Http;
+    QStm::MetaEnum<QRpc::Types::Protocol> protocol=QRpc::Types::Protocol::Http;
     QString vHost="/";
     QString hostName="localhost";
     QString driver;
@@ -25,19 +26,8 @@ public:
     QVariant port=8080;
     QVariant activityLimit=staticDefaultLimit;
     RequestExchangeSetting *parent=nullptr;
-    QString __protocolName, __protocolUrlName;
     explicit RequestExchangeSettingPvt(RequestExchangeSetting *parent):QObject{parent}, parent{parent}
     {
-    }
-
-    const QString &protocolName()
-    {
-        return this->__protocolName=QRpc::ProtocolName.value(this->protocol);
-    }
-
-    const QString &protocolUrlName()
-    {
-        return this->__protocolUrlName=QRpc::ProtocolUrlName.value(this->protocol);
     }
 
     void load(const RequestExchangeSetting &e)
@@ -108,7 +98,7 @@ const QVariantHash RequestExchangeSetting::toHash() const
 
 const QString &RequestExchangeSetting::url() const
 {
-    auto __return = QStringLiteral("%1:||%2:%3/%4").arg(this->protocolName(),this->hostName(),QString::number(this->port().toInt()),this->route());
+    auto __return = QStringLiteral("%1:||%2:%3/%4").arg(p->protocol.name().toLower(), this->hostName(), QString::number(this->port().toInt()),this->route());
     while(__return.contains(QStringLiteral("//")))
         __return=__return.replace(QStringLiteral("//"), QStringLiteral("/"));
     __return=__return.replace(QStringLiteral("||"), QStringLiteral("//"));
@@ -118,12 +108,13 @@ const QString &RequestExchangeSetting::url() const
 
 bool RequestExchangeSetting::isValid() const
 {
-    if(this->protocol()==QRpc::Amqp && !this->topic().isEmpty())
+    if(p->protocol.equal(QRpc::Types::Amqp) && !this->topic().isEmpty() )
         return true;
-    if(this->protocol()==QRpc::Http && !this->hostName().isEmpty())
-        return true;
-    return false;
 
+    if(p->protocol.equal(QRpc::Types::Http) && !this->hostName().isEmpty() )
+        return true;
+
+    return false;
 }
 
 RequestExchangeSetting &RequestExchangeSetting::print(const QString &output)
@@ -157,75 +148,25 @@ QStringList RequestExchangeSetting::printOut(const QString &output)
     return out;
 }
 
-
-RequestMethod RequestExchangeSetting::method()const
+Types::Method RequestExchangeSetting::method()const
 {
-    return p->method;
+    return p->method.type();
 }
 
 RequestExchangeSetting &RequestExchangeSetting::setMethod(const QVariant &value)
 {
-    bool ok;
-    auto methodType=value.toInt(&ok);
-    if(ok){
-        auto method=RequestMethod(methodType);
-        method=(method<Head || method>MaxMethod)?Post:method;
-        p->method=method;
-        return *this;
-    }
-
-    const auto vv=value.toString().trimmed().toLower();
-    for (const auto &v : RequestMethodNameList){
-        if(v.trimmed().toLower()!=vv)
-            return *this;
-        const auto &i = RequestMethodName.key(v);
-        p->method=RequestMethod(i);
-        return *this;
-    }
-    p->method=QRpc::Post;
+    p->method=value;
     return *this;
 }
 
-const QString &RequestExchangeSetting::methodName() const
+Types::Protocol RequestExchangeSetting::protocol() const
 {
-    return p->methodName=RequestMethodName.value(p->method);
-}
-
-Protocol RequestExchangeSetting::protocol() const
-{
-    return p->protocol;
-}
-
-const QString &RequestExchangeSetting::protocolName() const
-{
-    return p->protocolName();
-}
-
-const QString &RequestExchangeSetting::protocolUrlName() const
-{
-    return p->protocolUrlName();
-}
-
-RequestExchangeSetting &RequestExchangeSetting::setProtocol(const Protocol &value)
-{
-    p->protocol=value;
-    return *this;
+    return p->protocol.type();
 }
 
 RequestExchangeSetting &RequestExchangeSetting::setProtocol(const QVariant &value)
 {
-    auto &v=p->protocol;
-    if(value.isNull() || !value.isValid())
-        v=Protocol::Http;
-    else if(QString::number(value.toInt())==value)
-        v=Protocol(value.toInt());
-    else if(value.toString().trimmed().isEmpty())
-        v=Protocol::Http;
-    else
-        v=Protocol(ProtocolType.value(value.toString().trimmed()));
-
-    v=(v>rpcProtocolMax)?rpcProtocolMax:v;
-    v=(v<rpcProtocolMin)?rpcProtocolMin:v;
+    p->protocol=value;
     return *this;
 }
 

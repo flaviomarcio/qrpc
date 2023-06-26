@@ -60,7 +60,7 @@ public:
 
     HttpResponse &download(const QString &route, const QString &fileName);
 
-    HttpResponse &call(const RequestMethod &method, const QVariant &vRoute, const QVariant &body);
+    HttpResponse &call(const QRpc::Types::Method &method, const QVariant &vRoute, const QVariant &body);
 signals:
     void runJob(/*const QSslConfiguration *sslConfig, */const QVariantHash &headers, const QVariant &url, const QString &fileName, QRpc::Request *request);
 };

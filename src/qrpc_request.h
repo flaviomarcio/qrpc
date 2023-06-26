@@ -13,7 +13,7 @@ namespace QRpc {
 
 #define QRPC_DECLARE_CONTENT_TYPE(type)\
 public:\
-    Q_INVOKABLE virtual QRpc::ContentType contentType(){return QRpc::ContentType(type); }
+    Q_INVOKABLE virtual QRpc::Types::ContentType contentType(){return QRpc::Types::ContentType(type); }
 
 #define QRPC_DECLARE_BASE_ROUTE(route)\
 public:\
@@ -60,7 +60,7 @@ public:
     Q_ENUM(Action)
 
 public:
-    QRPC_DECLARE_CONTENT_TYPE(QRpc::AppJson)
+    QRPC_DECLARE_CONTENT_TYPE(QRpc::Types::AppJson)
     QRPC_DECLARE_BASE_ROUTE(/)
 
     //!
@@ -161,22 +161,17 @@ public:
     //! \brief protocol
     //! \return
     //!
-    Protocol protocol() const;
+    QRpc::Types::Protocol protocol() const;
     Request &setProtocol(const QVariant &value);
     Request &protocol(const QVariant &value){ return this->setProtocol(value);};
-    const QString &protocolName() const;
 
     //!
     //! \brief method
     //! \return
     //!
-    RequestMethod method() const;
-    Request &setMethod(const QString &value);
-    Request &setMethod(const QByteArray &value);
-    Request &setMethod(const int &value);
-    Request &method(const QString &value){ return this->setMethod(value);}
-    Request &method(const QByteArray &value){ return this->setMethod(value);}
-    Request &method(const int &value){ return this->setMethod(value);}
+    QRpc::Types::Method method() const;
+    Request &setMethod(const QVariant &value);
+    Request &method(const QVariant &value){ return this->setMethod(value);}
     //!
     //! \brief driver
     //! \return
@@ -298,7 +293,7 @@ public:
     //! \param route
     //! \return
     //!
-    HttpResponse &call(const QVariant &route);
+    HttpResponse &call(const QString &route);
 
     //!
     //! \brief call
@@ -315,14 +310,14 @@ public:
     //! \param body
     //! \return
     //!
-    HttpResponse &call(const RequestMethod &method, const QString &route, const QVariant &body);
+    HttpResponse &call(QRpc::Types::Method method, const QString &route, const QVariant &body);
 
     //!
     //! \brief call
     //! \param method
     //! \return
     //!
-    HttpResponse &call(const RequestMethod &method);
+    HttpResponse &call(QRpc::Types::Method method);
 
     //!
     //! \brief call
@@ -349,7 +344,7 @@ public:
     //! \param objectBody
     //! \return
     //!
-    HttpResponse &call(const RequestMethod &method, const QString &route, const QObject &objectBody);
+    HttpResponse &call(QRpc::Types::Method method, const QString &route, const QObject &objectBody);
 
     //!
     //! \brief call
@@ -365,7 +360,7 @@ public:
     //! \param route
     //! \return
     //!
-    HttpResponse &call(const RequestMethod &method, const QString &route);
+    HttpResponse &call(QRpc::Types::Method method, const QString &route);
 
     //!
     //! \brief call
@@ -374,7 +369,7 @@ public:
     //! \param ioDeviceBody
     //! \return
     //!
-    HttpResponse &call(const RequestMethod &method, const QString &route, QIODevice &ioDeviceBody);
+    HttpResponse &call(QRpc::Types::Method method, const QString &route, QIODevice &ioDeviceBody);
 
     //!
     //! \brief operator =

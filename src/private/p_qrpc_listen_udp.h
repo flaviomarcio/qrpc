@@ -29,6 +29,6 @@ private:
     ListenUDPPvt *p = nullptr;
 };
 
-//QRPC_LISTTEN_AUTO_REGISTER(UdpSocket, ListenUDP)
+//QRPC_LISTTEN_AUTO_REGISTER(QRpc::Types::UdpSocket, ListenUDP)
 
 } // namespace QRpc

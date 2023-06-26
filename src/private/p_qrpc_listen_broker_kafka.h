@@ -22,6 +22,6 @@ private:
     ListenBrokerKAFKAPvt *p = nullptr;
 };
 
-//QRPC_LISTTEN_AUTO_REGISTER(Kafka, ListenBrokerKAFKA)
+//QRPC_LISTTEN_AUTO_REGISTER(QRpc::Types::Kafka, ListenBrokerKAFKA)
 
 } // namespace QRpc

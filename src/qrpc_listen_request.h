@@ -25,12 +25,12 @@ class Q_RPC_EXPORT ListenRequest: public QObject
 public:
 
     Q_PROPERTY(QUuid listenUuid READ listenUuid WRITE setListenUuid NOTIFY listenUuidChanged )
-    Q_PROPERTY(int requestContentType READ requestContentType WRITE setRequestContentType NOTIFY requestContentTypeChanged )
+    Q_PROPERTY(QRpc::Types::ContentType requestContentType READ requestContentType WRITE setRequestContentType NOTIFY requestContentTypeChanged )
     Q_PROPERTY(QUuid requestUuid READ requestUuid WRITE setRequestUuid NOTIFY requestUuidChanged )
-    Q_PROPERTY(QByteArray requestProtocol READ requestProtocol WRITE setRequestProtocol NOTIFY requestProtocolChanged )
+    Q_PROPERTY(QRpc::Types::Protocol requestProtocol READ requestProtocol WRITE setRequestProtocol NOTIFY requestProtocolChanged )
     Q_PROPERTY(int requestPort READ requestPort WRITE setRequestPort NOTIFY requestPortChanged )
     Q_PROPERTY(QByteArray requestPath READ requestPath WRITE setRequestPath NOTIFY requestPathChanged )
-    Q_PROPERTY(QByteArray requestMethod READ requestMethod WRITE setRequestMethod NOTIFY requestMethodChanged )
+    Q_PROPERTY(QRpc::Types::Method requestMethod READ requestMethod WRITE setRequestMethod NOTIFY requestMethodChanged )
     Q_PROPERTY(QVariantHash requestHeader READ requestHeader WRITE setRequestHeader NOTIFY requestHeaderChanged )
     Q_PROPERTY(QVariantHash requestParameter READ requestParameter WRITE setRequestParameter NOTIFY requestParameterChanged )
     Q_PROPERTY(QVariant requestBody READ requestBody WRITE setRequestBody NOTIFY requestBodyChanged )
@@ -317,7 +317,7 @@ public:
     //! \brief requestProtocol
     //! \return
     //!
-    QByteArray &requestProtocol() const;
+    Types::Protocol requestProtocol() const;
 
     //!
     //! \brief setRequestProtocol
@@ -353,7 +353,7 @@ public:
     //! \brief requestMethod
     //! \return
     //!
-    QByteArray &requestMethod() const;
+    Types::Method requestMethod() const;
 
     //!
     //! \brief setRequestMethod
@@ -553,7 +553,7 @@ public:
     //! \brief requestContentType
     //! \return
     //!
-    int requestContentType() const;
+    Types::ContentType requestContentType() const;
     void setRequestContentType(const QVariant &value);
 
     //!

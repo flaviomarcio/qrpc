@@ -31,11 +31,11 @@ public:
 
     //!
     //! \brief install
-    //! \param type
+    //! \param protocol
     //! \param metaObject
     //! \return
     //!
-    static int install(const QVariant &type, const QMetaObject &metaObject);
+    static bool install(QRpc::Types::Protocol protocol, const QMetaObject &metaObject);
 
     //!
     //! \brief listenList

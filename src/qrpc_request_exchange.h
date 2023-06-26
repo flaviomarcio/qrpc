@@ -17,7 +17,7 @@ public:
     //! \brief RequestExchange
     //! \param parent
     //!
-    explicit RequestExchange(QObject *parent=nullptr);
+    Q_INVOKABLE explicit RequestExchange(QObject *parent=nullptr);
     explicit RequestExchange(RequestExchange &exchange, QObject *parent);
 
     //!
@@ -66,43 +66,44 @@ public:
     QStringList printOut(const QString &output={});
 
     //!
-    //! \brief setProtocol
-    //! \param value
+    //! \brief protocol
+    //! \return
     //!
+    Types::Protocol protocol() const;
     RequestExchange &setProtocol(const QVariant &value);
-    RequestExchange &setProtocol(const Protocol &value);
     RequestExchange &protocol(const QVariant &value){return this->setProtocol(value);}
-    RequestExchange &protocol(const Protocol &value){return this->setProtocol(value);}
 
     //!
-    //! \brief setMethod
-    //! \param value
+    //! \brief method
+    //! \return
     //!
-    RequestExchange &setMethod(const QString &value);
-    RequestExchange &setMethod(const RequestMethod &value);
+    Types::Method method() const;
+    RequestExchange &setMethod(const QVariant &value);
     RequestExchange &method(const QString &value){ return this->setMethod(value);}
-    RequestExchange &method(const RequestMethod &value){ return this->setMethod(value);}
 
     //!
-    //! \brief setHostName
+    //! \brief hostName
     //! \param value
+    //! \return
     //!
-    RequestExchange &setHostName(const QString &value);
     RequestExchange &hostName(const QString &value){ return this->setHostName(value);}
+    RequestExchange &setHostName(const QString &value);
 
     //!
-    //! \brief setRoute
+    //! \brief route
     //! \param value
+    //! \return
     //!
-    RequestExchange &setRoute(const QVariant &value);
     RequestExchange &route(const QVariant &value){ return this->setRoute(value);}
+    RequestExchange &setRoute(const QVariant &value);
 
     //!
-    //! \brief setPort
+    //! \brief port
     //! \param value
+    //! \return
     //!
-    RequestExchange &setPort(int value);
     RequestExchange &port(int value){ return this->setPort(value);}
+    RequestExchange &setPort(int value);
 
 private:
     RequestExchangePvt *p = nullptr;

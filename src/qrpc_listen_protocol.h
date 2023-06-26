@@ -1,6 +1,7 @@
 #pragma once
 
 #include "./qrpc_global.h"
+#include "./qrpc_types.h"
 #include <QObject>
 #include <QVariant>
 #include <QSettings>
@@ -18,8 +19,7 @@ class Q_RPC_EXPORT ListenProtocol : public QObject
     friend class ListenColletionsPvt;
 
 public:
-    Q_PROPERTY(int protocol READ protocol WRITE setProtocol NOTIFY protocolChanged)
-    Q_PROPERTY(QByteArray protocolName READ protocolName NOTIFY protocolNameChanged)
+    Q_PROPERTY(QRpc::Types::Protocol protocol READ protocol WRITE setProtocol NOTIFY protocolChanged)
     Q_PROPERTY(QByteArray optionName READ optionName WRITE setOptionName NOTIFY optionNameChanged)
     Q_PROPERTY(int cleanupInterval READ cleanupInterval WRITE setCleanupInterval NOTIFY cleanupIntervalChanged)
     Q_PROPERTY(int minThreads READ minThreads WRITE setMinThreads NOTIFY minThreadsChanged)
@@ -52,7 +52,7 @@ private:
     //! \param metaObject
     //! \param parent
     //!
-    Q_INVOKABLE explicit ListenProtocol(int protocol,
+    Q_INVOKABLE explicit ListenProtocol(Types::Protocol protocol,
                                         const QMetaObject &metaObject,
                                         QObject *parent);
 
@@ -73,22 +73,16 @@ public:
     //! \brief protocol
     //! \return
     //!
-    virtual int protocol();
+    virtual QRpc::Types::Protocol protocol();
 
 private:
     //!
     //! \brief setProtocol
     //! \param value
     //!
-    virtual void setProtocol(const int &value);
+    virtual void setProtocol(const QVariant &value);
 
 public:
-    //!
-    //! \brief protocolName
-    //! \return
-    //!
-    virtual QByteArray protocolName();
-
     //!
     //! \brief optionName
     //! \return

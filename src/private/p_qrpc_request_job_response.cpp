@@ -65,7 +65,15 @@ QVariantHash RequestJobResponse::toVariant()
     static const auto __body="body";
 
     Q_DECLARE_VU;
-    QVariantHash toHashResquest=Util::toHashResquest(this->request_exchange.call().method(),request_url,request_body,request_parameters,response_body,request_header,request_start,request_finish);
+    auto toHashResquest=Util::toHashResquest(
+        this->request_exchange.call().method(),
+        request_url,
+        request_body,
+        request_parameters,
+        response_body,
+        request_header,
+        request_start,
+        request_finish);
 
 
     QVariantHash toHashResponse={
@@ -84,10 +92,8 @@ QVariantHash RequestJobResponse::toVariant()
           QVariantHash{{__resquest, toHashResquest}},
           QVariantHash{{__response, toHashResponse}},
         };
-    ///*{"openapi", this->toMapOpenAPI()}*,/
+
     return {{__rpclog, rpclog}};
 }
-
-
 
 }

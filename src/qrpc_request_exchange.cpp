@@ -80,25 +80,23 @@ QStringList RequestExchange::printOut(const QString &output)
     return out;
 }
 
+Types::Protocol RequestExchange::protocol()const
+{
+    return this->call().protocol();
+}
+
 RequestExchange &RequestExchange::setProtocol(const QVariant &value)
 {
     this->call().setProtocol(value);
     return *this;
 }
 
-RequestExchange &RequestExchange::setProtocol(const Protocol &value)
+Types::Method RequestExchange::method() const
 {
-    this->call().setProtocol(value);
-    return *this;
+    return this->call().method();
 }
 
-RequestExchange &RequestExchange::setMethod(const QString &value)
-{
-    this->call().setMethod(value);
-    return *this;
-}
-
-RequestExchange &RequestExchange::setMethod(const RequestMethod &value)
+RequestExchange &RequestExchange::setMethod(const QVariant &value)
 {
     this->call().setMethod(value);
     return *this;

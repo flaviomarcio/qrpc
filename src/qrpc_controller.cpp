@@ -361,7 +361,7 @@ bool Controller::canOperation(const QMetaMethod &method)
     if (annotations.contains(opCrud))
         return true;
 
-    auto operation = QStringLiteral("op%1").arg(QString::fromUtf8(rq.requestMethod())).toLower();
+    auto operation = QStringLiteral("op%1").arg(QRpc::Types::methodName(rq.requestMethod())).toLower();
     if (annotations.contains(operation))
         return true;
 

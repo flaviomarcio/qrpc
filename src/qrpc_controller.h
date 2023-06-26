@@ -223,7 +223,6 @@ signals:
 
 private:
     ControllerPvt *p = nullptr;
-    Protocol acceptedProtocols;
 };
 
 typedef Controller QRPCController;

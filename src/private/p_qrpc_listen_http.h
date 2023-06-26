@@ -2,6 +2,7 @@
 
 #include "../qrpc_listen.h"
 #include "../qrpc_macro.h"
+#include "../qrpc_types.h"
 
 namespace QRpc {
 class ListenHTTPPvt;
@@ -30,6 +31,6 @@ private:
     ListenHTTPPvt *p = nullptr;
 };
 
-QRPC_LISTTEN_AUTO_REGISTER(Http, ListenHTTP)
+QRPC_LISTTEN_AUTO_REGISTER(QRpc::Types::Http, ListenHTTP)
 
 } // namespace QRpc

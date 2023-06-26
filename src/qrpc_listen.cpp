@@ -12,7 +12,7 @@
 
 namespace QRpc {
 
-typedef QHash<int, QPair<int, const QMetaObject *>> MetaObjectVectorHash;
+typedef QHash<QRpc::Types::Protocol, QPair<int, const QMetaObject *>> MetaObjectVectorHash;
 typedef QVector<ListenMetaObject> ListenMetaObjectList;
 
 Q_GLOBAL_STATIC(MetaObjectVectorHash, staticListenInstalledHash);
@@ -38,21 +38,19 @@ Listen::Listen(QObject *parent) : QThread{nullptr}, p{new ListenPvt{this}}
     Q_UNUSED(parent)
 }
 
-
-int Listen::install(const QVariant &type, const QMetaObject &metaObject)
+bool Listen::install(Types::Protocol protocol, const QMetaObject &metaObject)
 {
-    const auto itype = type.toInt();
-    if (!staticListenInstalledHash->contains(itype)) {
+    if (!staticListenInstalledHash->contains(protocol)) {
 #if Q_RPC_LOG_VERBOSE
         if (staticListenInstalledHash->isEmpty())
             rInfo() << QStringLiteral("interface registered: ") << metaObject.className();
         qInfo() << QByteArrayLiteral("interface: ") + metaObject.className();
 #endif
-        QPair<int, const QMetaObject *> pair(itype, &metaObject);
-        staticListenInstalledHash->insert(itype, pair);
+        QPair<int, const QMetaObject *> pair(protocol, &metaObject);
+        staticListenInstalledHash->insert(protocol, pair);
         staticListenInstalledList->append(pair);
     }
-    return staticListenInstalledHash->contains(itype);
+    return staticListenInstalledHash->contains(protocol);
 }
 
 ListenMetaObjectList &Listen::listenList()

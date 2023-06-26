@@ -2,11 +2,19 @@
 #include "./p_qrpc_util.h"
 #include "../qrpc_macro.h"
 #include "../../../qstm/src/qstm_util_variant.h"
+#include "../../../qstm/src/qstm_meta_enum.h"
 #include <QJsonDocument>
 
 namespace QRpc {
 
-static const auto staticDefaultContentType=QRpc::AppJson;
+static const auto __header_authorization="Authorization";
+static const auto __header_proxy_authorization="Proxy-Authorization";
+static const auto __header_www_authenticate="WWW-Authenticate";
+static const auto __header_cookie="Cookie";
+static const auto __equal="=";
+static const auto __space=" ";
+static const auto __null_str="";
+static const auto staticDefaultContentType=QRpc::Types::ContentType::AppJson;
 
 class HttpHeadersPvt:public QObject{
 public:
@@ -14,8 +22,12 @@ public:
     QObject *parent=nullptr;
     QVariantHash header;
 
-    explicit HttpHeadersPvt(HttpHeaders*parent):QObject{parent}, parent{parent}
+    explicit HttpHeadersPvt(HttpHeaders *parent, const QVariant &headers):QObject{parent}, parent{parent}
     {
+        if(!headers.isNull() && headers.isValid()){
+            Q_DECLARE_VU;
+            this->header=vu.toHash(headers);
+        }
     }
 
     QVariant header_v(const QString &key)const
@@ -50,14 +62,47 @@ public:
     }
 };
 
-HttpHeaders::HttpHeaders(QObject *parent):QObject{parent},p{new HttpHeadersPvt{this}}
+HttpHeaders::HttpHeaders(QObject *parent):QObject{parent},p{new HttpHeadersPvt{this,{}}}
 {
 }
 
-HttpHeaders::HttpHeaders(const QVariant &v, QObject *parent):QObject{parent}, p{new HttpHeadersPvt{this}}
+HttpHeaders::HttpHeaders(const QVariant &headers, QObject *parent):QObject{parent}, p{new HttpHeadersPvt{this, headers}}
 {
-    Q_DECLARE_VU;
-    p->header=vu.toHash(v);
+
+}
+
+HttpHeaders &HttpHeaders::operator=(const QVariant &v)
+{
+    p->header.clear();
+    QVariantHash vHash;
+    switch (v.typeId()) {
+    case QMetaType::QString:
+    case QMetaType::QByteArray:
+        vHash=QJsonDocument::fromJson(v.toByteArray()).toVariant().toHash();
+        break;
+    default:
+        vHash=v.toHash();
+    }
+    return this->setRawHeader(vHash);
+}
+
+HttpHeaders &HttpHeaders::operator<<(const QVariant &v)
+{
+    QVariantHash vHash;
+    switch (v.typeId()) {
+    case QMetaType::QString:
+    case QMetaType::QByteArray:
+        vHash=QJsonDocument::fromJson(v.toByteArray()).toVariant().toHash();
+        break;
+    default:
+        vHash=v.toHash();
+    }
+    QHashIterator<QString, QVariant> i(vHash);
+    while (i.hasNext()) {
+        i.next();
+        this->addRawHeader(i.key(), i.value());
+    }
+    return *this;
 }
 
 
@@ -65,6 +110,30 @@ HttpHeaders &HttpHeaders::clear()
 {
     p->header.clear();
     return *this;
+}
+
+HttpHeaders &HttpHeaders::print(const QString &output)
+{
+    for(auto &v:this->printOut(output))
+        rWarning()<<v;
+    return *this;
+}
+
+QStringList HttpHeaders::printOut(const QString &output)
+{
+    auto space=output.trimmed().isEmpty()?__null_str:QStringLiteral("    ");
+    QStringList __return;
+    Q_DECLARE_VU;
+    auto vHash=this->rawHeader();
+    if(!vHash.isEmpty()){
+        __return.append(QStringLiteral("%1%2 headers").arg(space, output).trimmed());
+        QHashIterator<QString, QVariant> i(vHash);
+        while (i.hasNext()){
+            i.next();
+            __return.append(QStringLiteral("%1     %2:%3").arg(space, i.key(), vu.toStr(i.value())));
+        }
+    }
+    return __return;
 }
 
 QVariantHash &HttpHeaders::rawHeader()const
@@ -144,15 +213,14 @@ HttpHeaders &HttpHeaders::setRawHeader(const QString &header, const QVariant &va
     for(auto &v:vList){
         auto x=v;
         if(x.startsWith(QT_STRINGIFY(Basic)) || x.startsWith(QT_STRINGIFY(basic))){
-            auto x_toUtf8 = x.replace(QT_STRINGIFY(Basic), "").replace(QT_STRINGIFY(basic), "").trimmed().toUtf8();
+            auto x_toUtf8 = x.replace(QT_STRINGIFY(Basic), __null_str).replace(QT_STRINGIFY(basic), __null_str).trimmed().toUtf8();
             auto x_from=QByteArray::fromBase64(x_toUtf8);
-            if(x_from.toBase64()!=x_toUtf8){
-                v=QT_STRINGIFY(Basic)+QStringLiteral(" ")+x_toUtf8.toBase64();
-            }
+            if(x_from.toBase64()!=x_toUtf8)
+                v=QT_STRINGIFY(Basic)+QByteArray(__space)+x_toUtf8.toBase64();
         }
     }
 
-    p->header[headerName]=vList;
+    p->header.insert(headerName, vList);
     return *this;
 }
 
@@ -201,50 +269,24 @@ HttpHeaders &HttpHeaders::addRawHeader(const QString &header, const QVariant &va
     return *this;
 }
 
-HttpHeaders &HttpHeaders::setContentType(const int contentType)
-{
-    auto content_type=ContentType(contentType);
-
-    if(ContentTypeHeaderTypeToHeader.contains(content_type))
-        return this->setContentType(ContentTypeHeaderTypeToHeader.value(content_type));
-
-    return this->setContentType(ContentTypeHeaderTypeToHeader.value(QRpc::AppOctetStream));
-}
-
 HttpHeaders &HttpHeaders::setContentType(const QVariant &v)
 {
-    p->header.remove(ContentTypeName);
-    p->header.remove(QString(ContentTypeName).toLower());
-    QVariant value=v;
-    if(v.typeId()==QMetaType::QUrl){
-        value={};
-        auto url=v.toUrl();
-        if(url.isLocalFile()){
-            auto ext=url.toLocalFile().split(QStringLiteral(".")).last().trimmed();
-            if(!ContentTypeExtensionToHeader.contains(ext.toLower()))
-                ext.clear();
-            auto type=ContentTypeExtensionToHeader.value(ext.toLower());
-            value=ContentTypeHeaderTypeToHeader.value(type);
-        }
-    }
-    if(value.isValid())
+    auto value=Types::contentTypeHeader(v);
+    if(!value.isEmpty())
         p->header.insert(ContentTypeName,value);
     return *this;
 }
 
-bool HttpHeaders::isContentType(int contentType) const
+bool HttpHeaders::isContentType(const QVariant &contentType) const
 {
-    const auto contenttype=p->header_v(ContentTypeName).toStringList();
-    for(auto &ct:contenttype){
-        int cType=-1;
-        if(!ContentTypeHeaderToHeaderType.contains(ct))
-            continue;
-        cType=ContentTypeHeaderToHeaderType.value(ct);
-        if(contentType!=cType)
-            continue;
-        return true;
-    }
-    return false;
+    auto contentTypes=Types::contentTypeHeaders(p->header_v(ContentTypeName));
+    if(contentTypes.isEmpty())
+        return false;
+
+    QStm::MetaEnum<Types::ContentType> e=contentType;
+    if(!contentTypes.contains(e.type()))
+        return false;
+    return true;
 }
 
 QVariant HttpHeaders::contentType() const
@@ -252,7 +294,7 @@ QVariant HttpHeaders::contentType() const
     return p->header_v(ContentTypeName);
 }
 
-ContentType HttpHeaders::defaultContentType()
+Types::ContentType HttpHeaders::defaultContentType()
 {
     return staticDefaultContentType;
 }
@@ -262,9 +304,10 @@ QVariant HttpHeaders::contentDisposition() const
     return p->header_v(ContentDispositionName);
 }
 
-HttpHeaders &HttpHeaders::setAuthorization(const QString &authorization, const QString &type, const QVariant &credentials)
+HttpHeaders &HttpHeaders::setAuthorization(const QString &headerName, const QVariant &authorizationScheme, const QVariant &credentials)
 {
     QString scredentials;
+    QStm::MetaEnum<QRpc::Types::AuthorizationScheme> e=authorizationScheme;
 
     switch (credentials.typeId()) {
     case QMetaType::QVariantMap:
@@ -276,123 +319,74 @@ HttpHeaders &HttpHeaders::setAuthorization(const QString &authorization, const Q
             i.next();
             params.append(QStringLiteral("%1=%2").arg(i.key(),i.value().toString()));
         }
-        scredentials=params.join(QStringLiteral(" "));
+        scredentials=params.join(__space);
         break;
     }
     default:
         scredentials=credentials.toString().trimmed();
     }
 
-    if(!type.isEmpty() && !scredentials.isEmpty())
-        this->setRawHeader(authorization.toUtf8(), QStringLiteral("%1 %2").arg(type,scredentials).toUtf8());
-    return *this;
+    return this->setRawHeader(headerName.toUtf8(), QStringLiteral("%1 %2").arg(e.name(),scredentials).toUtf8());
 }
 
-HttpHeaders &HttpHeaders::setAuthorization(const QString &authorization, const AuthorizationType &type, const QVariant &credentials)
+//HttpHeaders &HttpHeaders::setAuthorization(const QString &authorization, const QVariant &authType, const QVariant &credentials)
+//{
+//    QStm::MetaEnum<QRpc::Types::AuthorizationScheme> e=authType;
+//    if(!e.e(Types::Basic))
+//        return this->setAuthorization(authorization, stype, credentials);
+//    auto v=QByteArray::fromBase64(credentials.toByteArray());
+//    if(!v.isEmpty())
+//        return this->setAuthorization(authorization, stype, credentials);
+//    v=credentials.toByteArray().toBase64();
+//    return this->setAuthorization(authorization, stype, v);
+//}
+
+HttpHeaders &HttpHeaders::setAuthorization(const QVariant &authorizationScheme, const QVariant &credentials)
 {
-    QString stype;
-    switch (type) {
-    case Basic:
-        stype=QStringLiteral("Basic");
-        break;
-    case Bearer:
-        stype=QStringLiteral("Bearer");
-        break;
-    case Digest:
-        stype=QStringLiteral("Digest");
-        break;
-    case HOBA:
-        stype=QStringLiteral("HOBA");
-        break;
-    case Mutual:
-        stype=QStringLiteral("Mutual");
-        break;
-    case AWS4_HMAC_SHA256:
-        stype=QStringLiteral("AWS4_HMAC_SHA256");
-        break;
-    case Service:
-        stype=QStringLiteral("Service");
-        break;
-    default:
-        break;
-    }
-
-    if(type!=Basic)
-        return this->setAuthorization(authorization, stype, credentials);
-
-    auto v=QByteArray::fromBase64(credentials.toByteArray());
-    if(!v.isEmpty())
-        return this->setAuthorization(authorization, stype, credentials);
-
-    v=credentials.toByteArray().toBase64();
-    return this->setAuthorization(authorization, stype, v);
+    return this->setAuthorization(__header_authorization, authorizationScheme, credentials);
 }
 
-
-HttpHeaders &HttpHeaders::setAuthorization(const AuthorizationType &type, const QVariant &credentials)
+HttpHeaders &HttpHeaders::setAuthorizationBasic(const QVariant &authorizationScheme, const QVariant &userName, const QVariant &passWord)
 {
-    return this->setAuthorization(QStringLiteral("Authorization"), type, credentials);
+    static const auto __format=QStringLiteral("%1:%2");
+    auto credentials=__format.arg(userName.toString(), passWord.toString()).toUtf8().toBase64();
+    return this->setAuthorization(authorizationScheme, credentials);
 }
 
-HttpHeaders &HttpHeaders::setAuthorization(const AuthorizationType &type, const QVariant &userName, const QVariant &passWord)
+HttpHeaders &HttpHeaders::setProxyAuthorization(const QVariant &authorizationScheme, const QVariant &credentials)
 {
-    auto credentials=QStringLiteral("%1:%2").arg(userName.toString(), passWord.toString()).toUtf8().toBase64();
-    return this->setAuthorization(type, credentials);
+    return this->setAuthorization(__header_proxy_authorization, authorizationScheme, credentials);
 }
 
-HttpHeaders &HttpHeaders::setProxyAuthorization(const AuthorizationType &type, const QVariant &credentials)
+HttpHeaders &HttpHeaders::setWWWAuthenticate(const QVariant &authorizationScheme, const QVariant &credentials)
 {
-    return this->setAuthorization(QStringLiteral("Proxy-Authorization"), type, credentials);
+    return this->setAuthorization(__header_www_authenticate, authorizationScheme, credentials);
 }
 
-HttpHeaders &HttpHeaders::setProxyAuthorization(const QString &type, const QVariant &credentials)
+QVariant HttpHeaders::authorization(const QString &headerName, const QVariant &authorizationScheme)
 {
-    return this->setAuthorization(QStringLiteral("Proxy-Authorization"), type, credentials);
-}
-
-HttpHeaders &HttpHeaders::setWWWAuthenticate(const AuthorizationType &type, const QVariant &credentials)
-{
-    return this->setAuthorization(QStringLiteral("WWW-Authenticate"), type, credentials);
-}
-
-HttpHeaders &HttpHeaders::setWWWAuthenticate(const QString &type, const QVariant &credentials)
-{
-    return this->setAuthorization(QStringLiteral("WWW-Authenticate"), type, credentials);
-}
-
-QVariant HttpHeaders::cookies()const
-{
-    return this->rawHeader(QStringLiteral("Cookie"));
-}
-
-HttpHeaders &HttpHeaders::setCookies(const QVariant &cookie)
-{
-    return this->setRawHeader(QStringLiteral("Cookie"), cookie);
-}
-
-QVariant HttpHeaders::authorization(const QString &authorization, const QString &type)
-{
+    QStm::MetaEnum<QRpc::Types::AuthorizationScheme> e=authorizationScheme;
     QVariantList returnList;
     QHashIterator<QString, QVariant> i(p->header);
     while (i.hasNext()) {
         i.next();
-        if(i.key().toLower()!=authorization.toLower())
+
+        if(i.key().toLower()!=headerName.toLower())
             continue;
-        auto list=i.value().toString().split(QStringLiteral(" "));
+
+        auto list=i.value().toString().split(__space);
         if(list.size()<=1)
             continue;
 
 
-        if(type.toLower()!=list.first())
+        if(e.name().toLower()!=list.first())
             continue;
 
         list.takeFirst();
         for(auto &v:list){
-            if(v.contains(QStringLiteral("="))){
-                auto sp=v.split(QStringLiteral("="));
-                QVariantHash map;
-                map.insert(sp.at(0),sp.at(1));
-                returnList.append(map);
+            if(v.contains(__equal)){
+                auto sp=v.split(__equal);
+                returnList.append(QVariantHash{{sp.first(),sp.last()}});
                 continue;
             }
 
@@ -402,123 +396,34 @@ QVariant HttpHeaders::authorization(const QString &authorization, const QString 
             }
         }
     }
-    return returnList.size()==1?returnList.first():returnList;
+    return returnList.size()==1
+               ?returnList.first()
+               :returnList;
 }
 
-QVariant HttpHeaders::authorization(const QString &authorization, const AuthorizationType &type)
+QVariant HttpHeaders::authorization(const QVariant &authorizationScheme)
 {
-    QString stype;
-    switch (type) {
-    case Basic:
-        stype=QStringLiteral("Basic");
-        break;
-    case Bearer:
-        stype=QStringLiteral("Bearer");
-        break;
-    case Digest:
-        stype=QStringLiteral("Digest");
-        break;
-    case HOBA:
-        stype=QStringLiteral("HOBA");
-        break;
-    case Mutual:
-        stype=QStringLiteral("Mutual");
-        break;
-    case AWS4_HMAC_SHA256:
-        stype=QStringLiteral("AWS4_HMAC_SHA256");
-        break;
-    default:
-        break;
-    }
-    return this->authorization(authorization, stype);
+    return this->authorization(__header_authorization, authorizationScheme);
 }
 
-QVariant HttpHeaders::authorization(const AuthorizationType &type)
+QVariant HttpHeaders::proxyAuthorization(const QVariant &authorizationScheme)
 {
-    return this->authorization(QStringLiteral("Authorization"), type);
+    return this->authorization(__header_proxy_authorization, authorizationScheme);
 }
 
-QVariant HttpHeaders::authorization(const QString &type)
+QVariant HttpHeaders::wwwAuthenticate(const QVariant &authorizationScheme)
 {
-    return this->authorization(QStringLiteral("Authorization"), type);
+    return this->authorization(__header_www_authenticate, authorizationScheme);
 }
 
-QVariant HttpHeaders::proxyAuthorization(const AuthorizationType &type)
+QVariant HttpHeaders::cookies()const
 {
-    return this->authorization(QStringLiteral("Proxy-Authorization"), type);
+    return this->rawHeader(__header_cookie);
 }
 
-QVariant HttpHeaders::proxyAuthorization(const QString &type)
+HttpHeaders &HttpHeaders::cookies(const QVariant &cookie)
 {
-    return this->authorization(QStringLiteral("Proxy-Authorization"), type);
-}
-
-QVariant HttpHeaders::wwwAuthenticate(const AuthorizationType &type)
-{
-    return this->authorization(QStringLiteral("WWW-Authorization"), type);
-}
-
-QVariant HttpHeaders::wwwAuthenticate(const QString &type)
-{
-    return this->authorization(QStringLiteral("WWW-Authorization"), type);
-}
-
-HttpHeaders &HttpHeaders::print(const QString &output)
-{
-    for(auto &v:this->printOut(output))
-        rWarning()<<v;
-    return *this;
-}
-
-QStringList HttpHeaders::printOut(const QString &output)
-{
-    auto space=output.trimmed().isEmpty()?"":QStringLiteral("    ");
-    QStringList __return;
-    Q_DECLARE_VU;
-    auto vHash=this->rawHeader();
-    if(!vHash.isEmpty()){
-        __return.append(QStringLiteral("%1%2 headers").arg(space, output).trimmed());
-        QHashIterator<QString, QVariant> i(vHash);
-        while (i.hasNext()){
-            i.next();
-            __return.append(QStringLiteral("%1     %2:%3").arg(space, i.key(), vu.toStr(i.value())));
-        }
-    }
-    return __return;
-}
-
-HttpHeaders &HttpHeaders::operator=(const QVariant &v)
-{
-    p->header.clear();
-    QVariantHash vHash;
-    switch (v.typeId()) {
-    case QMetaType::QString:
-    case QMetaType::QByteArray:
-        vHash=QJsonDocument::fromJson(v.toByteArray()).toVariant().toHash();
-        break;
-    default:
-        vHash=v.toHash();
-    }
-    return this->setRawHeader(vHash);
-}
-
-HttpHeaders &HttpHeaders::operator<<(const QVariant &v)
-{
-    QVariantHash vHash;
-    switch (v.typeId()) {
-    case QMetaType::QString:
-    case QMetaType::QByteArray:
-        vHash=QJsonDocument::fromJson(v.toByteArray()).toVariant().toHash();
-        break;
-    default:
-        vHash=v.toHash();
-    }
-    QHashIterator<QString, QVariant> i(vHash);
-    while (i.hasNext()) {
-        i.next();
-        this->addRawHeader(i.key(), i.value());
-    }
-    return *this;
+    return this->setRawHeader(__header_cookie, cookie);
 }
 
 }

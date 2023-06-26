@@ -8,6 +8,7 @@
 #include "./p_qrpc_util.h"
 #include "./p_qrpc_request_job.h"
 #include "../../../qstm/src/qstm_util_variant.h"
+#include "../../../qstm/src/qstm_meta_enum.h"
 
 namespace QRpc {
 
@@ -37,7 +38,7 @@ QString RequestPvt::urlMaker(const QString &path)
         spath=spath.replace(QStringLiteral("//"),"/");
 
     auto shostname=rq.hostName().trimmed();
-    auto sprotocol=rq.protocolName().trimmed();
+    auto sprotocol=QRpc::Types::protocolName(rq.protocol());
     auto sport=rq.port().toString();
     static const auto __format1=QStringLiteral("%1://%2:%3");
     static const auto __format2=QStringLiteral("%1://%2:%3%4");
@@ -81,7 +82,7 @@ void RequestPvt::writeLog(RequestJobResponse *response, const QVariant &request)
 
     QTextStream outText(&file);
     auto &e=response->request_exchange.call();
-    outText << RequestMethodName.value(e.method())<<QStringLiteral(": ")<<response->request_url.toString()<<'\n';
+    outText << QRpc::Types::methodName(e.method())<<QStringLiteral(": ")<<response->request_url.toString()<<'\n';
     outText << QJsonDocument::fromVariant(request).toJson(QJsonDocument::Indented);
     outText << QStringLiteral("\n");
     outText << QStringLiteral("\n");
@@ -97,12 +98,14 @@ HttpResponse &RequestPvt::upload(const QString &route, const QString &fileName)
         auto content=this->qrpcHeader.contentType();
         if(!content.isValid() || content.isNull()){
             auto ext=QStringLiteral(".")+fileName.split(QStringLiteral(".")).last().toLower();
-            if(!ContentTypeExtensionToHeader.contains(ext)){
-                this->qrpcHeader.setContentType(QRpc::AppOctetStream);
-            }
-            else{
-                auto contentType=ContentTypeExtensionToHeader.value(ext);
+            auto contentType=QRpc::Types::contentType(ext);
+            switch (contentType) {
+            case QRpc::Types::AppNone:
+                this->qrpcHeader.setContentType(QRpc::Types::AppOctetStream);
+                break;
+            default:
                 this->qrpcHeader.setContentType(contentType);
+                break;
             }
         }
     }
@@ -120,23 +123,24 @@ HttpResponse &RequestPvt::upload(const QString &route, const QString &fileName)
         routeCall=QStringLiteral("/%1/%2").arg(baseRoute, route);
 
     auto &e=this->exchange.call();
-    e.setMethod(QRpc::Post);
+    e.setMethod(QRpc::Types::Post);
     e.setRoute(routeCall);
 
-    switch (e.protocol()) {
-    case QRpc::Http:
+    QStm::MetaEnum<QRpc::Types::Protocol> eProtocol(e.protocol());
+    switch (eProtocol.type()) {
+    case QRpc::Types::Http:
     {
         auto e_port=e.port().toInt()==80?"":QStringLiteral(":%1").arg(e.port().toInt());
         auto request_url = QStringLiteral("%1%2/%3").arg(e.hostName(), e_port, e.route()).replace(QStringLiteral("\""), "").replace(QStringLiteral("//"), QStringLiteral("/"));
         while(request_url.contains(QStringLiteral("//")))
             request_url=request_url.replace(QStringLiteral("//"), QStringLiteral("/"));
-        request_url = QStringLiteral("%1://%2").arg(e.protocolUrlName(), request_url.simplified());
+        request_url = QStringLiteral("%1://%2").arg(eProtocol.name(), request_url.simplified());
         this->request_url=QUrl{request_url}.toString();
         break;
     }
     default:
         auto request_url = QStringLiteral("%1:%2").arg(e.hostName(),e.port().toInt()).replace(QStringLiteral("\""), "").replace(QStringLiteral("//"), QStringLiteral("/"));
-        request_url = QStringLiteral("%1://%2").arg(e.protocolUrlName(), request_url.simplified());
+        request_url = QStringLiteral("%1://%2").arg(eProtocol.name(), request_url.simplified());
         while(request_url.contains(QStringLiteral("//")))
             request_url=request_url.replace(QStringLiteral("//"), QStringLiteral("/"));
         this->request_url=QUrl{request_url};
@@ -158,7 +162,7 @@ HttpResponse &RequestPvt::download(const QString &route, const QString &fileName
 {
 
     if(!this->qrpcHeader.contentType().isValid())
-        this->qrpcHeader.setContentType(QRpc::AppOctetStream);
+        this->qrpcHeader.setContentType(QRpc::Types::AppOctetStream);
     this->qrpcHeader.addRawHeader(ContentDispositionName, QStringLiteral("form-data; name=%1; filename=%1").arg(fileName));
 
     this->qrpcLastError.clear();
@@ -170,16 +174,16 @@ HttpResponse &RequestPvt::download(const QString &route, const QString &fileName
         routeCall=QStringLiteral("/%1/%2").arg(baseRoute, route);
 
     auto &e=this->exchange.call();
-    e.setMethod(QRpc::Get);
+    e.setMethod(QRpc::Types::Get);
     e.setRoute(routeCall);
     auto &vBody=this->request_body;
     auto method=e.method();
     QMultiHash<QString,QVariant> paramsGet;
     switch (method) {
-    case QRpc::Head:
-    case QRpc::Get:
-    case QRpc::Delete:
-    case QRpc::Options:
+    case QRpc::Types::Head:
+    case QRpc::Types::Get:
+    case QRpc::Types::Delete:
+    case QRpc::Types::Options:
     {
         Q_DECLARE_VU;
         paramsGet=vu.toMultiHash(vBody);
@@ -193,8 +197,9 @@ HttpResponse &RequestPvt::download(const QString &route, const QString &fileName
         break;
     }
 
-    switch (e.protocol()) {
-    case QRpc::Http:
+    QStm::MetaEnum<QRpc::Types::Protocol> eProtocol(e.protocol());
+    switch (eProtocol.type()) {
+    case QRpc::Types::Http:
     {
         auto e_port=e.port().toInt()==80?"":QStringLiteral(":%1").arg(e.port().toInt());
         auto request_url_str = QStringLiteral("%1%2/%3").arg(e.hostName(), e_port, e.route()).replace(QStringLiteral("\""), "").replace(QStringLiteral("//"), QStringLiteral("/"));
@@ -207,7 +212,7 @@ HttpResponse &RequestPvt::download(const QString &route, const QString &fileName
                 request_url_str+=QStringLiteral("/");
             request_url_str+=line;
         }
-        request_url_str=QStringLiteral("%1://%2").arg(e.protocolUrlName(), request_url_str);
+        request_url_str=QStringLiteral("%1://%2").arg(eProtocol.name(), request_url_str);
         this->request_url=QUrl(request_url_str);
         if(!paramsGet.isEmpty()){
             QUrlQuery url_query;
@@ -226,7 +231,7 @@ HttpResponse &RequestPvt::download(const QString &route, const QString &fileName
     }
     default:
         auto request_url = QStringLiteral("%1:%2").arg(e.hostName()).arg(e.port().toInt()).replace(QStringLiteral("\""), "").replace(QStringLiteral("//"), QStringLiteral("/"));
-        request_url = QStringLiteral("%1://%2").arg(e.protocolUrlName(), request_url);
+        request_url = QStringLiteral("%1://%2").arg(eProtocol.name(), request_url);
         this->request_url=QUrl{request_url};
     }
 
@@ -242,7 +247,7 @@ HttpResponse &RequestPvt::download(const QString &route, const QString &fileName
     return this->qrpcResponse;
 }
 
-HttpResponse &RequestPvt::call(const RequestMethod &method, const QVariant &vRoute, const QVariant &body)
+HttpResponse &RequestPvt::call(const QRpc::Types::Method &method, const QVariant &vRoute, const QVariant &body)
 {
     this->qrpcLastError.clear();
 
@@ -260,10 +265,10 @@ HttpResponse &RequestPvt::call(const RequestMethod &method, const QVariant &vRou
 
     QMultiHash<QString,QVariant> paramsGet;
     switch (method) {
-    case QRpc::Head:
-    case QRpc::Get:
-    case QRpc::Delete:
-    case QRpc::Options:
+    case QRpc::Types::Head:
+    case QRpc::Types::Get:
+    case QRpc::Types::Delete:
+    case QRpc::Types::Options:
     {
         Q_DECLARE_VU;
         paramsGet=vu.toMultiHash(vBody);
@@ -277,8 +282,9 @@ HttpResponse &RequestPvt::call(const RequestMethod &method, const QVariant &vRou
         break;
     }
 
-    switch (e.protocol()) {
-    case QRpc::Http:
+    QStm::MetaEnum<QRpc::Types::Protocol> eProtocol(e.protocol());
+    switch (eProtocol.type()) {
+    case QRpc::Types::Http:
     {
         auto e_port=e.port().toInt()==80?"":QStringLiteral(":%1").arg(e.port().toInt());
         auto request_url_str = QStringLiteral("%1%2/%3").arg(e.hostName(), e_port, e.route()).replace(QStringLiteral("\""), "").replace(QStringLiteral("//"), QStringLiteral("/"));
@@ -291,7 +297,7 @@ HttpResponse &RequestPvt::call(const RequestMethod &method, const QVariant &vRou
                 request_url_str+=QStringLiteral("/");
             request_url_str+=line;
         }
-        request_url_str=QStringLiteral("%1://%2").arg(e.protocolUrlName(), request_url_str);
+        request_url_str=QStringLiteral("%1://%2").arg(eProtocol.name(), request_url_str);
         this->request_url=QUrl{request_url_str};
         if(!paramsGet.isEmpty()){
             QUrlQuery url_query;
@@ -306,7 +312,7 @@ HttpResponse &RequestPvt::call(const RequestMethod &method, const QVariant &vRou
         }
         break;
     }
-    case QRpc::DataBase:
+    case QRpc::Types::DataBase:
     {
         auto topic=e.topic().trimmed();
         if(topic.isEmpty()){
@@ -319,12 +325,12 @@ HttpResponse &RequestPvt::call(const RequestMethod &method, const QVariant &vRou
     }
     default:
         auto request_url = QStringLiteral("%1:%2").arg(e.hostName()).arg(e.port().toInt()).replace(QStringLiteral("\""), "").replace(QStringLiteral("//"),QStringLiteral("/"));
-        request_url = QStringLiteral("%1://%2").arg(e.protocolUrlName(), request_url);
+        request_url = QStringLiteral("%1://%2").arg(eProtocol.name(), request_url);
         this->request_url=QUrl{request_url};
     }
 
-    switch (e.protocol()) {
-    case QRpc::Http:
+    switch (eProtocol.type()) {
+    case QRpc::Types::Http:
     {
         switch (vBody.typeId()) {
         case QMetaType::QVariantHash:
@@ -339,12 +345,12 @@ HttpResponse &RequestPvt::call(const RequestMethod &method, const QVariant &vRou
         }
         break;
     }
-    case QRpc::DataBase:
-    case QRpc::Kafka:
-    case QRpc::Amqp:
-    case QRpc::WebSocket:
-    case QRpc::TcpSocket:
-    case QRpc::UdpSocket:
+    case QRpc::Types::DataBase:
+    case QRpc::Types::Kafka:
+    case QRpc::Types::Amqp:
+    case QRpc::Types::WebSocket:
+    case QRpc::Types::TcpSocket:
+    case QRpc::Types::UdpSocket:
     {
         switch (vBody.typeId()) {
         case QMetaType::QVariantHash:
@@ -361,7 +367,7 @@ HttpResponse &RequestPvt::call(const RequestMethod &method, const QVariant &vRou
         ListenRequest request;
         request.setRequestProtocol(e.protocol());
         request.setRequestUuid( QUuid::createUuidV3(QUuid::createUuid(), base.toUtf8()) );
-        request.setRequestMethod(e.methodName().toUtf8().toLower());
+        request.setRequestMethod(QRpc::Types::methodName(e.method()).toLower());
         request.setRequestHeader(this->qrpcHeader.rawHeader());
         request.setRequestBody(vBody);
         request.setRequestPath(routeCall.toUtf8());

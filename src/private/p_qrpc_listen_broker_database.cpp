@@ -182,7 +182,7 @@ public:
         auto &requestMethod = request.requestMethod();
         const auto time_start = QDateTime::currentDateTime();
 
-        request.setRequestProtocol(QRpc::DataBase);
+        request.setRequestProtocol(QRpc::Types::DataBase);
         request.setRequestPath(requestPath.toUtf8());
         auto vMap = request.toHash();
         emit this->listen()->rpcRequest(vMap, QVariant());

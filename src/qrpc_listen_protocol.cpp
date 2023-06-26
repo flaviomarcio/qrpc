@@ -1,8 +1,10 @@
 #include "./qrpc_listen_protocol.h"
 #include "./qrpc_listen.h"
+#include "./qrpc_types.h"
 #include "../../qstm/src/qstm_macro.h"
 #include "../../qstm/src/qstm_util_variant.h"
 #include "../../qstm/src/qstm_envs.h"
+#include "../../qstm/src/qstm_meta_enum.h"
 //#include "./qrpc_listen_colletion.h"
 #include <QMetaProperty>
 #include <QSettings>
@@ -24,7 +26,7 @@ static const auto __path_separatorTwo="//";
 class ListenProtocolPvt : public QObject
 {
 public:
-    int protocol = -1;
+    QStm::MetaEnum<QRpc::Types::Protocol> protocol;
     QMetaObject protocolMetaObject;
     QVariantHash settingsHash;
     QSettings *settings = nullptr;
@@ -55,13 +57,6 @@ public:
     }
 
     ~ListenProtocolPvt() { delete this->settings; }
-
-    QByteArray protocolName() const
-    {
-        const auto protocol = Protocol(this->protocol);
-        auto __return = ProtocolUrlName.value(protocol).toUtf8();
-        return __return;
-    }
 
     void setSettings(const QVariantHash &settings, const QVariantHash &defaultSettings)
     {
@@ -130,58 +125,55 @@ public:
     }
 
 public slots:
-    void changeMap() { this->makeHash(); }
+    void changeHash() { this->makeHash(); }
 };
 
-ListenProtocol::ListenProtocol(QObject *parent) : QObject{parent}
+ListenProtocol::ListenProtocol(QObject *parent) : QObject{parent}, p{new ListenProtocolPvt{this}}
 {
-    this->p = new ListenProtocolPvt{this};
 }
 
-ListenProtocol::ListenProtocol(int protocol, const QMetaObject &metaObject, QObject *parent)
-    : QObject{parent}
+ListenProtocol::ListenProtocol(QRpc::Types::Protocol protocol, const QMetaObject &metaObject, QObject *parent)
+    : QObject{parent}, p{new ListenProtocolPvt{this}}
 {
-    this->p = new ListenProtocolPvt{this};
 
-
-    QObject::connect(this, &ListenProtocol::protocolChanged, this->p, &ListenProtocolPvt::changeMap);
-    QObject::connect(this, &ListenProtocol::protocolNameChanged, this->p, &ListenProtocolPvt::changeMap);
-    QObject::connect(this, &ListenProtocol::optionNameChanged, this->p, &ListenProtocolPvt::changeMap);
+    QObject::connect(this, &ListenProtocol::protocolChanged, this->p, &ListenProtocolPvt::changeHash);
+    QObject::connect(this, &ListenProtocol::protocolNameChanged, this->p, &ListenProtocolPvt::changeHash);
+    QObject::connect(this, &ListenProtocol::optionNameChanged, this->p, &ListenProtocolPvt::changeHash);
     QObject::connect(this,
                      &ListenProtocol::cleanupIntervalChanged,
                      this->p,
-                     &ListenProtocolPvt::changeMap);
-    QObject::connect(this, &ListenProtocol::minThreadsChanged, this->p, &ListenProtocolPvt::changeMap);
-    QObject::connect(this, &ListenProtocol::maxThreadsChanged, this->p, &ListenProtocolPvt::changeMap);
+                     &ListenProtocolPvt::changeHash);
+    QObject::connect(this, &ListenProtocol::minThreadsChanged, this->p, &ListenProtocolPvt::changeHash);
+    QObject::connect(this, &ListenProtocol::maxThreadsChanged, this->p, &ListenProtocolPvt::changeHash);
     QObject::connect(this,
                      &ListenProtocol::maxRequestSizeChanged,
                      this->p,
-                     &ListenProtocolPvt::changeMap);
+                     &ListenProtocolPvt::changeHash);
     QObject::connect(this,
                      &ListenProtocol::maxMultiPartSizeChanged,
                      this->p,
-                     &ListenProtocolPvt::changeMap);
-    QObject::connect(this, &ListenProtocol::driverChanged, this->p, &ListenProtocolPvt::changeMap);
-    QObject::connect(this, &ListenProtocol::hostNameChanged, this->p, &ListenProtocolPvt::changeMap);
-    QObject::connect(this, &ListenProtocol::userNameChanged, this->p, &ListenProtocolPvt::changeMap);
-    QObject::connect(this, &ListenProtocol::passwordChanged, this->p, &ListenProtocolPvt::changeMap);
-    QObject::connect(this, &ListenProtocol::databaseChanged, this->p, &ListenProtocolPvt::changeMap);
-    QObject::connect(this, &ListenProtocol::optionsChanged, this->p, &ListenProtocolPvt::changeMap);
-    QObject::connect(this, &ListenProtocol::portChanged, this->p, &ListenProtocolPvt::changeMap);
-    QObject::connect(this, &ListenProtocol::queueChanged, this->p, &ListenProtocolPvt::changeMap);
-    QObject::connect(this, &ListenProtocol::sslKeyFileChanged, this->p, &ListenProtocolPvt::changeMap);
-    QObject::connect(this, &ListenProtocol::sslCertFileChanged, this->p, &ListenProtocolPvt::changeMap);
-    QObject::connect(this, &ListenProtocol::enabledChanged, this->p, &ListenProtocolPvt::changeMap);
+                     &ListenProtocolPvt::changeHash);
+    QObject::connect(this, &ListenProtocol::driverChanged, this->p, &ListenProtocolPvt::changeHash);
+    QObject::connect(this, &ListenProtocol::hostNameChanged, this->p, &ListenProtocolPvt::changeHash);
+    QObject::connect(this, &ListenProtocol::userNameChanged, this->p, &ListenProtocolPvt::changeHash);
+    QObject::connect(this, &ListenProtocol::passwordChanged, this->p, &ListenProtocolPvt::changeHash);
+    QObject::connect(this, &ListenProtocol::databaseChanged, this->p, &ListenProtocolPvt::changeHash);
+    QObject::connect(this, &ListenProtocol::optionsChanged, this->p, &ListenProtocolPvt::changeHash);
+    QObject::connect(this, &ListenProtocol::portChanged, this->p, &ListenProtocolPvt::changeHash);
+    QObject::connect(this, &ListenProtocol::queueChanged, this->p, &ListenProtocolPvt::changeHash);
+    QObject::connect(this, &ListenProtocol::sslKeyFileChanged, this->p, &ListenProtocolPvt::changeHash);
+    QObject::connect(this, &ListenProtocol::sslCertFileChanged, this->p, &ListenProtocolPvt::changeHash);
+    QObject::connect(this, &ListenProtocol::enabledChanged, this->p, &ListenProtocolPvt::changeHash);
 
     p->protocol = protocol;
-    p->optionName = p->protocolName();
+    p->optionName = p->protocol.name().toLower();
     p->protocolMetaObject = metaObject;
     p->makeHash();
 }
 
 bool ListenProtocol::isValid() const
 {
-    return p->protocol >= 0;
+    return p->protocol.isValid();
 }
 
 Listen *ListenProtocol::makeListen()
@@ -196,23 +188,18 @@ Listen *ListenProtocol::makeListen()
         return nullptr;
     }
 
-    object->setObjectName(QStringLiteral("lis_%1").arg(QString::fromUtf8(this->protocolName())));
+    object->setObjectName(QStringLiteral("lis_%1").arg(QString::fromUtf8(p->protocol.name().toLower())));
     return listen;
 }
 
-int ListenProtocol::protocol()
+QRpc::Types::Protocol ListenProtocol::protocol()
 {
-    return p->protocol;
+    return p->protocol.type();
 }
 
-void ListenProtocol::setProtocol(const int &value)
+void ListenProtocol::setProtocol(const QVariant &value)
 {
     p->protocol = value;
-}
-
-QByteArray ListenProtocol::protocolName()
-{
-    return p->protocolName();
 }
 
 QByteArray ListenProtocol::optionName()
@@ -374,22 +361,22 @@ QVariantList ListenProtocol::port() const
         return vu.toList(value);
     }
 
-    switch (p->protocol) {
-    case Protocol::TcpSocket:
+    switch (p->protocol.type()) {
+    case QRpc::Types::Protocol::TcpSocket:
         return QVariantList{listen_tcp_port};
-    case Protocol::UdpSocket:
+    case QRpc::Types::Protocol::UdpSocket:
         return QVariantList{listen_udp_port};
-    case Protocol::WebSocket:
+    case QRpc::Types::Protocol::WebSocket:
         return QVariantList{listen_web_port};
-    case Protocol::Http:
+    case QRpc::Types::Protocol::Http:
         return QVariantList{listen_http_port};
-    case Protocol::Amqp:
+    case QRpc::Types::Protocol::Amqp:
         return QVariantList{listen_amqp_port};
-    case Protocol::Mqtt:
+    case QRpc::Types::Protocol::Mqtt:
         return QVariantList{listen_mqtt_port};
-    case Protocol::DataBase:
+    case QRpc::Types::Protocol::DataBase:
         return QVariantList{listen_database_port};
-    case Protocol::Kafka:
+    case QRpc::Types::Protocol::Kafka:
         return QVariantList{listen_kafka_port};
     default:
         return {};

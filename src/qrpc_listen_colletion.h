@@ -1,7 +1,6 @@
 #pragma once
 
 #include "./qrpc_global.h"
-#include "./qrpc_types.h"
 #include <QThread>
 #include <QVariant>
 #include <QVariantHash>
@@ -44,14 +43,14 @@ public:
     //! \brief protocol
     //! \return
     //!
-    virtual ListenProtocol &protocol();
+    virtual ListenProtocol *protocol();
 
     //!
     //! \brief protocol
     //! \param protocol
     //! \return
     //!
-    virtual ListenProtocol &protocol(const QRpc::Protocol &protocol);
+    virtual ListenProtocol *protocol(const QVariant &protocol);
 
     //!
     //! \brief protocols
@@ -78,10 +77,10 @@ public:
     virtual ListenColletions &settings(const QVariantHash &settings);
 
     //!
-    //! \brief listenPool
+    //! \brief listenQRPC
     //! \return
     //!
-    virtual ListenQRPC *listenPool();
+    virtual ListenQRPC *listenQRPC();
 
 public slots:
 

@@ -199,11 +199,10 @@ bool RequestJobHttp::call(RequestJobResponse *response)
     default:
         configureHeadersIgnored();
         auto method=response->request_exchange.call().method();
-        auto methodName=response->request_exchange.call().methodName().toUtf8().toUpper();
-
+        auto methodName=QRpc::Types::methodName(method);
         switch (method) {
-        case QRpc::Post:
-        case QRpc::Put:
+        case QRpc::Types::Post:
+        case QRpc::Types::Put:
         {
             auto v=this->request.header(QNetworkRequest::ContentTypeHeader);
             if(!v.isValid()){
@@ -216,22 +215,22 @@ bool RequestJobHttp::call(RequestJobResponse *response)
         }
 
         switch (method) {
-        case QRpc::Head:
+        case QRpc::Types::Head:
             this->reply=nam->head(this->request);
             break;
-        case QRpc::Options:
+        case QRpc::Types::Options:
             this->reply=nam->sendCustomRequest(this->request, methodName);
             break;
-        case QRpc::Get:
+        case QRpc::Types::Get:
             this->reply=nam->get(this->request);
             break;
-        case QRpc::Post:
+        case QRpc::Types::Post:
             this->reply=nam->post(this->request, requestBody);
             break;
-        case QRpc::Put:
+        case QRpc::Types::Put:
             this->reply=nam->put(this->request, requestBody);
             break;
-        case QRpc::Delete:
+        case QRpc::Types::Delete:
             this->reply=nam->deleteResource(this->request);
             break;
         default:

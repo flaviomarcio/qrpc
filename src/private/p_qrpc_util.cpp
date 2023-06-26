@@ -1,7 +1,7 @@
 #include "./p_qrpc_util.h"
 #include "../qrpc_types.h"
 #include "../../qstm/src/qstm_macro.h"
-#include "../../qstm/src/qstm_util_variant.h"
+#include "../../qstm/src/qstm_meta_enum.h"
 
 namespace QRpc {
 
@@ -77,9 +77,10 @@ const QString parseQueryItem(const QVariant &v)
 
 const QVariantHash toHashResquest(int method, const QVariant &request_url, const QString &request_body, const QVariantHash &request_parameters, const QString &response_body, const QVariantHash &request_header, const QDateTime &request_start, const QDateTime &request_finish)
 {
-    Q_DECLARE_VU;
-    auto request_method=RequestMethodName.value(method).toUpper();
-    QVariantHash map{
+    QStm::MetaEnum<QRpc::Types::Method> eMethod(method);
+
+    auto request_method=eMethod.name();
+    QVariantHash vHash{
         {__url, request_url},
         {__method, request_method},
         {__header, request_header},
@@ -105,34 +106,41 @@ const QVariantHash toHashResquest(int method, const QVariant &request_url, const
     }
 
     QString scUrl, cUrl;
-
-    if(request_url.typeId()==QMetaType::QUrl){
+    switch (request_url.typeId()) {
+    case QMetaType::QUrl:
+    {
         auto url=request_url.toUrl();
         cUrl=url.toString().split(__pathDelimer).join(__pathDelimer);
+        break;
     }
-    else{
+    default:
         cUrl=request_url.toString();
+        break;
     }
-    if(method==QRpc::Post || method==QRpc::Put){
-        map[__body]= request_parameters;
+
+    switch (eMethod.type()) {
+    case QRpc::Types::Post:
+    case QRpc::Types::Put:
+    {
+        vHash.insert(__body, request_parameters);
         auto body=request_body;
         body=response_body.trimmed().isEmpty()?"":QStringLiteral("-d '%1'").arg(body.replace('\n',' '));
         scUrl=QStringLiteral("curl --insecure -i -X %1 %2 %3 -G '%4'").arg(request_method, headers.join(' '), body, cUrl).trimmed();
+        break;
     }
-    else{
+    default:
         QStringList params;
-        map[QStringLiteral("parameter")]= request_parameters;
+        vHash[QStringLiteral("parameter")]= request_parameters;
         Q_V_HASH_ITERATOR(request_parameters){
             i.next();
             auto k=i.key();
-            params<<QStringLiteral("-d %1=%2").arg(k, Util::parseQueryItem(i.value()));
+            params.append(QStringLiteral("-d %1=%2").arg(k, Util::parseQueryItem(i.value())));
         }
         scUrl=QStringLiteral("curl --insecure -i -X %1 %2 -G '%3' %4").arg(request_method, headers.join(' '), cUrl, params.join(' ')).trimmed();
     }
 
-    map.insert(QStringLiteral("curl"), scUrl);
-    return map;
+    vHash.insert(QStringLiteral("curl"), scUrl);
+    return vHash;
 }
-
 }
 }

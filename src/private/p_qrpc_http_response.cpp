@@ -47,13 +47,13 @@ void HttpResponse::setBody(const QVariant &vBody)
     case QMetaType::QVariantList:
     case QMetaType::QStringList:
     {
-        if(this->header().isContentType(AppJson)){
+        if(this->header().isContentType(QRpc::Types::AppJson)){
             auto doc=QJsonDocument::fromVariant(vBody);
             p->response_body=doc.toJson(doc.Compact);
             break;
         }
 
-        if(this->header().isContentType(AppCBOR) || this->header().isContentType(AppOctetStream)){
+        if(this->header().isContentType(QRpc::Types::AppCBOR) || this->header().isContentType(QRpc::Types::AppOctetStream)){
             auto doc=QCborValue::fromVariant(vBody);
             p->response_body=doc.toByteArray();
             break;
@@ -65,13 +65,13 @@ void HttpResponse::setBody(const QVariant &vBody)
     case QMetaType::QString:
     case QMetaType::QByteArray:
     {
-        if(this->header().isContentType(AppJson)){
+        if(this->header().isContentType(QRpc::Types::AppJson)){
             auto doc=QJsonDocument::fromJson(vBody.toByteArray());
             p->response_body=doc.toJson(doc.Compact);
             break;
         }
 
-        if(this->header().isContentType(AppCBOR) || this->header().isContentType(AppOctetStream)){
+        if(this->header().isContentType(QRpc::Types::AppCBOR) || this->header().isContentType(QRpc::Types::AppOctetStream)){
             auto doc=QCborValue::fromCbor(vBody.toByteArray());
             p->response_body=doc.toByteArray();
             break;
@@ -99,14 +99,14 @@ QVariant HttpResponse::bodyVariant() const
         return {};
     }
 
-    if(this->header().isContentType(AppJson)){
+    if(this->header().isContentType(QRpc::Types::AppJson)){
         auto vdoc=QJsonDocument::fromJson(p->response_body, error).toVariant();
-        if(!vdoc.isNull() && !vdoc.isValid())
+        if(!vdoc.isNull() && vdoc.isValid())
             return vdoc;
     }
-    else if(this->header().isContentType(AppCBOR) || this->header().isContentType(AppOctetStream)){
+    else if(this->header().isContentType(QRpc::Types::AppCBOR) || this->header().isContentType(QRpc::Types::AppOctetStream)){
         auto vdoc=QCborValue::fromVariant(p->response_body).toVariant();
-        if(!vdoc.isNull() && !vdoc.isValid())
+        if(!vdoc.isNull() && vdoc.isValid())
             return vdoc;
     }
 

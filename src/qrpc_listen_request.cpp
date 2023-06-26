@@ -2,7 +2,9 @@
 #include "./qrpc_request.h"
 #include "./qrpc_startup.h"
 #include "./qrpc_macro.h"
+#include "./qrpc_types.h"
 #include "../../qstm/src/qstm_setting_base.h"
+#include "../../qstm/src/qstm_meta_enum.h"
 #include "../../qstm/src/qstm_macro.h"
 #include "../../qstm/src/qstm_util_variant.h"
 #include "../../qstm/src/qstm_network_types.h"
@@ -53,12 +55,12 @@ public:
     QHash<QString, QFile *> uploadedFiles;
     QEventLoop eventLoop;
     QUuid listenUuid;
-    ContentType requestContentType =QRpc::AppNone;
+    QStm::MetaEnum<QRpc::Types::ContentType> requestContentType =QRpc::Types::AppNone;
     QUuid requestUuid;
-    QByteArray requestProtocol;
+    QStm::MetaEnum<QRpc::Types::Protocol> requestProtocol;
     int requestPort=-1;
     QByteArray requestPath;
-    QByteArray requestMethod;
+    QStm::MetaEnum<QRpc::Types::Method> requestMethod;
     QVariantHash requestHeader;
     QVariantHash requestParameter;
     QVariant requestBody;
@@ -72,9 +74,8 @@ public:
     int responseCode=0;
     int requestTimeout=0;
 
-    explicit ListenRequestPvt(ListenRequest *parent):QObject{parent}, listenCode(parent)
+    explicit ListenRequestPvt(ListenRequest *parent):QObject{parent}, parent{parent}, listenCode(parent)
     {
-        this->parent=parent;
         QObject::connect(parent, &ListenRequest::finish, this, &ListenRequestPvt::onRequestFinish);
     }
 
@@ -181,25 +182,17 @@ public:
     void setRequestHeader(const QVariantHash &value)
     {
         this->requestHeader=value;
-        this->requestContentType=QRpc::AppXwwwForm;
-        static auto headerName=QString(ContentTypeName).toLower();
-        QHashIterator<QString, QVariant> i(value);
-        while (i.hasNext()) {
-            i.next();
-            auto key=i.key().toLower();
-            auto value=i.value().toString().toLower().trimmed();
-            if(key.toLower()!=headerName)
-                continue;
+        //this->requestContentType=QRpc::Types::AppXwwwForm;
+        QVariant v;
+        QByteArray contentTypeName=ContentTypeName;
+        if(value.contains(contentTypeName))
+            v=value.value(contentTypeName);
+        else if(value.contains(contentTypeName.toLower()))
+            v=value.value(contentTypeName.toLower());
+        else if(value.contains(contentTypeName.toUpper()))
+            v=value.value(contentTypeName.toUpper());
 
-            QHashIterator<QString, ContentType> i(ContentTypeHeaderToHeaderType);
-            while (i.hasNext()) {
-                i.next();
-                if(!value.contains(i.key()))
-                    continue;
-                this->requestContentType=i.value();
-                break;
-            }
-        }
+        this->requestContentType=QRpc::Types::contentType(v);
     }
 
     QVariantHash authorizationHeaders() const
@@ -283,27 +276,27 @@ QString ListenRequest::authorizationService() const
 
 bool ListenRequest::isMethodHead() const
 {
-    return (p->requestMethod==QByteArrayLiteral("head"));
+    return (p->requestMethod.equal(QRpc::Types::Head));
 }
 
 bool ListenRequest::isMethodGet()const
 {
-    return (p->requestMethod==QByteArrayLiteral("get"));
+    return (p->requestMethod.equal(QRpc::Types::Get));
 }
 
 bool ListenRequest::isMethodPost()const
 {
-    return (p->requestMethod==QByteArrayLiteral("post"));
+    return (p->requestMethod.equal(QRpc::Types::Post));
 }
 
 bool ListenRequest::isMethodPut() const
 {
-    return (p->requestMethod==QByteArrayLiteral("put"));
+    return (p->requestMethod.equal(QRpc::Types::Put));
 }
 
 bool ListenRequest::isMethodDelete() const
 {
-    return (p->requestMethod==QByteArrayLiteral("delete"));
+    return (p->requestMethod.equal(QRpc::Types::Delete));
 }
 
 bool ListenRequest::isMethodUpload() const
@@ -313,7 +306,7 @@ bool ListenRequest::isMethodUpload() const
 
 bool ListenRequest::isMethodOptions() const
 {
-    return (p->requestMethod==QByteArrayLiteral("options"));
+    return (p->requestMethod.equal(QRpc::Types::Options));
 }
 
 bool ListenRequest::canMethodHead()
@@ -408,7 +401,7 @@ bool ListenRequest::isEmpty() const
     if(p->requestPath.trimmed().isEmpty())
         return false;
 
-    if(p->requestMethod.trimmed().isEmpty())
+    if(!p->requestMethod.isValid())
         return false;
 
     return true;
@@ -854,21 +847,14 @@ void ListenRequest::setRequestUuid(const QUuid &value)
     p->requestUuid = value;
 }
 
-QByteArray &ListenRequest::requestProtocol() const
+QRpc::Types::Protocol ListenRequest::requestProtocol() const
 {
-    return p->requestProtocol;
+    return p->requestProtocol.type();
 }
 
 void ListenRequest::setRequestProtocol(const QVariant &value)
 {
-    auto ivalue=value.toLongLong();
-    if(ivalue>0){
-        auto name=ProtocolUrlName.value(Protocol(ivalue)).toUtf8();
-        if(name.isEmpty())
-            p->requestProtocol = value.toString().toUtf8();
-        else
-            p->requestProtocol = name;
-    }
+    p->requestProtocol=value;
 }
 
 int ListenRequest::requestPort() const
@@ -897,18 +883,14 @@ void QRpc::ListenRequest::setRequestPath(const QVariant &value)
         p->requestPath=p->requestPath.mid(0,p->requestPath.length()-1);
 }
 
-QByteArray &ListenRequest::requestMethod() const
+QRpc::Types::Method ListenRequest::requestMethod() const
 {
-    return p->requestMethod;
+    return p->requestMethod.type();
 }
 
 void ListenRequest::setRequestMethod(const QVariant &value)
 {
-    auto ivalue=value.toLongLong();
-    if(ivalue>0)
-        p->requestMethod=RequestMethodName.value(ivalue).toUtf8();
-    else
-        p->requestMethod=value.toByteArray().toLower();
+    p->requestMethod=value;
 }
 
 QVariantHash &ListenRequest::requestHeader() const
@@ -1169,12 +1151,12 @@ void ListenRequest::setRequestBody(const QVariant &value)
         _body=value;
         break;
     default:
-        switch (p->requestContentType) {
-        case AppJson:
+        switch (p->requestContentType.type()) {
+        case QRpc::Types::AppJson:
             _body=QJsonDocument::fromJson(value.toByteArray()).toVariant();
             break;
-        case AppCBOR:
-        case AppOctetStream:
+        case QRpc::Types::AppCBOR:
+        case QRpc::Types::AppOctetStream:
             _body=QCborValue::fromVariant(value).toVariant();
             break;
         default:
@@ -1296,25 +1278,29 @@ QByteArray ListenRequest::responseBodyBytes() const
 {
     QVariant v;
     const auto &response = p->responseBody;
-    auto typeId=response.typeId();
-    switch (typeId) {
+    switch (response.typeId()) {
     case QMetaType::QVariantList:
     case QMetaType::QStringList:
     case QMetaType::QVariantMap:
     case QMetaType::QVariantHash:
     {
-        //TODO UTILIZAR switch () {}
-        if(p->requestContentType==AppJson)
+        switch (p->requestContentType.type()) {
+        case QRpc::Types::AppJson:
             v=QJsonDocument::fromVariant(response).toJson(QJsonDocument::Compact);
-        else if(p->requestContentType==AppCBOR)
+            break;
+        case QRpc::Types::AppCBOR:
             v=QCborValue::fromVariant(response).toCbor();
-        else if(p->requestContentType==AppXML)
+            break;
+        case QRpc::Types::AppXML:
             v=QJsonDocument::fromVariant(response).toJson(QJsonDocument::Compact);
-        else if(p->requestContentType==AppOctetStream)
+            break;
+        case QRpc::Types::AppOctetStream:
             v=QCborValue::fromVariant(response).toCbor();
-        else
+            break;
+        default:
             v=QJsonDocument::fromVariant(response).toJson(QJsonDocument::Compact);
-        break;
+            break;
+        }
     }
     default:
         v=QVariant::fromValue(response);
@@ -1400,18 +1386,14 @@ const QUuid ListenRequest::makeUuid()
     return p->requestUuid;
 }
 
-int ListenRequest::requestContentType() const
+QRpc::Types::ContentType ListenRequest::requestContentType() const
 {
-    return p->requestContentType;
+    return p->requestContentType.type();
 }
 
 void ListenRequest::setRequestContentType(const QVariant &value)
 {
-    auto content_type=ContentType(value.toInt());
-    if(!ContentTypeHeaderTypeToHeader.contains(content_type))
-        p->requestContentType = QRpc::AppNone;
-    else
-        p->requestContentType = content_type;
+    p->requestContentType = value;
 }
 
 void ListenRequest::setRequestResponse(QObject *request)

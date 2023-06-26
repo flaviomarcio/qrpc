@@ -4,6 +4,7 @@
 #include "./qrpc_types.h"
 
 namespace QRpc {
+
 class RequestExchangeSettingPvt;
 //!
 //! \brief The RequestExchangeSetting class
@@ -12,8 +13,8 @@ class Q_RPC_EXPORT RequestExchangeSetting: public QObject
 {
     Q_OBJECT
 public:
-    Q_PROPERTY(QString protocol READ protocolName WRITE setProtocol RESET resetProtocol NOTIFY protocolChanged)
-    Q_PROPERTY(int method READ ___method WRITE setMethod RESET resetMethod NOTIFY methodChanged )
+    Q_PROPERTY(Types::Protocol protocol READ protocol WRITE setProtocol RESET resetProtocol NOTIFY protocolChanged)
+    Q_PROPERTY(Types::Method method READ method WRITE setMethod RESET resetMethod NOTIFY methodChanged )
     Q_PROPERTY(QString vHost READ vHost WRITE setVHost RESET resetVHost NOTIFY vHostChanged )
     Q_PROPERTY(QString driver READ driver WRITE setDriver RESET resetDriver NOTIFY driverChanged )
     Q_PROPERTY(QString hostName READ hostName WRITE setHostName RESET resetHostName NOTIFY hostNameChanged )
@@ -88,25 +89,19 @@ public:
     //! \brief method
     //! \return
     //!
-    RequestMethod method() const;
+    Types::Method method() const;
     RequestExchangeSetting &setMethod(const QVariant &value);
+    RequestExchangeSetting &method(const QVariant &value){ return this->setMethod(value);}
     RequestExchangeSetting &resetMethod(){ return this->setMethod({});}
-    RequestExchangeSetting &method(const int &value){ return this->setMethod(value);}
-    RequestExchangeSetting &method(const QString &value){ return this->setMethod(value);}
-    const QString &methodName() const;
 
     //!
     //! \brief protocol
     //! \return
     //!
-    Protocol protocol() const;
-    RequestExchangeSetting &setProtocol(const Protocol &value);
+    Types::Protocol protocol() const;
     RequestExchangeSetting &setProtocol(const QVariant &value);
     RequestExchangeSetting &resetProtocol(){ return this->setProtocol({});}
-    RequestExchangeSetting &protocol(const Protocol &value){ return this->setProtocol(value);}
     RequestExchangeSetting &protocol(const QVariant &value){ return this->setProtocol(value);}
-    const QString &protocolName() const;
-    const QString &protocolUrlName() const;
 
     //!
     //! \brief driver
@@ -199,6 +194,7 @@ public:
     RequestExchangeSetting &parameter(const QVariantHash &value){ return this->setParameter(value);}
 
 signals:
+
     void protocolChanged();
     void methodChanged();
     void vHostChanged();
@@ -214,7 +210,6 @@ signals:
 
 private:
     RequestExchangeSettingPvt *p = nullptr;
-    int ___method() const{ return this->method();}
 };
 
 }

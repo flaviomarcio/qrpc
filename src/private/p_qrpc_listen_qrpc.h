@@ -74,6 +74,6 @@ private:
     ListenQRPCPvt *p = nullptr;
 };
 
-QRPC_LISTTEN_AUTO_REGISTER(0, ListenQRPC)
+QRPC_LISTTEN_AUTO_REGISTER(QRpc::Types::Rpc, ListenQRPC)
 
 } // namespace QRpc
