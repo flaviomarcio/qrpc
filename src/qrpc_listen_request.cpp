@@ -1301,6 +1301,7 @@ QByteArray ListenRequest::responseBodyBytes() const
             v=QJsonDocument::fromVariant(response).toJson(QJsonDocument::Compact);
             break;
         }
+        break;
     }
     default:
         v=QVariant::fromValue(response);
