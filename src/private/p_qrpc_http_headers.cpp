@@ -346,11 +346,26 @@ HttpHeaders &HttpHeaders::setAuthorization(const QVariant &authorizationScheme, 
     return this->setAuthorization(__header_authorization, authorizationScheme, credentials);
 }
 
-HttpHeaders &HttpHeaders::setAuthorizationBasic(const QVariant &authorizationScheme, const QVariant &userName, const QVariant &passWord)
+HttpHeaders &HttpHeaders::setAuthorizationBearer(const QVariant &token)
+{
+    return this->setAuthorization(QRpc::Types::Bearer, token);
+}
+
+HttpHeaders &HttpHeaders::setAuthorizationService(const QVariant &token)
+{
+    return this->setAuthorization(QRpc::Types::Service, token);
+}
+
+HttpHeaders &HttpHeaders::setAuthorizationBasic(const QVariant &base64Encode)
+{
+    return this->setAuthorization(QRpc::Types::Service, base64Encode);
+}
+
+HttpHeaders &HttpHeaders::setAuthorizationBasic(const QVariant &userName, const QVariant &passWord)
 {
     static const auto __format=QStringLiteral("%1:%2");
     auto credentials=__format.arg(userName.toString(), passWord.toString()).toUtf8().toBase64();
-    return this->setAuthorization(authorizationScheme, credentials);
+    return this->setAuthorization(QRpc::Types::Basic, credentials);
 }
 
 HttpHeaders &HttpHeaders::setProxyAuthorization(const QVariant &authorizationScheme, const QVariant &credentials)

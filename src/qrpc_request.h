@@ -208,7 +208,7 @@ public:
     //! \brief route
     //! \return
     //!
-    const QString route() const;
+    QString route() const;
     Request &setRoute(const QVariant &value);
     Request &route(const QVariant &value){ return this->setRoute(value);}
 
@@ -281,6 +281,30 @@ public:
     //! \return
     //!
     const LastError &lastError()const;
+
+    //!
+    //! \brief GET
+    //! \return
+    //!
+    Request &GET();
+
+    //!
+    //! \brief POST
+    //! \return
+    //!
+    Request &POST();
+
+    //!
+    //! \brief PUT
+    //! \return
+    //!
+    Request &PUT();
+
+    //!
+    //! \brief DELETE
+    //! \return
+    //!
+    Request &DELETE();
 
     //!
     //! \brief call

@@ -186,7 +186,7 @@ Request &Request::setPassword(const QString &value)
     return *this;
 }
 
-const QString Request::route() const
+QString Request::route() const
 {
     return p->exchange.call().route();
 }
@@ -290,6 +290,34 @@ Request &Request::setRequestRecoveryOnBadGateway(int repeatCount)
 const LastError &Request::lastError() const
 {
     return p->qrpcLastError;
+}
+
+Request &Request::GET()
+{
+    auto &e=p->exchange.call();
+    e.method(QRpc::Types::Get);
+    return *this;
+}
+
+Request &Request::POST()
+{
+    auto &e=p->exchange.call();
+    e.method(QRpc::Types::Post);
+    return *this;
+}
+
+Request &Request::PUT()
+{
+    auto &e=p->exchange.call();
+    e.method(QRpc::Types::Put);
+    return *this;
+}
+
+Request &Request::DELETE()
+{
+    auto &e=p->exchange.call();
+    e.method(QRpc::Types::Delete);
+    return *this;
 }
 
 HttpResponse &Request::call()

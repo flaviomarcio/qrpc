@@ -99,7 +99,10 @@ public:
     //!
     virtual HttpHeaders &setAuthorization(const QString &headerName, const QVariant &authorizationScheme, const QVariant &credentials);
     virtual HttpHeaders &setAuthorization(const QVariant &authorizationScheme, const QVariant &credentials);
-    virtual HttpHeaders &setAuthorizationBasic(const QVariant &authorizationScheme, const QVariant &userName, const QVariant &passWord);
+    virtual HttpHeaders &setAuthorizationBearer(const QVariant &token);
+    virtual HttpHeaders &setAuthorizationService(const QVariant &token);
+    virtual HttpHeaders &setAuthorizationBasic(const QVariant &base64Encode);
+    virtual HttpHeaders &setAuthorizationBasic(const QVariant &userName, const QVariant &passWord);
     virtual QVariant authorization(const QString &headerName, const QVariant &authorizationScheme);
     virtual QVariant authorization(const QVariant &authorizationScheme);
 
