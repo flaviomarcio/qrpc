@@ -119,6 +119,13 @@ public:
     Q_INVOKABLE explicit Request(QObject *parent=nullptr);
 
     //!
+    //! \brief operator =
+    //! \param value
+    //! \return
+    //!
+    Request &operator=(const QStm::SettingBase *value);
+
+    //!
     //! \brief startsWith
     //! \param requestPath
     //! \param requestPathBase
@@ -146,9 +153,9 @@ public:
     //! \param setting
     //! \return
     //!
-    Request &setSettings(const QStm::SettingBase &setting);
+    Request &setSettings(const QStm::SettingBase *setting);
     Request &setSettings(const QVariantHash &setting);
-    Request &settings(const QStm::SettingBase &setting){ return this->setSettings(setting);}
+    Request &settings(const QStm::SettingBase *setting){ return this->setSettings(setting);}
     Request &settings(const QVariantHash &setting){ return this->setSettings(setting);}
 
     //!
@@ -394,13 +401,6 @@ public:
     //! \return
     //!
     HttpResponse &call(QRpc::Types::Method method, const QString &route, QIODevice &ioDeviceBody);
-
-    //!
-    //! \brief operator =
-    //! \param value
-    //! \return
-    //!
-    Request &operator=(const QStm::SettingBase &value);
 
     //!
     //! \brief upload

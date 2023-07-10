@@ -9,6 +9,12 @@ Request::Request(QObject *parent):QObject{parent}, p{new RequestPvt{this}}
 {
 }
 
+Request &Request::operator=(const QStm::SettingBase *value)
+{
+    this->setSettings(value);
+    return *this;
+}
+
 bool Request::startsWith(const QString &requestPath, const QVariant &requestPathBase)
 {
     QStringList paths;
@@ -80,7 +86,7 @@ bool Request::canRequest() const
     return true;
 }
 
-Request &Request::setSettings(const QStm::SettingBase &setting)
+Request &Request::setSettings(const QStm::SettingBase *setting)
 {
     p->setSettings(setting);
     return *this;
@@ -417,12 +423,6 @@ HttpResponse &Request::call(QRpc::Types::Method method, const QString &route, QI
     e.setRoute(route);
     e.setMethod(method);
     return p->call(e.method(), e.route(), body);
-}
-
-Request &Request::operator=(const QStm::SettingBase &value)
-{
-    this->setSettings(value);
-    return *this;
 }
 
 HttpResponse &Request::upload(QFile &file)

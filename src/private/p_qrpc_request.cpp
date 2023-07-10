@@ -47,16 +47,18 @@ QString RequestPvt::urlMaker(const QString &path)
                :__format2.arg(sprotocol, shostname, sport, spath);
 }
 
-void RequestPvt::setSettings(const QStm::SettingBase &setting)
+void RequestPvt::setSettings(const QStm::SettingBase *setting)
 {
-    auto __header=setting.headers();
+    if(!setting)
+        return;
+    auto __header=setting->headers();
     parent->header().setRawHeader(__header);
-    parent->setProtocol(setting.protocol());
-    parent->setPort(setting.port());
-    parent->setDriver(setting.driverName());
-    parent->setHostName(setting.hostName());
-    parent->setMethod(setting.method());
-    parent->setRoute(setting.route());
+    parent->setProtocol(setting->protocol());
+    parent->setPort(setting->port());
+    parent->setDriver(setting->driverName());
+    parent->setHostName(setting->hostName());
+    parent->setMethod(setting->method());
+    parent->setRoute(setting->route());
 }
 
 QString RequestPvt::parseFileName(const QString &fileName)

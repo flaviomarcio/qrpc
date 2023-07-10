@@ -124,7 +124,7 @@ QStm::SettingManager &Server::settings()const
     return p->settings;
 }
 
-const QStm::SettingBase &Server::settings(const QString &settingName)
+QStm::SettingBase *Server::settings(const QString &settingName)
 {
     return p->settings.setting(settingName);
 }
