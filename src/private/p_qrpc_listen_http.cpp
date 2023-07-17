@@ -18,7 +18,6 @@
 static const auto __contextPath="contextPath";
 static const auto __port="port";
 static const auto __set_crypt_mode="set-crypt-mode";
-static const auto __ENCRYPTED="ENCRYPTED";
 //static const auto __DECRYPTED="DECRYPTED";
 
 
@@ -111,8 +110,8 @@ public:
         auto &request = listen->cacheRequest()->createRequest();
         auto requestPath = QString{req.getPath()}.trimmed().toLower();
         auto requestBody = QByteArray{req.getBody()};
-        auto requestMethod = QString{req.getMethod()}.toLower();
-        auto requestPort = this->port;
+        const auto requestMethod = QString{req.getMethod()}.toLower();
+        const auto requestPort = this->port;
 
         if (!requestPath.isEmpty()) {
             auto c = requestPath.at(requestPath.length() - 1);
@@ -122,12 +121,6 @@ public:
 
         if(!this->contextPath.isEmpty() && requestPath.startsWith(this->contextPath))
             requestPath = requestPath.right(requestPath.length()-this->contextPath.length());
-
-        auto isENCRYPTED=requestHeaders.value(__set_crypt_mode).toString().trimmed().toUpper()==__ENCRYPTED;
-        if(isENCRYPTED){
-            QStm::CryptoUtil cu;
-            requestBody=cu.CryptoUtil::decrypt(requestBody);
-        }
 
         request.setRequestProtocol(QRpc::Types::Http);
         request.setRequestPort(requestPort);
@@ -186,7 +179,7 @@ public:
             file.close();
             return body;
         };
-        auto body=getBody();
+        const auto body=getBody();
 
 #if Q_RPC_LOG
 
@@ -262,11 +255,6 @@ public:
                 ret.setHeader(k, v);
             }
             ret.setStatus(request.responseCode(), request.responsePhrase()); //mensagem padrao
-            if(isENCRYPTED){
-                ret.setHeader(__set_crypt_mode, __ENCRYPTED);
-                QStm::CryptoUtil cu;
-                body=cu.encrypt(body);
-            }
             ret.write(body, true);
         }
     }

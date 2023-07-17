@@ -1113,7 +1113,7 @@ QVariant ListenRequest::requestParamHash(const QByteArray &key) const
         case QMetaType::QString:
         case QMetaType::QByteArray:
         {
-            auto s=v.toByteArray();
+            auto s=v.toByteArray().trimmed();
             return s.isEmpty()?QVariant{}:s;
         }
         default:
@@ -1283,6 +1283,7 @@ QByteArray ListenRequest::responseBodyBytes() const
     case QMetaType::QStringList:
     case QMetaType::QVariantMap:
     case QMetaType::QVariantHash:
+    case QMetaType::QVariantPair:
     {
         switch (p->requestContentType.type()) {
         case QRpc::Types::AppJson:
@@ -1301,36 +1302,29 @@ QByteArray ListenRequest::responseBodyBytes() const
             v=QJsonDocument::fromVariant(response).toJson(QJsonDocument::Compact);
             break;
         }
+        break;
     }
     default:
         v=QVariant::fromValue(response);
     }
 
-    if(v.isValid()){
-        QString body;
-        switch (v.typeId()) {
-        case QMetaType::QDate:
-            body=v.toDate().toString(Qt::ISODate);
-            break;
-        case QMetaType::QTime:
-            body=v.toTime().toString(Qt::ISODateWithMs);
-            break;
-        case QMetaType::QDateTime:
-            body=v.toDateTime().toString(Qt::ISODateWithMs);
-            break;
-        case QMetaType::QUuid:
-            body=v.toUuid().toString();
-            break;
-        case QMetaType::QUrl:
-            body=v.toUrl().toString();
-            break;
-        default:
-            body=v.toString();
-        }
-        return body.toUtf8();
-    }
+    if(!v.isValid())
+        return {};
 
-    return {};
+    switch (v.typeId()) {
+    case QMetaType::QDate:
+        return v.toDate().toString(Qt::ISODate).toUtf8();
+    case QMetaType::QTime:
+        return v.toTime().toString(Qt::ISODateWithMs).toUtf8();
+    case QMetaType::QDateTime:
+        return v.toDateTime().toString(Qt::ISODateWithMs).toUtf8();
+    case QMetaType::QUuid:
+        return v.toUuid().toString().toUtf8();
+    case QMetaType::QUrl:
+        return v.toUrl().toString().toUtf8();
+    default:
+        return v.toString().toUtf8();
+    }
 }
 
 void ListenRequest::setResponseBody(const QVariant &value)
