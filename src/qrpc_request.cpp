@@ -9,6 +9,12 @@ Request::Request(QObject *parent):QObject{parent}, p{new RequestPvt{this}}
 {
 }
 
+Request &Request::operator=(const QStm::SettingBase *value)
+{
+    this->setSettings(value);
+    return *this;
+}
+
 bool Request::startsWith(const QString &requestPath, const QVariant &requestPathBase)
 {
     QStringList paths;
@@ -80,7 +86,7 @@ bool Request::canRequest() const
     return true;
 }
 
-Request &Request::setSettings(const QStm::SettingBase &setting)
+Request &Request::setSettings(const QStm::SettingBase *setting)
 {
     p->setSettings(setting);
     return *this;
@@ -186,7 +192,7 @@ Request &Request::setPassword(const QString &value)
     return *this;
 }
 
-const QString Request::route() const
+QString Request::route() const
 {
     return p->exchange.call().route();
 }
@@ -292,6 +298,34 @@ const LastError &Request::lastError() const
     return p->qrpcLastError;
 }
 
+Request &Request::GET()
+{
+    auto &e=p->exchange.call();
+    e.method(QRpc::Types::Get);
+    return *this;
+}
+
+Request &Request::POST()
+{
+    auto &e=p->exchange.call();
+    e.method(QRpc::Types::Post);
+    return *this;
+}
+
+Request &Request::PUT()
+{
+    auto &e=p->exchange.call();
+    e.method(QRpc::Types::Put);
+    return *this;
+}
+
+Request &Request::DELETE()
+{
+    auto &e=p->exchange.call();
+    e.method(QRpc::Types::Delete);
+    return *this;
+}
+
 HttpResponse &Request::call()
 {
     auto &e=p->exchange.call();
@@ -389,12 +423,6 @@ HttpResponse &Request::call(QRpc::Types::Method method, const QString &route, QI
     e.setRoute(route);
     e.setMethod(method);
     return p->call(e.method(), e.route(), body);
-}
-
-Request &Request::operator=(const QStm::SettingBase &value)
-{
-    this->setSettings(value);
-    return *this;
 }
 
 HttpResponse &Request::upload(QFile &file)

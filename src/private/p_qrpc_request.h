@@ -50,7 +50,7 @@ public:
     
     QString urlMaker(const QString &path);
 
-    void setSettings(const QStm::SettingBase &setting);
+    void setSettings(const QStm::SettingBase *setting);
 
     QString parseFileName(const QString &fileName);
 

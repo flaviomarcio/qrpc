@@ -32,7 +32,7 @@ public:
     //! \return
     //!
     virtual QStm::SettingManager &settings() const;
-    virtual const QStm::SettingBase &settings(const QString &settingName);
+    virtual QStm::SettingBase *settings(const QString &settingName);
 
     //!
     //! \brief isRunning
