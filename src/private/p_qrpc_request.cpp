@@ -38,7 +38,7 @@ QString RequestPvt::urlMaker(const QString &path)
         spath=spath.replace(QStringLiteral("//"),"/");
 
     auto shostname=rq.hostName().trimmed();
-    auto sprotocol=QRpc::Types::protocolName(rq.protocol());
+    auto sprotocol=QRpc::Types::protocolName(rq.protocol()).toLower();
     auto sport=rq.port().toString();
     static const auto __format1=QStringLiteral("%1://%2:%3");
     static const auto __format2=QStringLiteral("%1://%2:%3%4");
