@@ -144,6 +144,11 @@ bool Server::start()
     for (auto &v : Controller::staticApiParserList())
         this->controllerParsers().append(v);
 
+    if(this->controllers().isEmpty()){
+        rWarning()<<"No controllers registerd";
+        return false;
+    }
+
     return p->serverStart();
 }
 

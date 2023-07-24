@@ -105,7 +105,7 @@ public:
         rWarning() << "registered class : " << makeObject->metaObject()->className();
 #endif
 
-        static auto nottionExcludeMethod=QVariantList{controller->rqRedirect, controller->rqExcludePath};
+        static auto annotationExcludeMethod=QVariantList{controller->rqRedirect, controller->rqExcludePath};
         static ByteArrayVector methodBlackList=QRPC_METHOD_BACK_LIST;
         const auto &vBasePathList = controller->basePath();
         if (vBasePathList.isEmpty())
@@ -138,7 +138,7 @@ public:
 
             const auto annotations=controller->annotation(method);
 
-            if(annotations.contains(nottionExcludeMethod))
+            if(annotations.contains(annotationExcludeMethod))
                 continue;
 
             methodList.append(method);
@@ -334,8 +334,7 @@ void ListenQRPC::registerListen(Listen *listen)
 
 Listen *ListenQRPC::childrenListen(QUuid uuid)
 {
-    auto listen = p->listens.value(uuid);
-    return listen;
+    return p->listens.value(uuid);
 }
 
 } // namespace QRpc
