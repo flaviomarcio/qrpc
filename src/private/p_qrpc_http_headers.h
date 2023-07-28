@@ -55,6 +55,7 @@ public:
     virtual QVariant rawHeader(const QString &headername) const;
     virtual HttpHeaders &setRawHeader(const QVariantHash &rawHeader);
     virtual HttpHeaders &setRawHeader(const QString &header, const QVariant &value);
+    virtual HttpHeaders &rawHeaderRemove(const QString &headerName);
 
     //!
     //! \brief addRawHeader
@@ -105,6 +106,7 @@ public:
     virtual HttpHeaders &setAuthorizationBasic(const QVariant &userName, const QVariant &passWord);
     virtual QVariant authorization(const QString &headerName, const QVariant &authorizationScheme);
     virtual QVariant authorization(const QVariant &authorizationScheme);
+    virtual HttpHeaders &authorizationRemove();
 
 
     //!

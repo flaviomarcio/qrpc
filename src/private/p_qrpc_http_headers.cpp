@@ -224,6 +224,16 @@ HttpHeaders &HttpHeaders::setRawHeader(const QString &header, const QVariant &va
     return *this;
 }
 
+HttpHeaders &HttpHeaders::rawHeaderRemove(const QString &headerName)
+{
+    auto keys=p->header.keys();
+    for(auto&key:keys){
+        if(key.toLower().trimmed()==headerName.trimmed().toLower())
+            p->header.remove(key);
+    }
+    return *this;
+}
+
 HttpHeaders &HttpHeaders::addRawHeader(const QVariantHash &rawHeader)
 {
     Q_DECLARE_VU;
@@ -419,6 +429,11 @@ QVariant HttpHeaders::authorization(const QString &headerName, const QVariant &a
 QVariant HttpHeaders::authorization(const QVariant &authorizationScheme)
 {
     return this->authorization(__header_authorization, authorizationScheme);
+}
+
+HttpHeaders &HttpHeaders::authorizationRemove()
+{
+    return this->rawHeaderRemove(__header_authorization);
 }
 
 QVariant HttpHeaders::proxyAuthorization(const QVariant &authorizationScheme)
