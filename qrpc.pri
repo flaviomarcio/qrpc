@@ -53,19 +53,20 @@ equals(QRPC_TOKEN,true): DEFINES+=QRPC_TOKEN
 equals(QRPC_CLIENT,true): DEFINES+=QRPC_CLIENT
 equals(QRPC_SERVER,true): DEFINES+=QRPC_SERVER
 
-
-message(" ")
-message(-QTREFORCE QRCP-MODULES-DEFINITION-ACCEPT)
-message("   -MODULES")
-equals(QRPC_BASE,true)      { message("      +QRPC_BASE............... accepted") } else { message("      +QRPC_BASE................. ignored") }
-equals(QRPC_TOKEN,true)     { message("      +QRPC_TOKEN.............. accepted") } else { message("      +QRPC_TOKEN................ ignored") }
-equals(QRPC_CLIENT,true)    { message("      +QRPC_CLIENT............. accepted") } else { message("      +QRPC_CLIENT............... ignored") }
-equals(QRPC_SERVER,true)    { message("      +QRPC_SERVER............. accepted") } else { message("      +QRPC_SERVER............... ignored") }
-message("   -SOURCES")
-equals(QRPC_BASE,true)      { message("      +QRPC_BASE............... "$$QRPC_BASE_SOURCE) }
-equals(QRPC_TOKEN,true)     { message("      +QRPC_TOKEN.............. "$$QRPC_TOKEN_SOURCE) }
-equals(QRPC_CLIENT,true)    { message("      +QRPC_CLIENT............. "$$QRPC_CLIENT_SOURCE) }
-equals(QRPC_SERVER,true)    { message("      +QRPC_SERVER............. "$$QRPC_SERVER_SOURCE) }
+!equals(QTREFORCE_NO_MESSAGE,true) {
+    message(" ")
+    message(-QTREFORCE QRCP-MODULES-DEFINITION-ACCEPT)
+    message("   -MODULES")
+    equals(QRPC_BASE,true)      { message("      +QRPC_BASE............... accepted") } else { message("      +QRPC_BASE................. ignored") }
+    equals(QRPC_TOKEN,true)     { message("      +QRPC_TOKEN.............. accepted") } else { message("      +QRPC_TOKEN................ ignored") }
+    equals(QRPC_CLIENT,true)    { message("      +QRPC_CLIENT............. accepted") } else { message("      +QRPC_CLIENT............... ignored") }
+    equals(QRPC_SERVER,true)    { message("      +QRPC_SERVER............. accepted") } else { message("      +QRPC_SERVER............... ignored") }
+    message("   -SOURCES")
+    equals(QRPC_BASE,true)      { message("      +QRPC_BASE............... "$$QRPC_BASE_SOURCE) }
+    equals(QRPC_TOKEN,true)     { message("      +QRPC_TOKEN.............. "$$QRPC_TOKEN_SOURCE) }
+    equals(QRPC_CLIENT,true)    { message("      +QRPC_CLIENT............. "$$QRPC_CLIENT_SOURCE) }
+    equals(QRPC_SERVER,true)    { message("      +QRPC_SERVER............. "$$QRPC_SERVER_SOURCE) }
+}
 
 
 INCLUDEPATH+=$$PWD/includes
