@@ -17,7 +17,7 @@
 
 static const auto __contextPath="contextPath";
 static const auto __port="port";
-static const auto __set_crypt_mode="set-crypt-mode";
+//static const auto __set_crypt_mode="set-crypt-mode";
 //static const auto __DECRYPTED="DECRYPTED";
 
 
