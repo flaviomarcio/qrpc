@@ -203,7 +203,7 @@ HttpResponse &RequestPvt::download(const QString &route, const QString &fileName
     switch (eProtocol.type()) {
     case QRpc::Types::Http:
     {
-        auto e_port=(e.port().toInt()==80 || e.port().toInt()==80<=0)?"":QStringLiteral(":%1").arg(e.port().toInt());
+        auto e_port=(e.port().toInt()==80 || e.port().toInt()<=0)?"":QStringLiteral(":%1").arg(e.port().toInt());
         auto request_url_str = QStringLiteral("%1%2/%3").arg(e.hostName(), e_port, e.route()).replace(QStringLiteral("\""), "").replace(QStringLiteral("//"), QStringLiteral("/"));
         auto request_url_part = request_url_str.split(QStringLiteral("/"));
         request_url_str.clear();
