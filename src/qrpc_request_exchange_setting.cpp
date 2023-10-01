@@ -98,7 +98,8 @@ const QVariantHash RequestExchangeSetting::toHash() const
 
 const QString &RequestExchangeSetting::url() const
 {
-    auto __return = QStringLiteral("%1:||%2:%3/%4").arg(p->protocol.name().toLower(), this->hostName(), QString::number(this->port().toInt()),this->route());
+    auto e_port=(this->port().toInt()==80 || this->port().toInt()<=0)?"":QStringLiteral(":%1").arg(this->port().toInt());
+    auto __return = QStringLiteral("%1:||%2%3/%4").arg(p->protocol.name().toLower(), this->hostName(), e_port,this->route());
     while(__return.contains(QStringLiteral("//")))
         __return=__return.replace(QStringLiteral("//"), QStringLiteral("/"));
     __return=__return.replace(QStringLiteral("||"), QStringLiteral("//"));

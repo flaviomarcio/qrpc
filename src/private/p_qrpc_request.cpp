@@ -29,6 +29,14 @@ RequestPvt::RequestPvt(Request *parent):
     this->qrpcBody.p=this;
 }
 
+QString makePort(QVariant vPort){
+    auto port=vPort.toInt();
+    if(port==80 || port<=0)
+        return {};
+    static const auto __format=QStringLiteral(":%1");
+    return __format.arg(port);
+}
+
 QString RequestPvt::urlMaker(const QString &path)
 {
     auto &rq=*this->parent;
@@ -129,20 +137,20 @@ HttpResponse &RequestPvt::upload(const QString &route, const QString &fileName)
     e.setRoute(routeCall);
 
     QStm::MetaEnum<QRpc::Types::Protocol> eProtocol(e.protocol());
+    auto e_port=makePort(e.port());
     switch (eProtocol.type()) {
     case QRpc::Types::Http:
     {
-        auto e_port=(e.port().toInt()==80 || e.port().toInt()<=0)?"":QStringLiteral(":%1").arg(e.port().toInt());
         auto request_url = QStringLiteral("%1%2/%3").arg(e.hostName(), e_port, e.route()).replace(QStringLiteral("\""), "").replace(QStringLiteral("//"), QStringLiteral("/"));
         while(request_url.contains(QStringLiteral("//")))
             request_url=request_url.replace(QStringLiteral("//"), QStringLiteral("/"));
-        request_url = QStringLiteral("%1://%2").arg(eProtocol.name(), request_url.simplified());
+        request_url = QStringLiteral("%1://%2").arg(eProtocol.name().toLower(), request_url.simplified());
         this->request_url=QUrl{request_url}.toString();
         break;
     }
     default:
-        auto request_url = QStringLiteral("%1:%2").arg(e.hostName(),e.port().toInt()).replace(QStringLiteral("\""), "").replace(QStringLiteral("//"), QStringLiteral("/"));
-        request_url = QStringLiteral("%1://%2").arg(eProtocol.name(), request_url.simplified());
+        auto request_url = QStringLiteral("%1%2").arg(e.hostName(),e_port).replace(QStringLiteral("\""), "").replace(QStringLiteral("//"), QStringLiteral("/"));
+        request_url = QStringLiteral("%1://%2").arg(eProtocol.name().toLower(), request_url.simplified());
         while(request_url.contains(QStringLiteral("//")))
             request_url=request_url.replace(QStringLiteral("//"), QStringLiteral("/"));
         this->request_url=QUrl{request_url};
@@ -199,11 +207,11 @@ HttpResponse &RequestPvt::download(const QString &route, const QString &fileName
         break;
     }
 
+    auto e_port=makePort(e.port());
     QStm::MetaEnum<QRpc::Types::Protocol> eProtocol(e.protocol());
     switch (eProtocol.type()) {
     case QRpc::Types::Http:
     {
-        auto e_port=(e.port().toInt()==80 || e.port().toInt()<=0)?"":QStringLiteral(":%1").arg(e.port().toInt());
         auto request_url_str = QStringLiteral("%1%2/%3").arg(e.hostName(), e_port, e.route()).replace(QStringLiteral("\""), "").replace(QStringLiteral("//"), QStringLiteral("/"));
         auto request_url_part = request_url_str.split(QStringLiteral("/"));
         request_url_str.clear();
@@ -214,7 +222,7 @@ HttpResponse &RequestPvt::download(const QString &route, const QString &fileName
                 request_url_str+=QStringLiteral("/");
             request_url_str+=line;
         }
-        request_url_str=QStringLiteral("%1://%2").arg(eProtocol.name(), request_url_str);
+        request_url_str=QStringLiteral("%1://%2").arg(eProtocol.name().toLower(), request_url_str);
         this->request_url=QUrl(request_url_str);
         if(!paramsGet.isEmpty()){
             QUrlQuery url_query;
@@ -232,8 +240,8 @@ HttpResponse &RequestPvt::download(const QString &route, const QString &fileName
         break;
     }
     default:
-        auto request_url = QStringLiteral("%1:%2").arg(e.hostName()).arg(e.port().toInt()).replace(QStringLiteral("\""), "").replace(QStringLiteral("//"), QStringLiteral("/"));
-        request_url = QStringLiteral("%1://%2").arg(eProtocol.name(), request_url);
+        auto request_url = QStringLiteral("%1%2").arg(e.hostName(),e_port).replace(QStringLiteral("\""), "").replace(QStringLiteral("//"), QStringLiteral("/"));
+        request_url = QStringLiteral("%1://%2").arg(eProtocol.name().toLower(), request_url);
         this->request_url=QUrl{request_url};
     }
 
@@ -284,11 +292,11 @@ HttpResponse &RequestPvt::call(const QRpc::Types::Method &method, const QVariant
         break;
     }
 
+    auto e_port=makePort(e.port());
     QStm::MetaEnum<QRpc::Types::Protocol> eProtocol(e.protocol());
     switch (eProtocol.type()) {
     case QRpc::Types::Http:
     {
-        auto e_port=(e.port().toInt()==80 || e.port().toInt()<=0)?"":QStringLiteral(":%1").arg(e.port().toInt());
         auto request_url_str = QStringLiteral("%1%2/%3").arg(e.hostName(), e_port, e.route()).replace(QStringLiteral("\""), "").replace(QStringLiteral("//"), QStringLiteral("/"));
         auto request_url_part = request_url_str.split(QStringLiteral("/"));
         request_url_str.clear();
@@ -299,7 +307,7 @@ HttpResponse &RequestPvt::call(const QRpc::Types::Method &method, const QVariant
                 request_url_str+=QStringLiteral("/");
             request_url_str+=line;
         }
-        request_url_str=QStringLiteral("%1://%2").arg(eProtocol.name(), request_url_str);
+        request_url_str=QStringLiteral("%1://%2").arg(eProtocol.name().toLower(), request_url_str);
         this->request_url=QUrl{request_url_str};
         if(!paramsGet.isEmpty()){
             QUrlQuery url_query;
@@ -326,8 +334,8 @@ HttpResponse &RequestPvt::call(const QRpc::Types::Method &method, const QVariant
         break;
     }
     default:
-        auto request_url = QStringLiteral("%1:%2").arg(e.hostName()).arg(e.port().toInt()).replace(QStringLiteral("\""), "").replace(QStringLiteral("//"),QStringLiteral("/"));
-        request_url = QStringLiteral("%1://%2").arg(eProtocol.name(), request_url);
+        auto request_url = QStringLiteral("%1%2").arg(e.hostName(),e_port).replace(QStringLiteral("\""), "").replace(QStringLiteral("//"), QStringLiteral("/"));
+        request_url = QStringLiteral("%1://%2").arg(eProtocol.name().toLower(), request_url);
         this->request_url=QUrl{request_url};
     }
 
