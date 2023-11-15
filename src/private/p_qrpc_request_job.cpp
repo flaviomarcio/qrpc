@@ -130,9 +130,8 @@ public:
     }
 };
 
-RequestJob::RequestJob():QThread{nullptr}
+RequestJob::RequestJob():QThread{nullptr}, p{new RequestJobPvt{this}}
 {
-    this->p=new RequestJobPvt{this};
     this->moveToThread(this);
     static qlonglong taskCount=0;
     this->setObjectName(QStringLiteral("ReqJob%1").arg(++taskCount));

@@ -182,9 +182,8 @@ public:
     }
 };
 
-ListenTCP::ListenTCP(QObject *parent) : Listen{parent}
+ListenTCP::ListenTCP(QObject *parent) : Listen{parent}, p{new ListenTCPPvt{this}}
 {
-    this->p = new ListenTCPPvt{this};
 }
 
 bool ListenTCP::start()

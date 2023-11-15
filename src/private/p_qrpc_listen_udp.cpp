@@ -112,9 +112,8 @@ public:
     }
 };
 
-ListenUDP::ListenUDP(QObject *parent) : Listen{parent}
+ListenUDP::ListenUDP(QObject *parent) : Listen{parent}, p{new ListenUDPPvt{this}}
 {
-    this->p = new ListenUDPPvt{this};
 }
 
 bool ListenUDP::start()

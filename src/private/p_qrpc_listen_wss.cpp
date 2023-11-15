@@ -249,9 +249,8 @@ public:
     }
 };
 
-ListenWebSocket::ListenWebSocket(QObject *parent) : Listen{parent}
+ListenWebSocket::ListenWebSocket(QObject *parent) : Listen{parent}, p{new ListenWebSocketPvt{this}}
 {
-    this->p = new ListenWebSocketPvt{this};
 }
 
 bool ListenWebSocket::start()

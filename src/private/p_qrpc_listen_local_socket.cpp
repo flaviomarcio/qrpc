@@ -192,9 +192,8 @@ public:
     }
 };
 
-ListenLocalSocket::ListenLocalSocket(QObject *parent) : Listen{parent}
+ListenLocalSocket::ListenLocalSocket(QObject *parent) : Listen{parent}, p{new ListenLocalSocketPvt{this}}
 {
-    this->p = new ListenLocalSocketPvt{this};
 }
 
 bool ListenLocalSocket::start()

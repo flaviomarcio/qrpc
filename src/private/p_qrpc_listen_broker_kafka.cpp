@@ -8,9 +8,8 @@ public:
     explicit ListenBrokerKAFKAPvt(ListenBrokerKAFKA *parent):QObject{parent} {}
 };
 
-ListenBrokerKAFKA::ListenBrokerKAFKA(QObject *parent) : Listen{parent}
+ListenBrokerKAFKA::ListenBrokerKAFKA(QObject *parent) : Listen{parent}, p{new ListenBrokerKAFKAPvt{this}}
 {
-    this->p = new ListenBrokerKAFKAPvt{this};
 }
 
 } // namespace QRpc

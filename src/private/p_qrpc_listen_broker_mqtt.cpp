@@ -8,9 +8,8 @@ public:
     explicit ListenBrokerMQTTPvt(ListenBrokerMQTT *parent):QObject{parent} {}
 };
 
-ListenBrokerMQTT::ListenBrokerMQTT(QObject *parent) : Listen{parent}
+ListenBrokerMQTT::ListenBrokerMQTT(QObject *parent) : Listen{parent}, p{new ListenBrokerMQTTPvt{this}}
 {
-    this->p = new ListenBrokerMQTTPvt{this};
 }
 
 } // namespace QRpc

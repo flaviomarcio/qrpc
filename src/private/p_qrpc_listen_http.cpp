@@ -277,11 +277,11 @@ public slots:
 class ListenHTTPPvt : public QObject
 {
 public:
+    ListenHTTP *parent = nullptr;
     QMutex lock, started;
     QList<HttpServer3rdparty *> listens;
-    ListenHTTP *parent = nullptr;
 
-    explicit ListenHTTPPvt(ListenHTTP *parent) : QObject{parent} { this->parent = parent; }
+    explicit ListenHTTPPvt(ListenHTTP *parent) : QObject{parent}, parent{parent} {}
 
     ~ListenHTTPPvt()
     {
@@ -345,9 +345,8 @@ public:
     }
 };
 
-ListenHTTP::ListenHTTP(QObject *parent) : Listen{parent}
+ListenHTTP::ListenHTTP(QObject *parent) : Listen{parent}, p{new ListenHTTPPvt{this}}
 {
-    this->p = new ListenHTTPPvt{this};
 }
 
 bool ListenHTTP::start()

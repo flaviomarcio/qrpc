@@ -31,14 +31,12 @@ public:
     }
 };
 
-ListenRequestCache::ListenRequestCache(Listen *parent) : QObject{parent}
+ListenRequestCache::ListenRequestCache(Listen *parent) : QObject{parent}, p{new ListenRequestCachePvt{this}}
 {
-    this->p = new ListenRequestCachePvt{this};
 }
 
 void ListenRequestCache::clear()
 {
-
     p->clear();
 }
 

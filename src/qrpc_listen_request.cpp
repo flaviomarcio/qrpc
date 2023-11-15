@@ -237,9 +237,8 @@ public slots:
     }
 };
 
-ListenRequest::ListenRequest(QObject *parent):QObject{parent}
+ListenRequest::ListenRequest(QObject *parent):QObject{parent}, p{new ListenRequestPvt{this}}
 {
-    this->p = new ListenRequestPvt{this};
 }
 
 ListenRequest::ListenRequest(const QVariant &requestBody, QObject *parent):QObject{parent},p{new ListenRequestPvt{this}}
@@ -249,7 +248,6 @@ ListenRequest::ListenRequest(const QVariant &requestBody, QObject *parent):QObje
 
 ListenRequest::ListenRequest(const QVariant &requestBody, const QVariantHash &setting, QObject *parent):QObject{parent},p{new ListenRequestPvt{this}}
 {
-    this->p = new ListenRequestPvt{this};
     this->setControllerSetting(setting);
     p->mergeMap(requestBody);
 }

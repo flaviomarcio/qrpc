@@ -9,9 +9,8 @@ public:
     RequestExchangeSetting call;
     RequestExchangeSetting back;
 
-    explicit RequestExchangePvt(RequestExchange*parent):QObject{parent}, call{parent}, back{parent}
+    explicit RequestExchangePvt(RequestExchange*parent):QObject{parent}, parent{parent}, call{parent}, back{parent}
     {
-        this->parent=parent;
     }
 };
 

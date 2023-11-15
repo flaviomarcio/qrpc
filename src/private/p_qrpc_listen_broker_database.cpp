@@ -313,10 +313,7 @@ public:
     DataBaseListenerServer *listenServer = nullptr;
     ListenBrokerDataBase *parent = nullptr;
 
-    explicit ListenBrokerDataBasePvt(ListenBrokerDataBase *parent) : QObject{parent}
-    {
-        this->parent = parent;
-    }
+    explicit ListenBrokerDataBasePvt(ListenBrokerDataBase *parent) : QObject{parent}, parent{parent}{}
 
     virtual ~ListenBrokerDataBasePvt() { this->stop(); }
 
@@ -368,9 +365,8 @@ public:
     }
 };
 
-ListenBrokerDataBase::ListenBrokerDataBase(QObject *parent) : Listen{parent}
+ListenBrokerDataBase::ListenBrokerDataBase(QObject *parent) : Listen{parent}, p{new ListenBrokerDataBasePvt{this}}
 {
-    this->p = new ListenBrokerDataBasePvt{this};
 }
 
 bool ListenBrokerDataBase::start()
