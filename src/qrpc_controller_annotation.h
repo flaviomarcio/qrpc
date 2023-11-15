@@ -4,8 +4,8 @@
 #include <QVariantHash>
 #include <QVariantList>
 #include <QString>
-#include "../../qnotation/src/qannotation_extended.h"
-#include "../../qnotation/src/qannotation_macros.h"
+#include "../../qannotation/src/qannotation_extended.h"
+#include "../../qannotation/src/qannotation_macros.h"
 #include "./qrpc_global.h"
 
 namespace QRpcPrivate
