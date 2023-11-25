@@ -55,7 +55,7 @@ SOURCES += \
 
 ##declare to include CONFIG+=Q_RPC_LOCALSOCKET
 CONFIG(Q_RPC_LOCALSOCKET){
-QT += websockets
+QT += localsocket
 HEADERS += \
     $$PWD/private/p_qrpc_listen_local_socket.h
 
